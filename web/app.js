@@ -76,6 +76,9 @@
     if (!session.isAuthed && !publicRoutes.includes(name)) return go('login');
     if (session.isAuthed && publicRoutes.includes(name)) return go('dashboard');
 
+    // Immersive full-bleed layout for the auth screens.
+    document.body.classList.toggle('auth-mode', name === 'login' || name === 'register');
+
     const view = $('#view');
     view.innerHTML = '<div class="card"><p class="muted">Loading…</p></div>';
     renderNav(name);
@@ -120,24 +123,42 @@
     return (view) => {
       view.innerHTML = '';
       const wrap = el(`
-        <div class="auth-wrap">
-          <div class="card">
-            <h1>${isLogin ? 'Welcome back' : 'Create your account'}</h1>
-            <p class="sub">${isLogin ? 'Log in to manage your escrow transactions.' : 'Sign up to buy and sell safely with escrow protection.'}</p>
-            <form id="f">
-              <label>Email</label>
-              <input name="email" type="email" required autocomplete="email" />
-              <label>Password</label>
-              <input name="password" type="password" required minlength="8" autocomplete="${isLogin ? 'current-password' : 'new-password'}" />
-              <div class="btn-row">
-                <button type="submit">${isLogin ? 'Log in' : 'Sign up'}</button>
+        <div class="auth-shell">
+          <aside class="auth-hero">
+            <div class="auth-hero-glow"></div>
+            <div class="auth-hero-content">
+              <div class="auth-brand">🛡️ SafePay <span>Escrow</span></div>
+              <h2 class="auth-tagline">Buy and sell with total peace of mind.</h2>
+              <p class="auth-lead">We hold the buyer's money securely and only release it to the seller once delivery is confirmed — or an admin resolves a dispute.</p>
+              <ul class="auth-features">
+                <li><span class="af-ic">🔒</span><div><strong>Funds held in escrow</strong><em>Money is locked the moment a deal starts.</em></div></li>
+                <li><span class="af-ic">⚖️</span><div><strong>Fair dispute resolution</strong><em>Open a case with evidence, an admin decides.</em></div></li>
+                <li><span class="af-ic">⭐</span><div><strong>Trusted reputations</strong><em>Ratings after every completed transaction.</em></div></li>
+              </ul>
+              <div class="auth-pay">
+                <span>Pay with</span>
+                <b class="pay-chip">M-Pesa</b><b class="pay-chip">PayPal</b><b class="pay-chip">Visa</b>
               </div>
-            </form>
-            <p class="muted" style="margin-top:16px">
-              ${isLogin ? "No account?" : 'Already registered?'}
-              <span class="link" id="swap">${isLogin ? 'Sign up' : 'Log in'}</span>
-            </p>
-          </div>
+            </div>
+          </aside>
+          <section class="auth-form">
+            <div class="auth-form-inner">
+              <h1>${isLogin ? 'Welcome back' : 'Create your account'}</h1>
+              <p class="sub">${isLogin ? 'Log in to manage your escrow transactions.' : 'Sign up to buy and sell safely with escrow protection.'}</p>
+              <form id="f">
+                <label>Email</label>
+                <div class="field"><span class="field-ic">✉️</span><input name="email" type="email" required autocomplete="email" placeholder="you@example.com" /></div>
+                <label>Password</label>
+                <div class="field"><span class="field-ic">🔑</span><input name="password" type="password" required minlength="8" autocomplete="${isLogin ? 'current-password' : 'new-password'}" placeholder="At least 8 characters" /></div>
+                <button type="submit" class="auth-submit">${isLogin ? 'Log in' : 'Create account'} <span class="arr">→</span></button>
+              </form>
+              <p class="auth-swap">
+                ${isLogin ? "New to SafePay?" : 'Already have an account?'}
+                <span class="link" id="swap">${isLogin ? 'Create an account' : 'Log in'}</span>
+              </p>
+              <p class="auth-trust">🔐 256-bit encrypted · Your credentials are never shared</p>
+            </div>
+          </section>
         </div>`);
       view.appendChild(wrap);
       $('#swap', wrap).onclick = () => go(isLogin ? 'register' : 'login');
