@@ -249,6 +249,134 @@ tr.clickable:hover td { background: var(--panel-2); }
 .row-between { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; color: var(--muted); }
 
+/* ============================================================
+   MOTION & POLISH LAYER
+   ============================================================ */
+
+@keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes popIn { 0% { opacity: 0; transform: scale(.92); } 100% { opacity: 1; transform: scale(1); } }
+@keyframes drift { 0% { transform: translate(0, 0); } 50% { transform: translate(-26px, -18px); } 100% { transform: translate(0, 0); } }
+@keyframes shimmer { 0% { transform: translateX(-120%); } 60%, 100% { transform: translateX(220%); } }
+@keyframes spin { to { transform: rotate(360deg); } }
+@keyframes bellSwing { 0%,70%,100% { transform: rotate(0); } 80% { transform: rotate(14deg); } 90% { transform: rotate(-10deg); } }
+@keyframes floatGlow { 0%,100% { opacity: .8; } 50% { opacity: 1; } }
+
+/* Ambient page background (whole app, not just auth) */
+body {
+  background:
+    radial-gradient(900px 500px at 100% -5%, rgba(34,197,94,.06), transparent 60%),
+    radial-gradient(800px 500px at -5% 105%, rgba(59,130,246,.05), transparent 55%),
+    var(--bg);
+  background-attachment: fixed;
+}
+
+/* Frosted, subtly elevated top bar */
+.topbar {
+  background: rgba(23, 27, 34, .78);
+  backdrop-filter: saturate(140%) blur(10px);
+  -webkit-backdrop-filter: saturate(140%) blur(10px);
+}
+.brand { transition: transform .15s, filter .2s; }
+.brand:hover { transform: translateY(-1px); filter: drop-shadow(0 2px 8px rgba(34,197,94,.35)); }
+.nav a { transition: color .15s, background .15s, transform .12s; }
+.nav a:active { transform: translateY(1px); }
+.nav a.active {
+  background: linear-gradient(180deg, rgba(34,197,94,.18), rgba(34,197,94,.06));
+  color: #d7ffe6;
+  box-shadow: inset 0 0 0 1px rgba(34,197,94,.25);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* Staggered entrance for each view's top-level blocks */
+  .view > * { animation: fadeUp .5s cubic-bezier(.22,.61,.36,1) both; }
+  .view > *:nth-child(1) { animation-delay: .02s; }
+  .view > *:nth-child(2) { animation-delay: .08s; }
+  .view > *:nth-child(3) { animation-delay: .14s; }
+  .view > *:nth-child(4) { animation-delay: .20s; }
+
+  /* Table rows cascade in */
+  tbody tr { animation: fadeUp .45s cubic-bezier(.22,.61,.36,1) both; }
+  tbody tr:nth-child(1) { animation-delay: .04s; }
+  tbody tr:nth-child(2) { animation-delay: .09s; }
+  tbody tr:nth-child(3) { animation-delay: .14s; }
+  tbody tr:nth-child(4) { animation-delay: .19s; }
+  tbody tr:nth-child(5) { animation-delay: .24s; }
+  tbody tr:nth-child(n+6) { animation-delay: .28s; }
+
+  /* Auth hero comes alive */
+  .auth-hero-glow { animation: drift 9s ease-in-out infinite, floatGlow 5s ease-in-out infinite; }
+  .auth-hero-content > * { animation: fadeUp .6s cubic-bezier(.22,.61,.36,1) both; }
+  .auth-brand { animation-delay: .05s; }
+  .auth-tagline { animation-delay: .12s; }
+  .auth-lead { animation-delay: .18s; }
+  .auth-features { animation-delay: .24s; }
+  .auth-pay { animation-delay: .32s; }
+  .auth-form-inner { animation: fadeUp .6s cubic-bezier(.22,.61,.36,1) both .1s; }
+}
+
+/* Cards lift on hover */
+.card { transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
+.card:hover { border-color: #33404d; box-shadow: 0 10px 30px rgba(0,0,0,.28); }
+
+/* Gradient headings */
+h1 {
+  background: linear-gradient(180deg, #ffffff, #b9c2cf);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Buttons: motion + shimmer sweep on primary */
+button { position: relative; overflow: hidden; transition: transform .14s ease, box-shadow .18s ease, background .15s ease; }
+button:not(.ghost):not(.danger):not(.warn)::after {
+  content: ""; position: absolute; top: 0; left: 0; width: 40%; height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.35), transparent);
+  transform: translateX(-120%);
+}
+button:not(.ghost):not(.danger):not(.warn):hover::after { animation: shimmer 1s ease; }
+button:not(:disabled):hover { transform: translateY(-1px); }
+button:not(:disabled):active { transform: translateY(0) scale(.99); }
+
+/* Inputs: rounder, smoother focus */
+input, select, textarea { transition: border-color .15s, box-shadow .15s, background .15s; }
+input:focus, select:focus, textarea:focus { box-shadow: 0 0 0 3px rgba(34,197,94,.15); }
+
+/* Table row hover slide */
+tr.clickable { transition: background .12s; }
+tr.clickable td { transition: transform .12s; }
+tr.clickable:hover td:first-child { transform: translateX(3px); }
+
+/* Status badges get a soft glow */
+.badge { transition: transform .12s; }
+.badge.HELD { box-shadow: 0 0 0 1px rgba(59,130,246,.25); }
+.badge.RELEASED { box-shadow: 0 0 12px rgba(34,197,94,.18); }
+.badge.DISPUTED { box-shadow: 0 0 12px rgba(239,68,68,.18); }
+
+/* Empty state: friendlier, animated CTA */
+.empty { animation: popIn .5s cubic-bezier(.22,.61,.36,1) both; }
+.empty .link { display: inline-block; margin-top: 8px; font-weight: 600; }
+.empty .link:hover { text-decoration: underline; }
+
+/* Notification bell micro-interaction */
+.bell #bellBtn { transition: transform .15s; display: inline-block; }
+.bell #bellBtn:hover { animation: bellSwing .7s ease; }
+.bell-count { animation: popIn .3s ease both; }
+.bell-item { animation: fadeUp .35s ease both; }
+
+/* Toast slides up */
+.toast { animation: fadeUp .3s cubic-bezier(.22,.61,.36,1) both; }
+
+/* Loading spinner utility (replaces bare "Loading…") */
+.spinner {
+  width: 26px; height: 26px; border-radius: 50%;
+  border: 3px solid var(--border); border-top-color: var(--accent);
+  animation: spin .8s linear infinite; margin: 24px auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
 /* ---------- Notification bell ---------- */
 .bell #bellBtn { position: relative; font-size: 18px; }
 .bell-count {

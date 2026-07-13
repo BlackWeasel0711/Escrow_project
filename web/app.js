@@ -80,7 +80,7 @@
     document.body.classList.toggle('auth-mode', name === 'login' || name === 'register');
 
     const view = $('#view');
-    view.innerHTML = '<div class="card"><p class="muted">Loading…</p></div>';
+    view.innerHTML = '<div class="spinner"></div>';
     renderNav(name);
     try {
       await fn(view, params);
@@ -191,7 +191,11 @@
 
     const card = el('<div class="card"></div>');
     if (!txs.length) {
-      card.appendChild(el(`<div class="empty">No transactions yet.<br/><span class="link" id="mk">Create your first escrow →</span></div>`));
+      card.appendChild(el(`<div class="empty">
+        <div style="font-size:44px;line-height:1">🗂️</div>
+        <div style="margin-top:8px">No transactions yet.</div>
+        <span class="link" id="mk">Create your first escrow →</span>
+      </div>`));
       card.querySelector('#mk').onclick = () => go('new');
     } else {
       const table = el(`<table><thead><tr>
