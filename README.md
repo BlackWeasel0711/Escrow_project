@@ -34,5 +34,10 @@ methods**, asserting both parties are notified at every step. **55/55 checks pas
 setup. This satisfies the brief's acceptance criterion (a test transaction moving through each state,
 visible in both the admin overview and the user's timeline).
 
-Still required before going live: real gateway sandbox/production credentials (flip `SIMULATE_PAYMENTS=false`),
-building/running the Android app in Android Studio, and deployment to hosting.
+Production-readiness in place:
+- **HTTPS/TLS**: HSTS headers, `FORCE_HTTPS` redirect (proxy-aware), and optional native TLS (`TLS_KEY_PATH`/`TLS_CERT_PATH`).
+- **Deployment**: `docker compose up --build` runs Postgres + API + web together (see `docs/README.md`).
+- **CI**: `.github/workflows/ci.yml` typechecks + end-to-end verifies the backend, checks the web, and **compiles the Android app** on every push.
+
+Still requires *your* accounts to fully go live: real gateway credentials (the PayPal/M-Pesa/Stripe
+integration code already exists behind `SIMULATE_PAYMENTS` — just add keys), and pushing to a host.

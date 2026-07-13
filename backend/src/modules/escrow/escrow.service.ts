@@ -4,7 +4,8 @@ import { HttpError } from '../../common/middleware/error.middleware';
 import { getGateway } from '../payments/payments.service';
 import { notify, notifyBoth } from '../notifications/notifications.service';
 
-const money = (cents: number, currency: string) => `${currency} ${(cents / 100).toFixed(2)}`;
+const money = (cents: number, currency: string) =>
+  `${currency} ${(cents / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 async function logEvent(
   transactionId: string,

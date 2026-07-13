@@ -28,7 +28,35 @@
 - **Escrow lifecycle**: `PENDING → HELD → (DISPUTED) → RELEASED | REFUNDED`. Every transition is written to `TransactionEvent` for an auditable timeline visible in both the user and admin views.
 - **Payments**: each gateway implements one `PaymentGateway` interface (`deposit`/`release`/`refund`). `SIMULATE_PAYMENTS=true` swaps in a fake gateway so the whole flow runs with no real accounts.
 
-## Deployment (outline)
+## Deployment
+
+### Fastest path — Docker Compose (one command)
+
+From the repo root:
+
+```
+docker compose up --build
+```
+
+This builds and runs three services: **PostgreSQL**, the **API** (applies the schema on start,
+listens on `http://localhost:4000`), and the **web** client via nginx (`http://localhost:8080`).
+Override secrets/config with env vars, e.g. `JWT_SECRET=… SIMULATE_PAYMENTS=false docker compose up`.
+
+### HTTPS / TLS
+
+HTTPS is handled in code:
+- `helmet` sends **HSTS** headers.
+- `FORCE_HTTPS=true` redirects any plain-HTTP request to HTTPS (for running behind a
+  TLS-terminating proxy such as Render, Nginx, or Cloudflare — `trust proxy` is set).
+- To terminate TLS in the app itself, set `TLS_KEY_PATH` and `TLS_CERT_PATH` to your PEM files
+  and the server starts as native HTTPS.
+
+### Continuous integration
+
+`.github/workflows/ci.yml` runs on every push/PR: backend typecheck + full end-to-end verify
+(embedded PostgreSQL), web syntax check, and an **Android `assembleDebug` compile**.
+
+## Manual deployment (outline)
 
 1. **Database** — provision managed PostgreSQL (e.g. Neon, Supabase, RDS). Set `DATABASE_URL`.
 2. **Backend** — build and run on any Node host (Render, Railway, Fly, a VM):
