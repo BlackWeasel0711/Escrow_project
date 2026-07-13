@@ -35,9 +35,10 @@ setup. This satisfies the brief's acceptance criterion (a test transaction movin
 visible in both the admin overview and the user's timeline).
 
 Production-readiness in place:
+- **Single-origin app**: the backend serves the website too, so the whole product runs as one service (no CORS, no separate frontend host). `web/config.js` auto-resolves the API URL per environment.
+- **One-click hosting**: `render.yaml` blueprint (managed Postgres + one Docker service, HTTPS, generated secret). Also `docker compose up` or `npm run dev:local` → everything on `http://localhost:4000`.
 - **HTTPS/TLS**: HSTS headers, `FORCE_HTTPS` redirect (proxy-aware), and optional native TLS (`TLS_KEY_PATH`/`TLS_CERT_PATH`).
-- **Deployment**: `docker compose up --build` runs Postgres + API + web together (see `docs/README.md`).
-- **CI**: `.github/workflows/ci.yml` typechecks + end-to-end verifies the backend, checks the web, and **compiles the Android app** on every push.
+- **CI**: `.github/workflows/ci.yml` typechecks + end-to-end verifies the backend (simulated **and** real gateway path), checks the web, and **compiles the Android app** on every push.
 
 Still requires *your* accounts to fully go live: real gateway credentials (the PayPal/M-Pesa/Stripe
 integration code already exists behind `SIMULATE_PAYMENTS` — just add keys), and pushing to a host.

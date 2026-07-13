@@ -30,17 +30,33 @@
 
 ## Deployment
 
-### Fastest path — Docker Compose (one command)
+The whole product (REST API **and** website) runs as a **single service on one origin** — the
+backend serves the web client, so there's no CORS, no separate frontend host, and no per-environment
+API URL to configure (`web/config.js` auto-uses same-origin `/api` when hosted).
 
-From the repo root:
+### One-click cloud deploy — Render Blueprint
+
+The repo includes `render.yaml`. In [Render](https://render.com): **New → Blueprint**, point it at this
+repo, **Apply**. It provisions managed PostgreSQL + one Docker web service (with a strong `JWT_SECRET`
+generated, `FORCE_HTTPS` on, schema applied on boot). You get a live HTTPS URL serving both the site
+and the API. Free tier is fine for a demo. To go live on payments, set `SIMULATE_PAYMENTS=false` and add
+the gateway keys in the Render dashboard. (Railway/Fly/any Docker host work the same way with the root
+`Dockerfile`.)
+
+### One command locally — Docker Compose
 
 ```
 docker compose up --build
 ```
 
-This builds and runs three services: **PostgreSQL**, the **API** (applies the schema on start,
-listens on `http://localhost:4000`), and the **web** client via nginx (`http://localhost:8080`).
-Override secrets/config with env vars, e.g. `JWT_SECRET=… SIMULATE_PAYMENTS=false docker compose up`.
+Runs **PostgreSQL** + the **all-in-one app**; open **http://localhost:4000** for the website (the API is
+under `/api` on the same origin). Override config via env, e.g.
+`JWT_SECRET=… SIMULATE_PAYMENTS=false docker compose up`.
+
+### No Docker? One command with Node
+
+`cd backend && npm run dev:local` — embedded PostgreSQL + seeded data + API **and** website on
+`http://localhost:4000`.
 
 ### HTTPS / TLS
 

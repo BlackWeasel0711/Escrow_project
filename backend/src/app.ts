@@ -1,3 +1,4 @@
+import path from 'path';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
@@ -53,5 +54,17 @@ app.use('/api/disputes', disputesRouter);
 app.use('/api/ratings', ratingsRouter);
 app.use('/api/notifications', notificationsRouter);
 app.use('/api/admin', adminRouter);
+
+// Optionally serve the web client from the same origin (single-service hosting).
+// Set SERVE_WEB_DIR to the web/ folder; the SPA is served for all non-API paths.
+const webDir = process.env.SERVE_WEB_DIR;
+if (webDir) {
+  const root = path.resolve(webDir);
+  app.use(express.static(root));
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path === '/health') return next();
+    res.sendFile(path.join(root, 'index.html'));
+  });
+}
 
 app.use(errorHandler);

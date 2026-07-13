@@ -41,9 +41,10 @@ await new Promise((resolve, reject) => {
   p.on('exit', (c) => (c === 0 ? resolve() : reject(new Error('seed failed'))));
 });
 
-console.log('Starting API on http://localhost:4000 ...');
+console.log('Starting API + web on http://localhost:4000 ...');
+const webDir = path.resolve(process.cwd(), '..', 'web');
 const server = spawn(process.execPath, ['-r', 'ts-node/register/transpile-only', 'src/server.ts'],
-  { env: { ...process.env, DATABASE_URL, JWT_SECRET: 'dev-local-secret', SIMULATE_PAYMENTS: 'true', PORT: String(PORT_API) }, shell: false, stdio: 'inherit' });
+  { env: { ...process.env, DATABASE_URL, JWT_SECRET: 'dev-local-secret', SIMULATE_PAYMENTS: 'true', PORT: String(PORT_API), SERVE_WEB_DIR: webDir }, shell: false, stdio: 'inherit' });
 
 async function shutdown() {
   console.log('\nShutting down...');
@@ -61,12 +62,13 @@ for (let i = 0; i < 60; i++) {
   await sleep(500);
 }
 console.log('\n==============================================');
-console.log('  SafePay API ready:  http://localhost:4000');
+console.log('  SafePay is ready:  http://localhost:4000');
+console.log('  (web app + API both served from this one URL)');
 console.log('  Seeded logins:');
 console.log('    admin  admin@safepay.test  / admin12345');
 console.log('    buyer  buyer@safepay.test  / buyer12345');
 console.log('    seller seller@safepay.test / seller12345');
-console.log('  Open web/index.html to use the app.');
+console.log('  Open http://localhost:4000 in your browser.');
 console.log('==============================================\n');
 
 setInterval(() => {}, 1 << 30);
