@@ -12,7 +12,8 @@
     "prisma:seed": "prisma db seed",
     "db:local": "node scripts/pg-daemon.mjs",
     "dev:local": "node scripts/dev-local.mjs",
-    "verify": "node scripts/verify.mjs"
+    "verify": "node scripts/verify.mjs",
+    "verify:live": "node scripts/verify-live.mjs"
   },
   "prisma": {
     "seed": "ts-node-dev --transpile-only prisma/seed.ts"

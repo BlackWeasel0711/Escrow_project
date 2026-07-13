@@ -3,7 +3,7 @@ import { SIMULATE_PAYMENTS, fakeRef } from './simulate';
 
 // Visa card processing goes through Stripe (PCI compliance, 3-D Secure, etc.
 // are handled by Stripe rather than us touching raw card numbers).
-const BASE_URL = 'https://api.stripe.com/v1';
+const BASE_URL = process.env.STRIPE_BASE_URL ?? 'https://api.stripe.com/v1';
 
 function authHeader() {
   return { Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}` };

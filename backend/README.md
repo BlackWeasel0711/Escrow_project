@@ -26,6 +26,14 @@ release) across all three payment methods — no external database or config nee
 proof that the whole stack works; see `scripts/verify.mjs`. `npm run db:local` starts just the embedded
 database if you want to point `npm run dev` at it (`postgresql://postgres:postgres@127.0.0.1:55432/escrow`).
 
+### Verifying the real payment code (no credentials needed)
+
+`npm run verify:live` runs the stack with **`SIMULATE_PAYMENTS=false`** against local **mock
+gateways** that mimic the real Daraja / PayPal / Stripe API shapes. This exercises the actual
+integration code — OAuth token fetch, STK push / order / payment-intent creation, and B2C payout /
+capture / reversal / refund — proving it works before you plug in live keys. (`npm run verify` covers
+the same escrow lifecycle via the simulated path.)
+
 ## Adding real payment gateways later
 
 Each gateway lives in `src/modules/payments/*.gateway.ts` behind the same `PaymentGateway` interface (`deposit`, `release`, `refund`). To go live with one:

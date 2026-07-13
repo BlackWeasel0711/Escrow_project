@@ -56,15 +56,50 @@ export const mpesaGateway: PaymentGateway = {
     return { gatewayRef: data.CheckoutRequestID, raw: data };
   },
 
-  async release() {
+  async release({ amountCents }) {
     if (SIMULATE_PAYMENTS) return;
-    // Payout to seller via Daraja B2C API (requires a separate B2C-enabled shortcode
-    // and security credential, provisioned by Safaricom on the production app).
-    throw new Error('M-Pesa B2C payout not yet configured — needs production Daraja app credentials');
+    // Payout to the seller via Daraja B2C. Needs a B2C-enabled shortcode + initiator
+    // security credential (provisioned by Safaricom on the production app). The seller's
+    // phone number (PartyB) should be collected at escrow creation.
+    const token = await getAccessToken();
+    const res = await fetch(`${BASE_URL}/mpesa/b2c/v1/paymentrequest`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        InitiatorName: process.env.MPESA_INITIATOR_NAME,
+        SecurityCredential: process.env.MPESA_SECURITY_CREDENTIAL,
+        CommandID: 'BusinessPayment',
+        Amount: Math.round(amountCents / 100),
+        PartyA: process.env.MPESA_B2C_SHORTCODE ?? process.env.MPESA_SHORTCODE,
+        PartyB: process.env.MPESA_TEST_MSISDN,
+        Remarks: 'Escrow release',
+        QueueTimeOutURL: process.env.MPESA_CALLBACK_URL,
+        ResultURL: process.env.MPESA_CALLBACK_URL,
+      }),
+    });
+    if (!res.ok) throw new Error(`Daraja B2C payout failed: ${res.status}`);
   },
 
-  async refund() {
+  async refund({ gatewayRef, amountCents }) {
     if (SIMULATE_PAYMENTS) return;
-    throw new Error('M-Pesa reversal requires the Daraja Transaction Reversal API and org security credentials');
+    // Return funds to the buyer via the Daraja Transaction Reversal API.
+    const token = await getAccessToken();
+    const res = await fetch(`${BASE_URL}/mpesa/reversal/v1/request`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        Initiator: process.env.MPESA_INITIATOR_NAME,
+        SecurityCredential: process.env.MPESA_SECURITY_CREDENTIAL,
+        CommandID: 'TransactionReversal',
+        TransactionID: gatewayRef,
+        Amount: Math.round(amountCents / 100),
+        ReceiverParty: process.env.MPESA_SHORTCODE,
+        RecieverIdentifierType: '11',
+        ResultURL: process.env.MPESA_CALLBACK_URL,
+        QueueTimeOutURL: process.env.MPESA_CALLBACK_URL,
+        Remarks: 'Escrow refund',
+      }),
+    });
+    if (!res.ok) throw new Error(`Daraja reversal failed: ${res.status}`);
   },
 };
