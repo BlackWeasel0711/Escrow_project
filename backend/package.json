@@ -11,6 +11,7 @@
     "prisma:migrate": "prisma migrate dev",
     "prisma:seed": "prisma db seed",
     "db:local": "node scripts/pg-daemon.mjs",
+    "dev:local": "node scripts/dev-local.mjs",
     "verify": "node scripts/verify.mjs"
   },
   "prisma": {
