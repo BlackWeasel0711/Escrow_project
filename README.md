@@ -1,0 +1,36 @@
+# Escrow Website & Android App
+
+A multi-payment escrow platform: buyers pay into escrow, funds are held until delivery is confirmed (or a dispute is resolved by an admin).
+
+## Structure
+
+- `backend/` — REST API (Node.js/TypeScript/Express/Prisma/PostgreSQL). Start here — see `backend/README.md`.
+- `web/` — website frontend (zero-build vanilla SPA). See `web/README.md`.
+- `android/` — native Android app (Kotlin + Jetpack Compose + Retrofit). See `android/README.md`.
+- `docs/` — OpenAPI spec, interactive API viewer, architecture & deployment notes. See `docs/README.md`.
+
+## Status
+
+Backend core is scaffolded and runnable in simulated-payments mode (no real gateway accounts needed yet):
+- Email/password auth (JWT)
+- Escrow transaction lifecycle: `PENDING → HELD → DISPUTED → RELEASED/REFUNDED`
+- Payment gateway adapters for PayPal, M-Pesa, and Visa (via Stripe), behind one interface — switch `SIMULATE_PAYMENTS=false` once real sandbox credentials are added
+- Dispute center (open case, attach evidence, admin ruling)
+- Ratings after completed transactions
+- Admin overview/users/transactions endpoints
+
+All four deliverables are now in place:
+- **Web**: zero-build vanilla SPA — auth, full buyer/seller escrow flow, dispute center, ratings, admin dashboard.
+- **Android**: native Kotlin/Compose app mirroring the user-facing flows via Retrofit.
+- **Docs**: OpenAPI 3.0 spec (`docs/openapi.yaml` + `docs/api.html` viewer), architecture & deployment notes.
+- **Seed + smoke test**: `npm run prisma:seed` creates a first admin and demo users; `backend/scripts/smoke.md`
+  scripts the deposit → hold → dispute → release acceptance test for each payment method.
+
+**Verified end-to-end.** `cd backend && npm run verify` stands up a throwaway PostgreSQL, applies the
+schema, seeds, boots the API, and drives the full lifecycle (deposit → hold → dispute → release, plus the
+plain confirm-received release) across **all three payment methods** — **39/39 checks pass** with no
+external setup. This satisfies the brief's acceptance criterion (a test transaction moving through each
+state, visible in both the admin overview and the user's timeline).
+
+Still required before going live: real gateway sandbox/production credentials (flip `SIMULATE_PAYMENTS=false`),
+building/running the Android app in Android Studio, and deployment to hosting.

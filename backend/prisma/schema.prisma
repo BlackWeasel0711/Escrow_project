@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum PaymentMethod {
+  PAYPAL
+  MPESA
+  VISA
+}
+
+enum TransactionStatus {
+  PENDING    // created, awaiting payment confirmation from gateway
+  HELD       // funds captured and locked in escrow
+  DISPUTED   // buyer or seller opened a dispute while held
+  RELEASED   // funds paid out to seller
+  REFUNDED   // funds returned to buyer
+  CANCELLED  // never funded / cancelled before hold
+}
+
+enum DisputeStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED_RELEASE  // admin ruled in seller's favor
+  RESOLVED_REFUND   // admin ruled in buyer's favor
+}
+
+model User {
+  id           String   @id @default(uuid())
+  email        String   @unique
+  passwordHash String
+  role         Role     @default(USER)
+  createdAt    DateTime @default(now())
+
+  transactionsAsBuyer  Transaction[] @relation("BuyerTransactions")
+  transactionsAsSeller Transaction[] @relation("SellerTransactions")
+  disputesOpened       Dispute[]     @relation("DisputeOpener")
+  ratingsGiven         Rating[]      @relation("RatingsGiven")
+  ratingsReceived      Rating[]      @relation("RatingsReceived")
+}
+
+model Transaction {
+  id            String             @id @default(uuid())
+  buyerId       String
+  sellerId      String
+  buyer         User               @relation("BuyerTransactions", fields: [buyerId], references: [id])
+  seller        User               @relation("SellerTransactions", fields: [sellerId], references: [id])
+  description   String
+  amountCents   Int
+  currency      String             @default("KES")
+  method        PaymentMethod
+  status        TransactionStatus  @default(PENDING)
+  gatewayRef    String?            // id returned by PayPal/M-Pesa/Stripe for this payment
+  createdAt     DateTime           @default(now())
+  updatedAt     DateTime           @updatedAt
+
+  events    TransactionEvent[]
+  dispute   Dispute?
+  rating    Rating?
+}
+
+model TransactionEvent {
+  id            String      @id @default(uuid())
+  transactionId String
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  fromStatus    TransactionStatus?
+  toStatus      TransactionStatus
+  note          String?
+  createdAt     DateTime    @default(now())
+}
+
+model Dispute {
+  id            String        @id @default(uuid())
+  transactionId String        @unique
+  transaction   Transaction   @relation(fields: [transactionId], references: [id])
+  openedById    String
+  openedBy      User          @relation("DisputeOpener", fields: [openedById], references: [id])
+  reason        String
+  status        DisputeStatus @default(OPEN)
+  adminNote     String?
+  createdAt     DateTime      @default(now())
+  resolvedAt    DateTime?
+
+  evidence Evidence[]
+}
+
+model Evidence {
+  id         String   @id @default(uuid())
+  disputeId  String
+  dispute    Dispute  @relation(fields: [disputeId], references: [id])
+  fileUrl    String
+  uploadedAt DateTime @default(now())
+}
+
+model Rating {
+  id            String      @id @default(uuid())
+  transactionId String      @unique
+  transaction   Transaction @relation(fields: [transactionId], references: [id])
+  raterId       String
+  rater         User        @relation("RatingsGiven", fields: [raterId], references: [id])
+  rateeId       String
+  ratee         User        @relation("RatingsReceived", fields: [rateeId], references: [id])
+  score         Int         // 1-5
+  comment       String?
+  createdAt     DateTime    @default(now())
+}
