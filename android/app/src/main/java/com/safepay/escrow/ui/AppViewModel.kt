@@ -20,6 +20,7 @@ sealed interface Screen {
     data object Register : Screen
     data object Dashboard : Screen
     data object NewEscrow : Screen
+    data object Notifications : Screen
     data class Detail(val id: String) : Screen
 }
 
@@ -31,6 +32,8 @@ data class UiState(
     val toast: String? = null,
     val isAdmin: Boolean = false,
     val currentUserId: String? = null,
+    val notifications: List<com.safepay.escrow.data.Notification> = emptyList(),
+    val unreadCount: Int = 0,
 )
 
 class AppViewModel(app: Application) : AndroidViewModel(app) {
@@ -55,8 +58,9 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
     fun navigate(screen: Screen) {
         _state.value = _state.value.copy(screen = screen)
         when (screen) {
-            is Screen.Dashboard -> loadTransactions()
+            is Screen.Dashboard -> { loadTransactions(); refreshUnread() }
             is Screen.Detail -> loadDetail(screen.id)
+            is Screen.Notifications -> loadNotifications()
             else -> {}
         }
     }
@@ -122,5 +126,23 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         api.rate(RateRequest(id, score, comment?.takeIf { it.isNotBlank() }))
         toast("Thanks for rating")
         loadDetail(id)
+    }
+
+    fun loadNotifications() = launchGuarded {
+        val res = api.notifications()
+        _state.value = _state.value.copy(notifications = res.items, unreadCount = res.unread)
+        // Opening the list marks everything read.
+        api.markAllNotificationsRead()
+        _state.value = _state.value.copy(unreadCount = 0)
+    }
+
+    /** Refreshes just the unread badge without navigating. */
+    fun refreshUnread() {
+        viewModelScope.launch {
+            try {
+                val res = api.notifications()
+                _state.value = _state.value.copy(unreadCount = res.unread)
+            } catch (_: Throwable) { /* badge is best-effort */ }
+        }
     }
 }

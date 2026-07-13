@@ -71,6 +71,21 @@ data class RateRequest(
 )
 
 @Serializable
+data class Notification(
+    val id: String,
+    val transactionId: String? = null,
+    val message: String,
+    val read: Boolean = false,
+    val createdAt: String,
+)
+
+@Serializable
+data class NotificationsResponse(
+    val unread: Int = 0,
+    val items: List<Notification> = emptyList(),
+)
+
+@Serializable
 data class ApiError(val error: String? = null, val message: String? = null)
 
 /** Payment methods the API accepts, with display labels. */

@@ -51,6 +51,9 @@ Then set `SIMULATE_PAYMENTS=false`.
 | `POST /api/disputes/:id/rule` | admin | Rule RELEASE or REFUND |
 | `POST /api/ratings` | user | Rate the other party after release |
 | `GET /api/ratings/users/:userId` | — | A user's average rating |
+| `GET /api/notifications` | user | My notifications + unread count |
+| `POST /api/notifications/read-all` | user | Mark all my notifications read |
+| `POST /api/notifications/:id/read` | user | Mark one notification read |
 | `GET /api/admin/overview` | admin | Totals: held funds, open disputes, users |
 | `GET /api/admin/users` / `transactions` | admin | Full listings |
 

@@ -98,9 +98,11 @@
     nav.appendChild(navLink('dashboard', 'My Escrows', active));
     nav.appendChild(navLink('new', 'New Escrow', active));
     if (session.isAdmin) nav.appendChild(navLink('admin', 'Admin', active));
+    nav.appendChild(buildBell());
     const out = el('<a>Log out</a>');
-    out.onclick = () => { session.token = null; renderNav(); go('login'); };
+    out.onclick = () => { stopBellPolling(); session.token = null; renderNav(); go('login'); };
     nav.appendChild(out);
+    startBellPolling();
   }
   function navLink(name, label, active) {
     const a = el(`<a class="${active === name ? 'active' : ''}">${label}</a>`);
@@ -429,6 +431,57 @@
     else txCard.appendChild(table);
     view.appendChild(txCard);
   });
+
+  // ---------- notifications bell ----------
+  let bellTimer = null;
+  function buildBell() {
+    const wrap = el(`<span class="bell" style="position:relative">
+      <a id="bellBtn" title="Notifications">🔔<span id="bellCount" class="bell-count" hidden>0</span></a>
+      <div id="bellPanel" class="bell-panel" hidden></div>
+    </span>`);
+    wrap.querySelector('#bellBtn').onclick = (e) => { e.stopPropagation(); toggleBell(wrap); };
+    return wrap;
+  }
+  async function toggleBell(wrap) {
+    const panel = $('#bellPanel', wrap);
+    if (!panel.hidden) { panel.hidden = true; return; }
+    panel.hidden = false;
+    panel.innerHTML = '<div class="muted" style="padding:10px">Loading…</div>';
+    try {
+      const { items } = await api('/notifications');
+      if (!items.length) { panel.innerHTML = '<div class="muted" style="padding:12px">No notifications yet.</div>'; }
+      else {
+        panel.innerHTML = '';
+        const head = el('<div class="bell-head"><strong>Notifications</strong><span class="link" id="markAll">Mark all read</span></div>');
+        head.querySelector('#markAll').onclick = async () => { await api('/notifications/read-all', { method: 'POST' }); refreshBellCount(); toggleBell(wrap); toggleBell(wrap); };
+        panel.appendChild(head);
+        for (const n of items) {
+          panel.appendChild(el(`<div class="bell-item ${n.read ? '' : 'unread'}">
+            <div>${esc(n.message)}</div>
+            <div class="t-time">${when(n.createdAt)}</div>
+          </div>`));
+        }
+      }
+      await api('/notifications/read-all', { method: 'POST' }); // opening the panel marks them read
+      refreshBellCount();
+    } catch (e) { panel.innerHTML = `<div class="muted" style="padding:10px">${esc(e.message)}</div>`; }
+  }
+  async function refreshBellCount() {
+    const badge = document.getElementById('bellCount');
+    if (!badge) return;
+    try {
+      const { unread } = await api('/notifications');
+      if (unread > 0) { badge.textContent = unread > 99 ? '99+' : unread; badge.hidden = false; }
+      else badge.hidden = true;
+    } catch {}
+  }
+  function startBellPolling() {
+    stopBellPolling();
+    refreshBellCount();
+    bellTimer = setInterval(refreshBellCount, 20000);
+  }
+  function stopBellPolling() { if (bellTimer) { clearInterval(bellTimer); bellTimer = null; } }
+  document.addEventListener('click', () => { const p = document.getElementById('bellPanel'); if (p) p.hidden = true; });
 
   // ---------- boot ----------
   $('.brand').onclick = () => go(session.isAuthed ? 'dashboard' : 'login');

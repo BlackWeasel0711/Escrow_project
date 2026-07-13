@@ -97,6 +97,35 @@ async function runMethod(method, adminToken) {
   // rating after release
   const rate = await api('/ratings', { method: 'POST', token: buyer.token, body: { transactionId: txId, score: 5, comment: 'Great' } });
   check(`${method}: buyer can rate released tx`, rate.status === 201, `got ${rate.status}`);
+
+  // notifications: both parties were notified across the lifecycle
+  const buyerNotifs = (await api('/notifications', { token: buyer.token })).data;
+  const sellerNotifs = (await api('/notifications', { token: seller.token })).data;
+  check(`${method}: buyer received notifications`, buyerNotifs.items.length >= 3, `got ${buyerNotifs.items?.length}`);
+  check(`${method}: seller notified of resolution`, sellerNotifs.items.some((n) => /resolved the dispute/i.test(n.message)));
+  check(`${method}: unread count exposed`, typeof buyerNotifs.unread === 'number');
+  // mark-all-read clears the unread count
+  await api('/notifications/read-all', { method: 'POST', token: buyer.token });
+  const afterRead = (await api('/notifications', { token: buyer.token })).data;
+  check(`${method}: read-all clears unread`, afterRead.unread === 0, `got ${afterRead.unread}`);
+}
+
+async function runRefundPath(adminToken) {
+  console.log('\n--- Dispute resolved as REFUND ---');
+  const buyer = (await api('/auth/register', { method: 'POST', body: { email: 'refbuyer@t.test', password: 'password123' } })).data;
+  await api('/auth/register', { method: 'POST', body: { email: 'refseller@t.test', password: 'password123' } });
+  const tx = (await api('/transactions', { method: 'POST', token: buyer.token, body: { sellerEmail: 'refseller@t.test', description: 'Refund case', amountCents: 90000, method: 'VISA' } })).data;
+  await api('/disputes', { method: 'POST', token: buyer.token, body: { transactionId: tx.id, reason: 'Item never arrived' } });
+  const queue = (await api('/disputes', { token: adminToken })).data;
+  const d = queue.find((x) => x.transactionId === tx.id);
+  const ruling = await api(`/disputes/${d.id}/rule`, { method: 'POST', token: adminToken, body: { ruling: 'REFUND', adminNote: 'No delivery proof' } });
+  check('REFUND: admin ruling succeeded', ruling.status === 200);
+  const final = (await api(`/transactions/${tx.id}`, { token: buyer.token })).data;
+  check('REFUND: final status REFUNDED', final.status === 'REFUNDED', `got ${final.status}`);
+  const chain = final.events.map((e) => e.toStatus).join(',');
+  check('REFUND: timeline is PENDING,HELD,DISPUTED,REFUNDED', chain === 'PENDING,HELD,DISPUTED,REFUNDED', `got ${chain}`);
+  const notifs = (await api('/notifications', { token: buyer.token })).data;
+  check('REFUND: buyer notified of refund', notifs.items.some((n) => /refunded to the buyer/i.test(n.message)));
 }
 
 async function main() {
@@ -145,8 +174,11 @@ async function main() {
     const rel = await api(`/transactions/${tx.id}/confirm-received`, { method: 'POST', token: b.token });
     check('confirm-received releases funds', rel.data?.status === 'RELEASED', `got ${rel.data?.status}`);
 
-    // full dispute path for each gateway
+    // full dispute path (resolved as RELEASE) for each gateway
     for (const m of ['MPESA', 'PAYPAL', 'VISA']) await runMethod(m, admin.token);
+
+    // dispute resolved as REFUND (the other ruling branch)
+    await runRefundPath(admin.token);
 
     // admin overview reflects data
     const overview = (await api('/admin/overview', { token: admin.token })).data;

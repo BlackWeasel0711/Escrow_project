@@ -15,6 +15,9 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material3.Badge
+import androidx.compose.material3.BadgedBox
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CircularProgressIndicator
@@ -72,6 +75,7 @@ fun AppRoot(vm: AppViewModel) {
                 is Screen.Register -> AuthScreen(vm, register = true)
                 is Screen.Dashboard -> DashboardScreen(vm, state)
                 is Screen.NewEscrow -> NewEscrowScreen(vm)
+                is Screen.Notifications -> NotificationsScreen(vm, state)
                 is Screen.Detail -> DetailScreen(vm, state)
             }
             if (state.loading) {
@@ -133,7 +137,16 @@ private fun DashboardScreen(vm: AppViewModel, state: UiState) {
     Scaffold(topBar = {
         TopAppBar(
             title = { Text("My Escrows") },
-            actions = { TextButton(onClick = { vm.logout() }) { Text("Log out") } }
+            actions = {
+                BadgedBox(badge = {
+                    if (state.unreadCount > 0) Badge { Text(state.unreadCount.toString()) }
+                }) {
+                    IconButton(onClick = { vm.navigate(Screen.Notifications) }) {
+                        Icon(Icons.Default.Notifications, contentDescription = "Notifications")
+                    }
+                }
+                TextButton(onClick = { vm.logout() }) { Text("Log out") }
+            }
         )
     }) { pad ->
         Column(Modifier.padding(pad).fillMaxSize().padding(16.dp)) {
@@ -183,6 +196,38 @@ private fun StatusBadge(status: String) {
         fontWeight = FontWeight.Bold,
         style = MaterialTheme.typography.labelMedium
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun NotificationsScreen(vm: AppViewModel, state: UiState) {
+    Scaffold(topBar = {
+        TopAppBar(
+            title = { Text("Notifications") },
+            navigationIcon = {
+                IconButton(onClick = { vm.navigate(Screen.Dashboard) }) {
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Back")
+                }
+            }
+        )
+    }) { pad ->
+        Column(Modifier.padding(pad).fillMaxSize().padding(16.dp).verticalScroll(rememberScrollState())) {
+            if (state.notifications.isEmpty()) {
+                Text("No notifications yet.", color = MaterialTheme.colorScheme.onSurfaceVariant)
+            } else {
+                state.notifications.forEach { n ->
+                    Card(Modifier.fillMaxWidth().padding(vertical = 6.dp)) {
+                        Column(Modifier.padding(14.dp)) {
+                            Text(n.message)
+                            Spacer(Modifier.height(4.dp))
+                            Text(n.createdAt, style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

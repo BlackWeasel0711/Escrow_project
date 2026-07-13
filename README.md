@@ -17,6 +17,7 @@ Backend core is scaffolded and runnable in simulated-payments mode (no real gate
 - Payment gateway adapters for PayPal, M-Pesa, and Visa (via Stripe), behind one interface — switch `SIMULATE_PAYMENTS=false` once real sandbox credentials are added
 - Dispute center (open case, attach evidence, admin ruling)
 - Ratings after completed transactions
+- Notifications: both parties are actively notified on every status change (in-app, plus email when SMTP is configured)
 - Admin overview/users/transactions endpoints
 
 All four deliverables are now in place:
@@ -27,10 +28,11 @@ All four deliverables are now in place:
   scripts the deposit → hold → dispute → release acceptance test for each payment method.
 
 **Verified end-to-end.** `cd backend && npm run verify` stands up a throwaway PostgreSQL, applies the
-schema, seeds, boots the API, and drives the full lifecycle (deposit → hold → dispute → release, plus the
-plain confirm-received release) across **all three payment methods** — **39/39 checks pass** with no
-external setup. This satisfies the brief's acceptance criterion (a test transaction moving through each
-state, visible in both the admin overview and the user's timeline).
+schema, seeds, boots the API, and drives the full lifecycle — deposit → hold → dispute → release, the
+plain confirm-received release, **and** a dispute resolved as a refund — across **all three payment
+methods**, asserting both parties are notified at every step. **55/55 checks pass** with no external
+setup. This satisfies the brief's acceptance criterion (a test transaction moving through each state,
+visible in both the admin overview and the user's timeline).
 
 Still required before going live: real gateway sandbox/production credentials (flip `SIMULATE_PAYMENTS=false`),
 building/running the Android app in Android Studio, and deployment to hosting.

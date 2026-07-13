@@ -154,4 +154,23 @@ tr.clickable:hover td { background: var(--panel-2); }
 .muted { color: var(--muted); }
 .row-between { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
 .mono { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12px; color: var(--muted); }
+
+/* ---------- Notification bell ---------- */
+.bell #bellBtn { position: relative; font-size: 18px; }
+.bell-count {
+  position: absolute; top: -4px; right: -6px;
+  background: var(--danger); color: #fff; font-size: 10px; font-weight: 700;
+  min-width: 16px; height: 16px; line-height: 16px; text-align: center;
+  border-radius: 999px; padding: 0 4px;
+}
+.bell-panel {
+  position: absolute; right: 0; top: 30px; width: 320px; max-height: 60vh; overflow-y: auto;
+  background: var(--panel); border: 1px solid var(--border); border-radius: 10px;
+  box-shadow: 0 12px 30px rgba(0,0,0,.4); z-index: 50;
+}
+.bell-head { display: flex; justify-content: space-between; align-items: center; padding: 10px 12px; border-bottom: 1px solid var(--border); }
+.bell-item { padding: 10px 12px; border-bottom: 1px solid var(--border); font-size: 13px; }
+.bell-item:last-child { border-bottom: none; }
+.bell-item.unread { background: var(--panel-2); }
+.bell-item.unread::before { content: "● "; color: var(--accent); }
 .stars { color: var(--warn); letter-spacing: 2px; }

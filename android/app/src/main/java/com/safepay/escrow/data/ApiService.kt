@@ -29,4 +29,10 @@ interface ApiService {
 
     @POST("ratings")
     suspend fun rate(@Body body: RateRequest): retrofit2.Response<Unit>
+
+    @GET("notifications")
+    suspend fun notifications(): NotificationsResponse
+
+    @POST("notifications/read-all")
+    suspend fun markAllNotificationsRead(): retrofit2.Response<Unit>
 }

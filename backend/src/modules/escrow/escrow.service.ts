@@ -2,6 +2,9 @@ import { PaymentMethod, TransactionStatus } from '@prisma/client';
 import { prisma } from '../../prisma';
 import { HttpError } from '../../common/middleware/error.middleware';
 import { getGateway } from '../payments/payments.service';
+import { notify, notifyBoth } from '../notifications/notifications.service';
+
+const money = (cents: number, currency: string) => `${currency} ${(cents / 100).toFixed(2)}`;
 
 async function logEvent(
   transactionId: string,
@@ -52,6 +55,10 @@ export async function createEscrow(params: {
   });
   await logEvent(transaction.id, TransactionStatus.PENDING, TransactionStatus.HELD, 'Funds captured and locked');
 
+  const amount = money(params.amountCents, held.currency);
+  await notify(seller.id, `You have a new escrow of ${amount} for "${params.description}". Funds are held until the buyer confirms delivery.`, transaction.id);
+  await notify(params.buyerId, `Your payment of ${amount} is held safely in escrow for "${params.description}".`, transaction.id);
+
   return held;
 }
 
@@ -90,6 +97,7 @@ export async function confirmReceived(userId: string, transactionId: string) {
     data: { status: TransactionStatus.RELEASED },
   });
   await logEvent(transactionId, TransactionStatus.HELD, TransactionStatus.RELEASED, 'Buyer confirmed receipt');
+  await notifyBoth(tx.buyerId, tx.sellerId, `The buyer confirmed receipt — ${money(tx.amountCents, tx.currency)} has been released to the seller.`, transactionId);
   return updated;
 }
 
@@ -115,6 +123,10 @@ export async function applyDisputeRuling(
 
   const updated = await prisma.transaction.update({ where: { id: transactionId }, data: { status: toStatus } });
   await logEvent(transactionId, TransactionStatus.DISPUTED, toStatus, `Admin ruling: ${ruling}`);
+  const outcome = ruling === 'RELEASE'
+    ? `released to the seller`
+    : `refunded to the buyer`;
+  await notifyBoth(tx.buyerId, tx.sellerId, `An admin resolved the dispute: ${money(tx.amountCents, tx.currency)} has been ${outcome}.`, transactionId);
   return updated;
 }
 
@@ -129,5 +141,6 @@ export async function markDisputed(transactionId: string) {
     data: { status: TransactionStatus.DISPUTED },
   });
   await logEvent(transactionId, TransactionStatus.HELD, TransactionStatus.DISPUTED, 'Dispute opened');
+  await notifyBoth(tx.buyerId, tx.sellerId, `A dispute was opened on your ${money(tx.amountCents, tx.currency)} escrow. Funds stay locked until an admin resolves it.`, transactionId);
   return updated;
 }

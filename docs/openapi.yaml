@@ -16,6 +16,7 @@ tags:
   - name: Transactions
   - name: Disputes
   - name: Ratings
+  - name: Notifications
   - name: Admin
 
 paths:
@@ -200,6 +201,40 @@ paths:
                   count: { type: integer }
                   ratings: { type: array, items: { $ref: '#/components/schemas/Rating' } }
 
+  /notifications:
+    get:
+      tags: [Notifications]
+      summary: My notifications with unread count
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  unread: { type: integer }
+                  items: { type: array, items: { $ref: '#/components/schemas/Notification' } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /notifications/read-all:
+    post:
+      tags: [Notifications]
+      summary: Mark all my notifications read
+      security: [{ bearerAuth: [] }]
+      responses:
+        '200': { description: OK }
+
+  /notifications/{id}/read:
+    post:
+      tags: [Notifications]
+      summary: Mark one notification read
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: OK }
+
   /admin/overview:
     get:
       tags: [Admin]
@@ -338,4 +373,13 @@ components:
         rateeId: { type: string, format: uuid }
         score: { type: integer, minimum: 1, maximum: 5 }
         comment: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+    Notification:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        userId: { type: string, format: uuid }
+        transactionId: { type: string, format: uuid, nullable: true }
+        message: { type: string }
+        read: { type: boolean }
         createdAt: { type: string, format: date-time }
