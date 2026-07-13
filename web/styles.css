@@ -16,11 +16,14 @@
 * { box-sizing: border-box; }
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   background: var(--bg);
   color: var(--text);
-  line-height: 1.5;
+  line-height: 1.55;
+  letter-spacing: -0.01em;
+  -webkit-font-smoothing: antialiased;
 }
+h1, h2, h3, .brand, .auth-brand, .auth-tagline { font-family: "Sora", "Inter", sans-serif; }
 
 /* ---------- Top bar ---------- */
 .topbar {
@@ -262,13 +265,65 @@ tr.clickable:hover td { background: var(--panel-2); }
 @keyframes bellSwing { 0%,70%,100% { transform: rotate(0); } 80% { transform: rotate(14deg); } 90% { transform: rotate(-10deg); } }
 @keyframes floatGlow { 0%,100% { opacity: .8; } 50% { opacity: 1; } }
 
-/* Ambient page background (whole app, not just auth) */
-body {
-  background:
-    radial-gradient(900px 500px at 100% -5%, rgba(34,197,94,.06), transparent 60%),
-    radial-gradient(800px 500px at -5% 105%, rgba(59,130,246,.05), transparent 55%),
-    var(--bg);
-  background-attachment: fixed;
+/* ---------- Flowing aurora background (app-wide) ---------- */
+body { background: var(--bg); }
+.aurora {
+  position: fixed; inset: 0; z-index: -1; overflow: hidden;
+  background: radial-gradient(1200px 800px at 50% -20%, #101a20, var(--bg) 70%);
+}
+.aurora span {
+  position: absolute; display: block; border-radius: 50%;
+  filter: blur(70px); opacity: .55; will-change: transform;
+}
+.aurora .a1 { width: 46vw; height: 46vw; left: -8vw; top: -10vw;
+  background: radial-gradient(circle, rgba(34,197,94,.55), transparent 65%);
+  animation: aur1 26s ease-in-out infinite; }
+.aurora .a2 { width: 40vw; height: 40vw; right: -6vw; top: 8vh;
+  background: radial-gradient(circle, rgba(20,184,166,.5), transparent 65%);
+  animation: aur2 32s ease-in-out infinite; }
+.aurora .a3 { width: 44vw; height: 44vw; left: 12vw; bottom: -18vw;
+  background: radial-gradient(circle, rgba(59,130,246,.42), transparent 65%);
+  animation: aur3 30s ease-in-out infinite; }
+.aurora .a4 { width: 34vw; height: 34vw; right: 10vw; bottom: -12vw;
+  background: radial-gradient(circle, rgba(139,92,246,.36), transparent 65%);
+  animation: aur4 36s ease-in-out infinite; }
+/* faint moving mesh grid for depth ("not simple") */
+.aurora-grid {
+  position: absolute; inset: -2px;
+  background-image:
+    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(circle at 50% 40%, #000 0%, transparent 75%);
+  -webkit-mask-image: radial-gradient(circle at 50% 40%, #000 0%, transparent 75%);
+  animation: gridDrift 40s linear infinite;
+}
+
+@keyframes aur1 { 0%,100%{ transform: translate(0,0) scale(1);} 33%{ transform: translate(8vw,6vh) scale(1.15);} 66%{ transform: translate(3vw,-4vh) scale(.9);} }
+@keyframes aur2 { 0%,100%{ transform: translate(0,0) scale(1);} 50%{ transform: translate(-9vw,7vh) scale(1.2);} }
+@keyframes aur3 { 0%,100%{ transform: translate(0,0) scale(1);} 40%{ transform: translate(7vw,-6vh) scale(1.12);} 75%{ transform: translate(-5vw,-3vh) scale(.95);} }
+@keyframes aur4 { 0%,100%{ transform: translate(0,0) scale(1);} 50%{ transform: translate(6vw,-8vh) scale(1.18);} }
+@keyframes gridDrift { from { background-position: 0 0, 0 0; } to { background-position: 46px 92px, 46px 92px; } }
+
+/* Cards float over the aurora with a subtle frosted translucency */
+.card {
+  background: rgba(23, 27, 34, .72);
+  backdrop-filter: blur(8px) saturate(130%);
+  -webkit-backdrop-filter: blur(8px) saturate(130%);
+}
+.auth-hero, .auth-form { background-color: transparent; }
+.auth-hero { background: linear-gradient(160deg, rgba(34,197,94,.14), rgba(22,163,74,.03) 45%, transparent 72%); }
+.auth-shell {
+  background: rgba(20, 24, 30, .55);
+  backdrop-filter: blur(10px) saturate(130%);
+  -webkit-backdrop-filter: blur(10px) saturate(130%);
+  border: 1px solid var(--border); border-radius: 20px; overflow: hidden;
+  min-height: auto; box-shadow: 0 30px 80px rgba(0,0,0,.45);
+}
+body.auth-mode .view { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 4vh 20px; }
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora span, .aurora-grid { animation: none !important; }
 }
 
 /* Frosted, subtly elevated top bar */

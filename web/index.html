@@ -4,9 +4,20 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>SafePay Escrow</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <!-- Load fonts without blocking render: text shows immediately, swaps to Sora/Inter when ready. -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" media="print" onload="this.media='all'" />
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Sora:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" /></noscript>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
+  <!-- Living, flowing aurora background -->
+  <div class="aurora" aria-hidden="true">
+    <span class="a1"></span><span class="a2"></span><span class="a3"></span><span class="a4"></span>
+    <div class="aurora-grid"></div>
+  </div>
+
   <header class="topbar">
     <div class="brand" data-nav="dashboard">🛡️ SafePay <span>Escrow</span></div>
     <nav id="nav" class="nav"></nav>
