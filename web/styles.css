@@ -247,20 +247,33 @@ label { display: block; font-size: 11px; font-weight: 700; text-transform: upper
 .field:focus-within .field-ic .ico { filter: drop-shadow(0 2px 6px rgba(123,108,255,.6)); }
 
 /* Bigger, luminous, breathing SafePay shield logo */
-.brand .ico, .auth-brand .ico {
+/* SafePay shield logo — enlarged (~2x), resizable, glowing, with a shine sweep */
+.brand-logo {
+  position: relative; display: inline-block; flex: none; line-height: 0;
+  width: clamp(64px, 5.4vw, 88px); height: clamp(64px, 5.4vw, 88px);
   filter: drop-shadow(0 0 14px rgba(139,92,246,.9)) drop-shadow(0 0 28px rgba(236,72,153,.55));
   animation: brandGlow 3s ease-in-out infinite;
   transition: transform .25s;
 }
-/* Enlarged (~2x) + resizable: scales fluidly with the viewport */
-.auth-brand .ico { width: clamp(64px, 5.4vw, 88px); height: auto; }
-.brand .ico { width: clamp(34px, 2.6vw, 48px); height: auto; }
-.brand:hover .ico, .auth-brand:hover .ico { transform: scale(1.1) rotate(-5deg); }
+.brand .brand-logo { width: clamp(34px, 2.6vw, 48px); height: clamp(34px, 2.6vw, 48px); }
+.brand-logo .ico { width: 100%; height: 100%; }
+.brand:hover .brand-logo, .auth-brand:hover .brand-logo { transform: scale(1.1) rotate(-5deg); }
+/* the shine: a diagonal light streak clipped to the shield shape, sweeping across */
+.brand-logo .shine {
+  position: absolute; inset: 0; pointer-events: none;
+  -webkit-mask: url('assets/shield-mask.svg') center / contain no-repeat;
+          mask: url('assets/shield-mask.svg') center / contain no-repeat;
+  background: linear-gradient(115deg, transparent 42%, rgba(255,255,255,.92) 50%, transparent 58%);
+  background-repeat: no-repeat; background-size: 260% 100%;
+  mix-blend-mode: screen;
+  animation: shineSweep 3.8s ease-in-out infinite;
+}
 @keyframes brandGlow {
   0%, 100% { filter: drop-shadow(0 0 12px rgba(139,92,246,.75)) drop-shadow(0 0 24px rgba(236,72,153,.4)); transform: translateY(0) scale(1) rotate(0deg); }
   50%      { filter: drop-shadow(0 0 22px rgba(139,92,246,1)) drop-shadow(0 0 46px rgba(236,72,153,.8)); transform: translateY(-4px) scale(1.07) rotate(4deg); }
 }
-@media (prefers-reduced-motion: reduce) { .brand .ico, .auth-brand .ico { animation: none; } }
+@keyframes shineSweep { 0% { background-position: 210% 0; } 55%, 100% { background-position: -90% 0; } }
+@media (prefers-reduced-motion: reduce) { .brand-logo, .brand-logo .shine { animation: none; } }
 input, select, textarea {
   width: 100%;
   padding: 10px 12px;

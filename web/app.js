@@ -27,6 +27,8 @@
   };
   const icon = (name, size = 20) =>
     `<svg class="ico" viewBox="0 0 24 24" width="${size}" height="${size}" aria-hidden="true">${ICONS[name] || ''}</svg>`;
+  // Shield logo with a light-shine sweep clipped to the shield shape.
+  const brandLogo = () => `<span class="brand-logo">${icon('shield', 40)}<span class="shine"></span></span>`;
 
   let toastTimer;
   function toast(msg, kind = '') {
@@ -143,7 +145,7 @@
           <aside class="auth-hero">
             <div class="auth-hero-glow"></div>
             <div class="auth-hero-content">
-              <div class="auth-brand">${icon('shield', 40)} SafePay <span>Escrow</span></div>
+              <div class="auth-brand">${brandLogo()} SafePay <span>Escrow</span></div>
               <h2 class="auth-tagline">Karibu! Nunua na uuze bila wasiwasi.</h2>
               <p class="auth-lead"><strong>Pesa yako iko salama.</strong> We hold the buyer's money securely and only release it to the seller once delivery is confirmed — or an admin resolves a dispute.</p>
               <ul class="auth-features">
@@ -525,7 +527,7 @@
   document.addEventListener('click', () => { const p = document.getElementById('bellPanel'); if (p) p.hidden = true; });
 
   // ---------- boot ----------
-  $('.brand').innerHTML = `${icon('shield', 32)} SafePay <span>Escrow</span>`;
+  $('.brand').innerHTML = `${brandLogo()} SafePay <span>Escrow</span>`;
   $('.brand').onclick = () => go(session.isAuthed ? 'dashboard' : 'login');
   window.addEventListener('hashchange', render);
   renderNav();
