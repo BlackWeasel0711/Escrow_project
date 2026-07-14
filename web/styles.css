@@ -1,16 +1,18 @@
 :root {
-  --bg: #0e1116;
-  --panel: #171b22;
-  --panel-2: #1e242d;
-  --border: #2a313c;
-  --text: #e6e9ee;
-  --muted: #97a0ad;
-  --accent: #22c55e;
-  --accent-2: #16a34a;
-  --danger: #ef4444;
-  --warn: #f59e0b;
-  --info: #3b82f6;
-  --radius: 12px;
+  /* Kenyan fintech palette — flag green & red, warm savanna, clean light surfaces. */
+  --bg: #f5f7f2;          /* warm off-white */
+  --panel: #ffffff;
+  --panel-2: #eef1e9;     /* soft green-tinted grey */
+  --border: #dde2d6;
+  --text: #12160f;        /* near-black (flag black) */
+  --muted: #5f6b5c;
+  --accent: #009543;      /* Kenya flag green (also M-Pesa trust green) */
+  --accent-2: #007a37;
+  --danger: #be0027;      /* Kenya flag red */
+  --warn: #e2960f;        /* savanna gold */
+  --info: #1f7a8c;
+  --gold: #e2960f;
+  --radius: 14px;
 }
 
 * { box-sizing: border-box; }
@@ -59,7 +61,8 @@ body.auth-mode { background:
   radial-gradient(1000px 500px at 100% 110%, rgba(59,130,246,.12), transparent 55%),
   var(--bg);
 }
-body.auth-mode .topbar { display: none; }
+body.auth-mode .topbar,
+body.auth-mode .flag-stripe { display: none; }
 body.auth-mode .view { max-width: none; margin: 0; padding: 0; }
 
 .auth-shell {
@@ -185,7 +188,7 @@ button {
   font-size: 14px;
   font-weight: 600;
   background: var(--accent);
-  color: #06210f;
+  color: #ffffff;
   transition: background .15s;
 }
 button:hover { background: var(--accent-2); }
@@ -218,15 +221,15 @@ tr.clickable:hover td { background: var(--panel-2); }
   font-size: 12px;
   font-weight: 600;
 }
-.badge.PENDING  { background: #33302033; color: var(--warn); }
-.badge.HELD     { background: #1e3a5f33; color: var(--info); }
-.badge.DISPUTED { background: #4a1d1d33; color: var(--danger); }
-.badge.RELEASED { background: #14351f33; color: var(--accent); }
-.badge.REFUNDED { background: #2a2a2a; color: var(--muted); }
-.badge.CANCELLED{ background: #2a2a2a; color: var(--muted); }
-.badge.OPEN, .badge.UNDER_REVIEW { background: #4a1d1d33; color: var(--danger); }
-.badge.RESOLVED_RELEASE { background: #14351f33; color: var(--accent); }
-.badge.RESOLVED_REFUND  { background: #2a2a2a; color: var(--muted); }
+.badge.PENDING  { background: #fdf1dc; color: #a5720a; }
+.badge.HELD     { background: #e2f0f3; color: #1f6d7e; }
+.badge.DISPUTED { background: #fbe3e7; color: var(--danger); }
+.badge.RELEASED { background: #daf3e4; color: var(--accent-2); }
+.badge.REFUNDED { background: #eceee9; color: var(--muted); }
+.badge.CANCELLED{ background: #eceee9; color: var(--muted); }
+.badge.OPEN, .badge.UNDER_REVIEW { background: #fbe3e7; color: var(--danger); }
+.badge.RESOLVED_RELEASE { background: #daf3e4; color: var(--accent-2); }
+.badge.RESOLVED_REFUND  { background: #eceee9; color: var(--muted); }
 
 /* ---------- Timeline ---------- */
 .timeline { list-style: none; padding: 0; margin: 0; }
@@ -265,60 +268,63 @@ tr.clickable:hover td { background: var(--panel-2); }
 @keyframes bellSwing { 0%,70%,100% { transform: rotate(0); } 80% { transform: rotate(14deg); } 90% { transform: rotate(-10deg); } }
 @keyframes floatGlow { 0%,100% { opacity: .8; } 50% { opacity: 1; } }
 
-/* ---------- Flowing aurora background (app-wide) ---------- */
+/* ---------- Kenyan savanna background (app-wide) ---------- */
 body { background: var(--bg); }
 .aurora {
   position: fixed; inset: 0; z-index: -1; overflow: hidden;
-  background: radial-gradient(1200px 800px at 50% -20%, #101a20, var(--bg) 70%);
+  background:
+    radial-gradient(1000px 650px at 8% -12%, rgba(0,149,67,.10), transparent 60%),
+    radial-gradient(900px 650px at 100% 112%, rgba(226,150,15,.12), transparent 60%),
+    var(--bg);
 }
 .aurora span {
   position: absolute; display: block; border-radius: 50%;
-  filter: blur(70px); opacity: .55; will-change: transform;
+  filter: blur(60px); opacity: .30; will-change: transform;
 }
-.aurora .a1 { width: 46vw; height: 46vw; left: -8vw; top: -10vw;
-  background: radial-gradient(circle, rgba(34,197,94,.55), transparent 65%);
-  animation: aur1 26s ease-in-out infinite; }
-.aurora .a2 { width: 40vw; height: 40vw; right: -6vw; top: 8vh;
-  background: radial-gradient(circle, rgba(20,184,166,.5), transparent 65%);
-  animation: aur2 32s ease-in-out infinite; }
-.aurora .a3 { width: 44vw; height: 44vw; left: 12vw; bottom: -18vw;
-  background: radial-gradient(circle, rgba(59,130,246,.42), transparent 65%);
-  animation: aur3 30s ease-in-out infinite; }
-.aurora .a4 { width: 34vw; height: 34vw; right: 10vw; bottom: -12vw;
-  background: radial-gradient(circle, rgba(139,92,246,.36), transparent 65%);
-  animation: aur4 36s ease-in-out infinite; }
-/* faint moving mesh grid for depth ("not simple") */
+.aurora .a1 { width: 42vw; height: 42vw; left: -8vw; top: -12vw;
+  background: radial-gradient(circle, rgba(0,149,67,.55), transparent 65%);
+  animation: aur1 28s ease-in-out infinite; }
+.aurora .a2 { width: 38vw; height: 38vw; right: -6vw; top: 10vh;
+  background: radial-gradient(circle, rgba(226,150,15,.5), transparent 65%);
+  animation: aur2 34s ease-in-out infinite; }
+.aurora .a3 { width: 40vw; height: 40vw; left: 14vw; bottom: -20vw;
+  background: radial-gradient(circle, rgba(190,0,39,.28), transparent 65%);
+  animation: aur3 32s ease-in-out infinite; }
+.aurora .a4 { display: none; }
+/* subtle kanga / kente-style diagonal weave */
 .aurora-grid {
   position: absolute; inset: -2px;
-  background-image:
-    linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,.03) 1px, transparent 1px);
-  background-size: 46px 46px;
-  mask-image: radial-gradient(circle at 50% 40%, #000 0%, transparent 75%);
-  -webkit-mask-image: radial-gradient(circle at 50% 40%, #000 0%, transparent 75%);
-  animation: gridDrift 40s linear infinite;
+  background-image: repeating-linear-gradient(45deg, rgba(0,149,67,.05) 0 2px, transparent 2px 16px);
+  mask-image: radial-gradient(circle at 50% 30%, #000 0%, transparent 80%);
+  -webkit-mask-image: radial-gradient(circle at 50% 30%, #000 0%, transparent 80%);
+  animation: gridDrift 60s linear infinite;
 }
 
-@keyframes aur1 { 0%,100%{ transform: translate(0,0) scale(1);} 33%{ transform: translate(8vw,6vh) scale(1.15);} 66%{ transform: translate(3vw,-4vh) scale(.9);} }
-@keyframes aur2 { 0%,100%{ transform: translate(0,0) scale(1);} 50%{ transform: translate(-9vw,7vh) scale(1.2);} }
-@keyframes aur3 { 0%,100%{ transform: translate(0,0) scale(1);} 40%{ transform: translate(7vw,-6vh) scale(1.12);} 75%{ transform: translate(-5vw,-3vh) scale(.95);} }
-@keyframes aur4 { 0%,100%{ transform: translate(0,0) scale(1);} 50%{ transform: translate(6vw,-8vh) scale(1.18);} }
-@keyframes gridDrift { from { background-position: 0 0, 0 0; } to { background-position: 46px 92px, 46px 92px; } }
+@keyframes aur1 { 0%,100%{ transform: translate(0,0) scale(1);} 33%{ transform: translate(7vw,6vh) scale(1.12);} 66%{ transform: translate(3vw,-4vh) scale(.92);} }
+@keyframes aur2 { 0%,100%{ transform: translate(0,0) scale(1);} 50%{ transform: translate(-8vw,6vh) scale(1.16);} }
+@keyframes aur3 { 0%,100%{ transform: translate(0,0) scale(1);} 40%{ transform: translate(6vw,-6vh) scale(1.1);} 75%{ transform: translate(-4vw,-3vh) scale(.96);} }
+@keyframes gridDrift { from { background-position: 0 0; } to { background-position: 96px 96px; } }
 
-/* Cards float over the aurora with a subtle frosted translucency */
+/* Clean white cards with a soft lift */
 .card {
-  background: rgba(23, 27, 34, .72);
-  backdrop-filter: blur(8px) saturate(130%);
-  -webkit-backdrop-filter: blur(8px) saturate(130%);
+  background: var(--panel);
+  box-shadow: 0 2px 12px rgba(18, 22, 15, .05);
 }
+
+/* Auth: bold Kenya-green hero + clean white form */
 .auth-hero, .auth-form { background-color: transparent; }
-.auth-hero { background: linear-gradient(160deg, rgba(34,197,94,.14), rgba(22,163,74,.03) 45%, transparent 72%); }
+.auth-hero {
+  background: linear-gradient(155deg, #00a94a 0%, #007a37 55%, #0a5e2d 100%);
+  color: #fff;
+}
+.auth-hero .auth-lead, .auth-hero .auth-features em, .auth-hero .auth-pay { color: rgba(255,255,255,.85); }
+.auth-hero .af-ic { background: rgba(255,255,255,.14); border-color: rgba(255,255,255,.25); }
+.auth-hero .pay-chip { background: rgba(255,255,255,.16); border-color: rgba(255,255,255,.3); color: #fff; }
+.auth-hero .auth-brand span { color: #ffd76a; }
 .auth-shell {
-  background: rgba(20, 24, 30, .55);
-  backdrop-filter: blur(10px) saturate(130%);
-  -webkit-backdrop-filter: blur(10px) saturate(130%);
-  border: 1px solid var(--border); border-radius: 20px; overflow: hidden;
-  min-height: auto; box-shadow: 0 30px 80px rgba(0,0,0,.45);
+  background: var(--panel);
+  border: 1px solid var(--border); border-radius: 22px; overflow: hidden;
+  min-height: auto; box-shadow: 0 24px 60px rgba(18, 22, 15, .14);
 }
 body.auth-mode .view { display: flex; align-items: center; justify-content: center; min-height: 100vh; padding: 4vh 20px; }
 
@@ -326,21 +332,29 @@ body.auth-mode .view { display: flex; align-items: center; justify-content: cent
   .aurora span, .aurora-grid { animation: none !important; }
 }
 
-/* Frosted, subtly elevated top bar */
+/* Clean white top bar with a Kenyan-flag accent stripe under it */
 .topbar {
-  background: rgba(23, 27, 34, .78);
+  background: rgba(255, 255, 255, .9);
   backdrop-filter: saturate(140%) blur(10px);
   -webkit-backdrop-filter: saturate(140%) blur(10px);
+  border-bottom: none;
+  box-shadow: 0 1px 0 var(--border);
 }
 .brand { transition: transform .15s, filter .2s; }
-.brand:hover { transform: translateY(-1px); filter: drop-shadow(0 2px 8px rgba(34,197,94,.35)); }
+.brand:hover { transform: translateY(-1px); filter: drop-shadow(0 2px 6px rgba(0,149,67,.3)); }
 .nav a { transition: color .15s, background .15s, transform .12s; }
 .nav a:active { transform: translateY(1px); }
 .nav a.active {
-  background: linear-gradient(180deg, rgba(34,197,94,.18), rgba(34,197,94,.06));
-  color: #d7ffe6;
-  box-shadow: inset 0 0 0 1px rgba(34,197,94,.25);
+  background: rgba(0,149,67,.12);
+  color: var(--accent-2);
+  box-shadow: inset 0 0 0 1px rgba(0,149,67,.3);
 }
+/* Kenyan flag stripe: black · white · red · white · green */
+.flag-stripe { height: 4px; display: flex; }
+.flag-stripe i { flex: 1; }
+.flag-stripe i:nth-child(1) { background: #000; }
+.flag-stripe i:nth-child(2) { background: #be0027; flex: 1.6; }
+.flag-stripe i:nth-child(3) { background: #009543; }
 
 @media (prefers-reduced-motion: no-preference) {
   /* Staggered entrance for each view's top-level blocks */
@@ -372,11 +386,11 @@ body.auth-mode .view { display: flex; align-items: center; justify-content: cent
 
 /* Cards lift on hover */
 .card { transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease; }
-.card:hover { border-color: #33404d; box-shadow: 0 10px 30px rgba(0,0,0,.28); }
+.card:hover { border-color: rgba(0,149,67,.35); box-shadow: 0 10px 28px rgba(0,149,67,.10); }
 
-/* Gradient headings */
+/* Headings: deep near-black with a subtle green depth */
 h1 {
-  background: linear-gradient(180deg, #ffffff, #b9c2cf);
+  background: linear-gradient(180deg, #12160f, #2b3a2c);
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent;
 }

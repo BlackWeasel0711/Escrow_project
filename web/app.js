@@ -128,15 +128,15 @@
             <div class="auth-hero-glow"></div>
             <div class="auth-hero-content">
               <div class="auth-brand">🛡️ SafePay <span>Escrow</span></div>
-              <h2 class="auth-tagline">Buy and sell with total peace of mind.</h2>
-              <p class="auth-lead">We hold the buyer's money securely and only release it to the seller once delivery is confirmed — or an admin resolves a dispute.</p>
+              <h2 class="auth-tagline">Karibu! Nunua na uuze bila wasiwasi.</h2>
+              <p class="auth-lead"><strong>Pesa yako iko salama.</strong> We hold the buyer's money securely and only release it to the seller once delivery is confirmed — or an admin resolves a dispute.</p>
               <ul class="auth-features">
-                <li><span class="af-ic">🔒</span><div><strong>Funds held in escrow</strong><em>Money is locked the moment a deal starts.</em></div></li>
+                <li><span class="af-ic">🔒</span><div><strong>Pesa salama in escrow</strong><em>Funds are locked the moment a deal starts.</em></div></li>
                 <li><span class="af-ic">⚖️</span><div><strong>Fair dispute resolution</strong><em>Open a case with evidence, an admin decides.</em></div></li>
-                <li><span class="af-ic">⭐</span><div><strong>Trusted reputations</strong><em>Ratings after every completed transaction.</em></div></li>
+                <li><span class="af-ic">⭐</span><div><strong>Trusted reputations</strong><em>Ratings after every completed deal.</em></div></li>
               </ul>
               <div class="auth-pay">
-                <span>Pay with</span>
+                <span>Lipa na</span>
                 <b class="pay-chip">M-Pesa</b><b class="pay-chip">PayPal</b><b class="pay-chip">Visa</b>
               </div>
             </div>
