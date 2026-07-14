@@ -190,15 +190,21 @@ body.auth-mode .view { max-width: none; margin: 0; padding: 0; }
   padding: 16px 15px; font-size: 15px; font-weight: 500; letter-spacing: .01em;
 }
 .field input:focus { outline: none; box-shadow: none; }
-/* Keep autofilled inputs dark (browsers force a light background otherwise) */
+/* Keep autofilled inputs dark across browsers (they force a light background otherwise) */
 input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
-input:-webkit-autofill:active {
-  -webkit-box-shadow: 0 0 0 1000px #23253f inset;
-  -webkit-text-fill-color: #f3f4fb;
-  caret-color: #f3f4fb;
-  transition: background-color 100000s ease-in-out 0s;
+input:-webkit-autofill:active,
+input:autofill {
+  -webkit-box-shadow: 0 0 0 1000px #23253f inset !important;
+  box-shadow: 0 0 0 1000px #23253f inset !important;
+  background-color: #23253f !important;
+  background-image: none !important;
+  -webkit-text-fill-color: #f3f4fb !important;
+  color: #f3f4fb !important;
+  caret-color: #f3f4fb !important;
+  border-radius: inherit;
+  transition: background-color 600000s ease-in-out 0s, color 600000s ease-in-out 0s;
 }
 
 .auth-submit {
@@ -361,41 +367,18 @@ body:not(.auth-mode) .view > .row-between { justify-content: center; }
 @keyframes floatGlow { 0%,100% { opacity: .8; } 50% { opacity: 1; } }
 
 /* ---------- World-map backdrop (real, accurate map) ---------- */
-/* Professional dotted (halftone) world map — dots revealed only through continents */
 .worldmap {
   position: fixed; inset: 0; z-index: -2; pointer-events: none;
-  background: radial-gradient(circle at center, rgba(150,172,255,.95) 0 1.25px, transparent 1.7px);
-  background-size: 8px 8px;
-  -webkit-mask: url('assets/worldmap.svg') center center / contain no-repeat;
-          mask: url('assets/worldmap.svg') center center / contain no-repeat;
-  opacity: .8;
+  /* full map, every continent clearly visible, gently drifting for a dynamic feel */
+  background: url('assets/worldmap.svg') center center / contain no-repeat;
+  opacity: .85;
   animation: mapFloat 46s ease-in-out infinite alternate;
 }
 @keyframes mapFloat {
   from { transform: scale(1) translate(0, 0); }
-  to   { transform: scale(1.08) translate(-1.6%, 1%); }
+  to   { transform: scale(1.09) translate(-2%, 1.2%); }
 }
-/* Glowing, pulsing network nodes + arcs for a dynamic, professional feel */
-.map-glow {
-  position: fixed; inset: 0; z-index: -2; pointer-events: none; overflow: hidden;
-}
-.map-glow i {
-  position: absolute; width: 8px; height: 8px; border-radius: 50%;
-  box-shadow: 0 0 12px 3px currentColor;
-  animation: nodePulse 3.2s ease-in-out infinite;
-}
-.map-glow i::after {
-  content: ""; position: absolute; inset: -6px; border-radius: 50%;
-  border: 1px solid currentColor; opacity: .5;
-  animation: nodeRing 3.2s ease-out infinite;
-}
-.map-glow i:nth-child(1) { left: 30%; top: 42%; color: #4cc4ff; animation-delay: 0s; }
-.map-glow i:nth-child(2) { left: 53%; top: 38%; color: #a78bff; animation-delay: .8s; }
-.map-glow i:nth-child(3) { left: 55%; top: 60%; color: #ec4899; animation-delay: 1.6s; }
-.map-glow i:nth-child(4) { left: 72%; top: 40%; color: #34e0a1; animation-delay: 2.4s; }
-@keyframes nodePulse { 0%, 100% { opacity: .55; transform: scale(.85); } 50% { opacity: 1; transform: scale(1.15); } }
-@keyframes nodeRing { 0% { transform: scale(.6); opacity: .6; } 100% { transform: scale(2.4); opacity: 0; } }
-@media (prefers-reduced-motion: reduce) { .worldmap, .map-glow i, .map-glow i::after { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .worldmap { animation: none; } }
 .bg-overlay {
   position: fixed; inset: 0; z-index: -1; pointer-events: none;
   background: linear-gradient(180deg, rgba(11,12,28,.30), rgba(11,12,28,.46));
