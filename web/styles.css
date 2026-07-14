@@ -151,6 +151,25 @@ body.auth-mode .view { max-width: none; margin: 0; padding: 0; }
 }
 .auth-form-inner label, .auth-form-inner .field { text-align: left; }
 .auth-form-inner h1 { font-size: 30px; letter-spacing: -.4px; }
+
+/* Two symmetrical beams of light rotating along the card border */
+@property --beamAngle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+.auth-form-inner { position: relative; }
+.auth-form-inner::before {
+  content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 2px;
+  background: conic-gradient(from var(--beamAngle),
+    transparent 0 7%, #9db4ff 12%, #ffffff 15%, #9db4ff 18%, transparent 23% 57%,
+    #ff9ede 62%, #ffffff 65%, #ff9ede 68%, transparent 73% 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask-composite: exclude;
+  filter: drop-shadow(0 0 7px rgba(160,150,255,.9)) drop-shadow(0 0 7px rgba(255,130,220,.7));
+  animation: beamSpin 4.5s linear infinite;
+  pointer-events: none; z-index: 2;
+}
+@keyframes beamSpin { to { --beamAngle: 360deg; } }
+@media (prefers-reduced-motion: reduce) { .auth-form-inner::before { animation: none; } }
 /* Brighter, softly-lit text for easy reading */
 .auth-form-inner .sub { color: #c6cbef; }
 .auth-form-inner label { color: #d2d6f4; text-shadow: 0 1px 6px rgba(0,0,0,.45); }
@@ -173,12 +192,12 @@ body.auth-mode .view { max-width: none; margin: 0; padding: 0; }
 .field input:focus { outline: none; box-shadow: none; }
 
 .auth-submit {
-  width: 100%; margin-top: 22px; padding: 13px; font-size: 15px;
+  width: 100%; margin-top: 22px; padding: 15px; font-size: 15px; font-weight: 700;
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  box-shadow: 0 8px 20px rgba(34,197,94,.25);
+  background: linear-gradient(90deg, #4b6ef5 0%, #8b5cf6 50%, #ec4899 100%);
+  box-shadow: 0 10px 28px rgba(139,92,246,.45);
 }
-.auth-submit:hover { transform: translateY(-1px); box-shadow: 0 10px 26px rgba(34,197,94,.32); }
+.auth-submit:hover { transform: translateY(-1px); box-shadow: 0 14px 34px rgba(236,72,153,.45); }
 .auth-submit .arr { transition: transform .15s; }
 .auth-submit:hover .arr { transform: translateX(3px); }
 
@@ -334,10 +353,9 @@ body:not(.auth-mode) .view > .row-between { justify-content: center; }
 /* ---------- World-map backdrop (real, accurate map) ---------- */
 .worldmap {
   position: fixed; inset: 0; z-index: -2; pointer-events: none;
-  background: url('assets/worldmap.svg') center 46% / contain no-repeat;
-  opacity: .62;
-  -webkit-mask-image: radial-gradient(150% 150% at 50% 46%, #000 80%, transparent 100%);
-  mask-image: radial-gradient(150% 150% at 50% 46%, #000 80%, transparent 100%);
+  /* full map, every continent clearly visible */
+  background: url('assets/worldmap.svg') center center / contain no-repeat;
+  opacity: .85;
 }
 .bg-overlay {
   position: fixed; inset: 0; z-index: -1; pointer-events: none;
