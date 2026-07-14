@@ -126,8 +126,25 @@ body.auth-mode .view { max-width: none; margin: 0; padding: 0; }
 
 /* Right form */
 .auth-form { display: flex; align-items: center; justify-content: center; padding: 48px 40px; }
-.auth-form-inner { width: 100%; max-width: 380px; }
+/* Frosted glass panel so the form separates clearly from the world-map background */
+.auth-form-inner {
+  width: 100%; max-width: 400px;
+  background: linear-gradient(180deg, rgba(24,26,52,.74), rgba(14,16,34,.82));
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 22px;
+  padding: 36px 32px;
+  box-shadow: 0 26px 64px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.07);
+}
 .auth-form-inner h1 { font-size: 28px; letter-spacing: -.4px; }
+/* Brighter, softly-lit text for easy reading */
+.auth-form-inner .sub { color: #c6cbef; }
+.auth-form-inner label { color: #d2d6f4; text-shadow: 0 1px 6px rgba(0,0,0,.45); }
+.auth-form-inner .field { background: rgba(34,37,70,.94); border-color: rgba(255,255,255,.12); }
+.auth-form-inner .field input { color: #f3f4fb; }
+.auth-form-inner .auth-swap { color: #b9bee6; }
+.auth-form-inner .auth-trust { color: #aeb4dc; }
 
 .field {
   display: flex; align-items: center; gap: 10px;
@@ -409,12 +426,17 @@ h1 {
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent;
 }
-/* Beautiful glow shadow on all titles */
+/* Strong, luminous glow on all titles */
 h1, h2, .auth-tagline {
   filter:
-    drop-shadow(0 2px 4px rgba(0,0,0,.45))
-    drop-shadow(0 0 22px rgba(139,92,246,.5))
-    drop-shadow(0 0 4px rgba(236,72,153,.35));
+    drop-shadow(0 2px 5px rgba(0,0,0,.55))
+    drop-shadow(0 0 10px rgba(255,255,255,.28))
+    drop-shadow(0 0 28px rgba(139,92,246,.7))
+    drop-shadow(0 0 8px rgba(236,72,153,.5));
+}
+.auth-form-inner h1 {
+  background: linear-gradient(100deg, #ffffff 0%, #e5dcff 55%, #ffc9e6 100%);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
 }
 .auth-hero .auth-tagline, .auth-hero .auth-brand {
   filter: drop-shadow(0 2px 6px rgba(0,0,0,.4)) drop-shadow(0 0 14px rgba(255,255,255,.25));
