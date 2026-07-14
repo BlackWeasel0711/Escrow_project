@@ -14,7 +14,7 @@
 
   // ---------- gradient SVG icon set ----------
   const ICONS = {
-    shield: '<path fill="url(#gP)" d="M12 2.2l7.4 3.1c.5.2.8.7.8 1.2v5c0 5-3.4 9.2-8.2 10.5C7.2 20.7 3.8 16.5 3.8 11.5v-5c0-.5.3-1 .8-1.2L12 2.2z"/><path fill="#fff" opacity=".2" d="M12 2.2l7.4 3.1c.5.2.8.7.8 1.2v4.2C15.5 8.5 8.5 8.5 3.8 10.7V6.5c0-.5.3-1 .8-1.2L12 2.2z"/><path fill="#fff" d="M10.7 15.7l-3.1-3.1 1.5-1.5 1.6 1.6 4.1-4.1 1.5 1.5-5.6 5.6z"/>',
+    shield: '<path fill="url(#gP)" stroke="#eadfff" stroke-opacity=".55" stroke-width=".4" d="M12 1.7l7.8 3.24c.48.2.8.68.8 1.2v5.06c0 5.28-3.53 9.72-8.6 11.03C6.93 20.92 3.4 16.48 3.4 11.2V6.14c0-.52.32-1 .8-1.2L12 1.7z"/><path fill="#fff" d="M10.5 16.4l-3.6-3.6 1.95-1.95 1.65 1.65 4.7-4.7 1.95 1.95-6.6 6.65z"/>',
     mail: '<rect x="2.5" y="4.5" width="19" height="15" rx="2.8" fill="url(#gB)"/><rect x="2.5" y="4.5" width="19" height="6" rx="2.8" fill="#fff" opacity=".14"/><path fill="#fff" opacity=".95" d="M4.4 7.1l6.98 5.1c.37.27.87.27 1.24 0l6.98-5.1c-.17-.12-.37-.1-.6-.1H5c-.23 0-.43-.02-.6.1z"/>',
     key: '<path fill="url(#gPk)" d="M15.5 2a6.5 6.5 0 00-6.28 8.2L2 17.42V22h4.6v-2.2h2.2v-2.2h2.2l1.02-1.02A6.5 6.5 0 1015.5 2zm1.8 5.2a1.6 1.6 0 11-3.2 0 1.6 1.6 0 013.2 0z"/><circle cx="15.6" cy="7" r="1.3" fill="#fff" opacity=".5"/>',
     lock: '<path fill="none" stroke="#c9f0e2" stroke-width="2.4" stroke-linecap="round" d="M7.6 11V7.1a4.4 4.4 0 018.8 0V11"/><rect x="4.1" y="10.4" width="15.8" height="11.4" rx="3" fill="url(#gG)"/><rect x="4.1" y="10.4" width="15.8" height="4.8" rx="3" fill="#fff" opacity=".22"/><circle cx="12" cy="15.4" r="2.1" fill="#06331e"/><path fill="#06331e" d="M11 15.2h2l-.55 3.7h-.9z"/>',
