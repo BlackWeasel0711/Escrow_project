@@ -279,10 +279,42 @@ tr.clickable:hover td { background: var(--panel-2); }
 @keyframes bellSwing { 0%,70%,100% { transform: rotate(0); } 80% { transform: rotate(14deg); } 90% { transform: rotate(-10deg); } }
 @keyframes floatGlow { 0%,100% { opacity: .8; } 50% { opacity: 1; } }
 
+/* ---------- Auto-flowing escrow background scenes ---------- */
+.slideshow { position: fixed; inset: 0; z-index: -2; overflow: hidden; }
+.bg-slide {
+  position: absolute; inset: 0; opacity: 0;
+  display: flex; align-items: center; justify-content: center;
+  animation: bgFade 32s ease-in-out infinite;
+}
+.bg-slide .bg-motif { width: min(52vw, 620px); height: auto; opacity: .14; filter: drop-shadow(0 0 48px rgba(123,108,255,.5)); }
+.bg-slide.s1 { background: radial-gradient(1000px 700px at 22% 26%, rgba(52,224,161,.20), transparent 60%), linear-gradient(140deg, #0b1522, #0a0b18); animation-delay: 0s; }
+.bg-slide.s2 { background: radial-gradient(1000px 700px at 78% 30%, rgba(75,110,245,.22), transparent 60%), linear-gradient(140deg, #0a1024, #0a0b18); animation-delay: 8s; }
+.bg-slide.s3 { background: radial-gradient(1000px 700px at 30% 72%, rgba(168,85,247,.22), transparent 60%), linear-gradient(140deg, #120a22, #0a0b18); animation-delay: 16s; }
+.bg-slide.s4 { background: radial-gradient(1000px 700px at 74% 70%, rgba(236,72,153,.20), transparent 60%), linear-gradient(140deg, #1a0a1a, #0a0b18); animation-delay: 24s; }
+.bg-slide.s2 .bg-motif { transform: translateX(24vw); }
+.bg-slide.s3 .bg-motif { transform: translateX(-22vw) translateY(14vh); }
+.bg-slide.s4 .bg-motif { transform: translateX(22vw) translateY(12vh); }
+/* Each scene fades in, holds, fades out — staggered so they flow one to the next. */
+@keyframes bgFade {
+  0%   { opacity: 0; }
+  3%   { opacity: 1; }
+  22%  { opacity: 1; }
+  25%  { opacity: 0; }
+  100% { opacity: 0; }
+}
+.bg-overlay {
+  position: fixed; inset: 0; z-index: -1; pointer-events: none;
+  background: linear-gradient(180deg, rgba(11,12,28,.62), rgba(11,12,28,.80));
+}
+@media (prefers-reduced-motion: reduce) {
+  .bg-slide { animation: none; }
+  .bg-slide.s1 { opacity: 1; }
+}
+
 /* ---------- Exodus-style deep background (app-wide) ---------- */
 body { background: var(--bg); }
 .aurora {
-  position: fixed; inset: 0; z-index: -1; overflow: hidden;
+  position: fixed; inset: 0; z-index: -3; overflow: hidden;
   background:
     radial-gradient(1100px 700px at 12% -10%, rgba(75,110,245,.22), transparent 58%),
     radial-gradient(1000px 720px at 92% 8%, rgba(139,92,246,.20), transparent 58%),
