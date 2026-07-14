@@ -279,23 +279,18 @@ tr.clickable:hover td { background: var(--panel-2); }
 @keyframes bellSwing { 0%,70%,100% { transform: rotate(0); } 80% { transform: rotate(14deg); } 90% { transform: rotate(-10deg); } }
 @keyframes floatGlow { 0%,100% { opacity: .8; } 50% { opacity: 1; } }
 
-/* ---------- World-map backdrop ---------- */
+/* ---------- World-map backdrop (real, accurate map) ---------- */
 .worldmap {
-  position: fixed; inset: -4% -4%; z-index: -2; pointer-events: none;
-  background: url('assets/worldmap.svg') center 42% / cover no-repeat;
-  opacity: .55;
-  -webkit-mask-image: radial-gradient(130% 120% at 50% 42%, #000 55%, transparent 96%);
-  mask-image: radial-gradient(130% 120% at 50% 42%, #000 55%, transparent 96%);
-  animation: mapDrift 60s ease-in-out infinite alternate;
+  position: fixed; inset: 0; z-index: -2; pointer-events: none;
+  background: url('assets/worldmap.svg') center 46% / contain no-repeat;
+  opacity: .62;
+  -webkit-mask-image: radial-gradient(150% 150% at 50% 46%, #000 80%, transparent 100%);
+  mask-image: radial-gradient(150% 150% at 50% 46%, #000 80%, transparent 100%);
 }
-@keyframes mapDrift { from { transform: scale(1) translateX(0); } to { transform: scale(1.06) translateX(-1.5%); } }
 .bg-overlay {
   position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  background:
-    radial-gradient(1100px 700px at 50% 30%, transparent 40%, rgba(11,12,28,.55) 100%),
-    linear-gradient(180deg, rgba(11,12,28,.35), rgba(11,12,28,.55));
+  background: linear-gradient(180deg, rgba(11,12,28,.30), rgba(11,12,28,.46));
 }
-@media (prefers-reduced-motion: reduce) { .worldmap { animation: none; } }
 
 /* ---------- Exodus-style deep background (app-wide) ---------- */
 body { background: var(--bg); }
