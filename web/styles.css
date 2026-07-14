@@ -353,10 +353,16 @@ body:not(.auth-mode) .view > .row-between { justify-content: center; }
 /* ---------- World-map backdrop (real, accurate map) ---------- */
 .worldmap {
   position: fixed; inset: 0; z-index: -2; pointer-events: none;
-  /* full map, every continent clearly visible */
+  /* full map, every continent clearly visible, gently drifting for a dynamic feel */
   background: url('assets/worldmap.svg') center center / contain no-repeat;
   opacity: .85;
+  animation: mapFloat 46s ease-in-out infinite alternate;
 }
+@keyframes mapFloat {
+  from { transform: scale(1) translate(0, 0); }
+  to   { transform: scale(1.09) translate(-2%, 1.2%); }
+}
+@media (prefers-reduced-motion: reduce) { .worldmap { animation: none; } }
 .bg-overlay {
   position: fixed; inset: 0; z-index: -1; pointer-events: none;
   background: linear-gradient(180deg, rgba(11,12,28,.30), rgba(11,12,28,.46));
@@ -401,16 +407,23 @@ body { background: var(--bg); }
 
 /* Auth: gradient hero + glassy form */
 .auth-hero, .auth-form { background-color: transparent; }
-/* Deep, saturated, colorful hero */
+/* Deep colorful hero — translucent so the world map shows through, and animated */
 .auth-hero {
   background:
-    radial-gradient(120% 110% at 8% 4%, rgba(105,130,255,.5), transparent 52%),
-    radial-gradient(120% 120% at 100% 100%, rgba(255,60,160,.4), transparent 55%),
-    linear-gradient(152deg, #2f3fd6 0%, #6e2fce 46%, #cf1f7a 100%);
+    radial-gradient(120% 110% at 8% 4%, rgba(105,130,255,.42), transparent 52%),
+    radial-gradient(120% 120% at 100% 100%, rgba(255,60,160,.34), transparent 55%),
+    linear-gradient(152deg, rgba(43,58,210,.66) 0%, rgba(108,45,204,.62) 46%, rgba(205,31,122,.56) 100%);
+  background-size: 100% 100%, 100% 100%, 170% 170%;
   color: #fff;
-  -webkit-mask-image: linear-gradient(90deg, #000 80%, transparent 100%);
-  mask-image: linear-gradient(90deg, #000 80%, transparent 100%);
+  animation: heroShift 22s ease-in-out infinite;
+  -webkit-mask-image: linear-gradient(90deg, #000 78%, transparent 100%);
+  mask-image: linear-gradient(90deg, #000 78%, transparent 100%);
 }
+@keyframes heroShift {
+  0%, 100% { background-position: 0% 50%, 100% 100%, 0% 50%; }
+  50%      { background-position: 0% 50%, 100% 100%, 100% 50%; }
+}
+@media (prefers-reduced-motion: reduce) { .auth-hero { animation: none; } }
 .auth-hero .auth-lead, .auth-hero .auth-features em, .auth-hero .auth-pay { color: rgba(255,255,255,.9); }
 .auth-hero .af-ic { background: none; border: none; box-shadow: none; }
 .auth-hero .pay-chip { background: rgba(255,255,255,.18); border-color: rgba(255,255,255,.32); color: #fff; }
