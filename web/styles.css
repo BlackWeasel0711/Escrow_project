@@ -30,7 +30,7 @@ body {
   letter-spacing: -0.01em;
   -webkit-font-smoothing: antialiased;
 }
-h1, h2, h3, .brand, .auth-brand, .auth-tagline { font-family: "Sora", "Inter", sans-serif; }
+h1, h2, h3, .brand, .auth-brand, .auth-tagline { font-family: "Sora", "Inter", sans-serif; font-weight: 800; letter-spacing: -.02em; }
 
 /* ---------- Top bar ---------- */
 .topbar {
@@ -109,11 +109,29 @@ body.auth-mode .view { max-width: none; margin: 0; padding: 0; }
 
 .auth-features { list-style: none; padding: 0; margin: 0 0 30px; display: grid; gap: 16px; }
 .auth-features li { display: flex; gap: 14px; align-items: flex-start; }
+/* Glossy 3D "app-icon" tiles — playful & dynamic */
 .af-ic {
-  flex: none; width: 40px; height: 40px; border-radius: 11px;
-  display: grid; place-items: center; font-size: 19px;
-  background: var(--panel-2); border: 1px solid var(--border);
+  flex: none; width: 48px; height: 48px; border-radius: 15px;
+  display: grid; place-items: center;
+  position: relative; overflow: hidden; border: none;
+  box-shadow: 0 10px 20px rgba(0,0,0,.4), inset 0 2px 2px rgba(255,255,255,.55), inset 0 -3px 6px rgba(0,0,0,.25);
+  transition: transform .22s cubic-bezier(.34,1.56,.64,1);
 }
+.af-ic::after {                 /* glossy shine sweep */
+  content: ""; position: absolute; top: -35%; left: -12%; width: 124%; height: 72%;
+  background: linear-gradient(180deg, rgba(255,255,255,.55), rgba(255,255,255,0));
+  border-radius: 0 0 60% 60%;
+}
+.af-ic .ico {
+  position: relative; z-index: 1;
+  filter: brightness(0) invert(1) drop-shadow(0 1px 1px rgba(0,0,0,.35));  /* force crisp white glyph */
+}
+/* distinct vibrant tile per feature */
+.auth-features li:nth-child(1) .af-ic { background: linear-gradient(155deg, #3ef0ad, #10b39b 70%, #0a8f8f); }
+.auth-features li:nth-child(2) .af-ic { background: linear-gradient(155deg, #b57bff, #ec4899 75%, #d61f7a); }
+.auth-features li:nth-child(3) .af-ic { background: linear-gradient(155deg, #ffd54a, #f59e0b 75%, #e17408); }
+.auth-features li:hover .af-ic { transform: translateY(-3px) rotate(-6deg) scale(1.08); }
+.auth-features li { align-items: center; }
 .auth-features strong { display: block; font-size: 14.5px; }
 .auth-features em { font-style: normal; color: var(--muted); font-size: 13px; }
 
@@ -192,7 +210,10 @@ h2 { font-size: 19px; margin: 0 0 14px; }
 .sub { color: var(--muted); margin: 0 0 22px; }
 
 /* ---------- Forms ---------- */
-label { display: block; font-size: 13px; color: var(--muted); margin: 12px 0 6px; }
+label { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .11em; color: var(--muted); margin: 14px 0 7px; }
+/* 3D depth on inline icons */
+.field-ic .ico, .brand .ico, .auth-brand .ico, .bell .ico { filter: drop-shadow(0 2px 3px rgba(0,0,0,.45)); }
+.field:focus-within .field-ic .ico { filter: drop-shadow(0 2px 6px rgba(123,108,255,.6)); }
 input, select, textarea {
   width: 100%;
   padding: 10px 12px;
