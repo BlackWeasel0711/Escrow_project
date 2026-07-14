@@ -12,6 +12,21 @@
   const money = (cents, cur = 'KES') => `${cur} ${(cents / 100).toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
   const when = (d) => new Date(d).toLocaleString();
 
+  // ---------- gradient SVG icon set ----------
+  const ICONS = {
+    shield: '<path fill="url(#gP)" d="M12 2.2l7.4 3.1c.5.2.8.7.8 1.2v5c0 5-3.4 9.2-8.2 10.5C7.2 20.7 3.8 16.5 3.8 11.5v-5c0-.5.3-1 .8-1.2L12 2.2z"/><path fill="#fff" d="M10.8 15.2l-2.7-2.7 1.5-1.5 1.2 1.2 3.7-3.7 1.5 1.5-5.2 5.2z"/>',
+    mail: '<rect x="2.5" y="4.5" width="19" height="15" rx="2.5" fill="url(#gB)"/><path fill="#fff" opacity=".92" d="M4.4 7.1l6.98 5.1c.37.27.87.27 1.24 0l6.98-5.1c-.17-.12-.37-.1-.6-.1H5c-.23 0-.43-.02-.6.1z"/>',
+    key: '<path fill="url(#gPk)" d="M15.5 2a6.5 6.5 0 00-6.28 8.2L2 17.42V22h4.6v-2.2h2.2v-2.2h2.2l1.02-1.02A6.5 6.5 0 1015.5 2zm1.8 5.2a1.6 1.6 0 11-3.2 0 1.6 1.6 0 013.2 0z"/>',
+    lock: '<rect x="4" y="10.3" width="16" height="11.2" rx="2.4" fill="url(#gG)"/><path fill="none" stroke="url(#gG)" stroke-width="2.1" stroke-linecap="round" d="M7.7 10.3V7a4.3 4.3 0 018.6 0v3.3"/><circle cx="12" cy="15" r="1.7" fill="#0b0c1c"/><rect x="11.1" y="15" width="1.8" height="4" rx=".9" fill="#0b0c1c"/>',
+    scales: '<path fill="url(#gPk)" d="M13 4.6a1.5 1.5 0 10-2 0V6l-6 1.6v1.86l1.94-.52-1.74 4.66a3.1 3.1 0 006.06 0L9.5 8.55 11 8.15V18.5H7.5a1 1 0 100 2h9a1 1 0 100-2H13V8.15l1.5.4-1.82 4.65a3.1 3.1 0 006.06 0L17 8.94l1.94.52V7.6L13 6V4.6z"/>',
+    star: '<path fill="url(#gGold)" d="M12 2.6l2.9 5.88 6.5.95-4.7 4.58 1.1 6.47L12 17.9l-5.8 3.05 1.1-6.47L2.6 9.43l6.5-.95L12 2.6z"/>',
+    bell: '<path fill="url(#gP)" d="M12 2a6 6 0 00-6 6c0 3.6-1 5.35-1.83 6.28-.62.7-.12 1.82.83 1.82h14c.95 0 1.45-1.12.83-1.82C19 13.35 18 11.6 18 8a6 6 0 00-6-6z"/><path fill="url(#gP)" d="M9.5 19.2a2.5 2.5 0 005 0h-5z"/>',
+    inbox: '<path fill="url(#gB)" d="M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2zm-.7 11H8a1 1 0 011 1 3 3 0 006 0 1 1 0 011-1h3.7L16.4 6.35A1 1 0 0015.5 6h-7a1 1 0 00-.9.55L4.3 14z"/>',
+    check: '<path fill="url(#gG)" d="M12 2a10 10 0 100 20 10 10 0 000-20zm-1.2 14.2l-4-4 1.5-1.5 2.5 2.5 5-5 1.5 1.5-6.5 6.5z"/>',
+  };
+  const icon = (name, size = 20) =>
+    `<svg class="ico" viewBox="0 0 24 24" width="${size}" height="${size}" aria-hidden="true">${ICONS[name] || ''}</svg>`;
+
   let toastTimer;
   function toast(msg, kind = '') {
     const t = $('#toast');
@@ -127,13 +142,13 @@
           <aside class="auth-hero">
             <div class="auth-hero-glow"></div>
             <div class="auth-hero-content">
-              <div class="auth-brand">🛡️ SafePay <span>Escrow</span></div>
+              <div class="auth-brand">${icon('shield', 26)} SafePay <span>Escrow</span></div>
               <h2 class="auth-tagline">Karibu! Nunua na uuze bila wasiwasi.</h2>
               <p class="auth-lead"><strong>Pesa yako iko salama.</strong> We hold the buyer's money securely and only release it to the seller once delivery is confirmed — or an admin resolves a dispute.</p>
               <ul class="auth-features">
-                <li><span class="af-ic">🔒</span><div><strong>Pesa salama in escrow</strong><em>Funds are locked the moment a deal starts.</em></div></li>
-                <li><span class="af-ic">⚖️</span><div><strong>Fair dispute resolution</strong><em>Open a case with evidence, an admin decides.</em></div></li>
-                <li><span class="af-ic">⭐</span><div><strong>Trusted reputations</strong><em>Ratings after every completed deal.</em></div></li>
+                <li><span class="af-ic">${icon('lock', 22)}</span><div><strong>Pesa salama in escrow</strong><em>Funds are locked the moment a deal starts.</em></div></li>
+                <li><span class="af-ic">${icon('scales', 22)}</span><div><strong>Fair dispute resolution</strong><em>Open a case with evidence, an admin decides.</em></div></li>
+                <li><span class="af-ic">${icon('star', 22)}</span><div><strong>Trusted reputations</strong><em>Ratings after every completed deal.</em></div></li>
               </ul>
               <div class="auth-pay">
                 <span>Lipa na</span>
@@ -147,16 +162,16 @@
               <p class="sub">${isLogin ? 'Log in to manage your escrow transactions.' : 'Sign up to buy and sell safely with escrow protection.'}</p>
               <form id="f">
                 <label>Email</label>
-                <div class="field"><span class="field-ic">✉️</span><input name="email" type="email" required autocomplete="email" placeholder="you@example.com" /></div>
+                <div class="field"><span class="field-ic">${icon('mail', 18)}</span><input name="email" type="email" required autocomplete="email" placeholder="you@example.com" /></div>
                 <label>Password</label>
-                <div class="field"><span class="field-ic">🔑</span><input name="password" type="password" required minlength="8" autocomplete="${isLogin ? 'current-password' : 'new-password'}" placeholder="At least 8 characters" /></div>
+                <div class="field"><span class="field-ic">${icon('key', 18)}</span><input name="password" type="password" required minlength="8" autocomplete="${isLogin ? 'current-password' : 'new-password'}" placeholder="At least 8 characters" /></div>
                 <button type="submit" class="auth-submit">${isLogin ? 'Log in' : 'Create account'} <span class="arr">→</span></button>
               </form>
               <p class="auth-swap">
                 ${isLogin ? "New to SafePay?" : 'Already have an account?'}
                 <span class="link" id="swap">${isLogin ? 'Create an account' : 'Log in'}</span>
               </p>
-              <p class="auth-trust">🔐 256-bit encrypted · Your credentials are never shared</p>
+              <p class="auth-trust">${icon('lock', 14)} 256-bit encrypted · Your credentials are never shared</p>
             </div>
           </section>
         </div>`);
@@ -192,8 +207,8 @@
     const card = el('<div class="card"></div>');
     if (!txs.length) {
       card.appendChild(el(`<div class="empty">
-        <div style="font-size:44px;line-height:1">🗂️</div>
-        <div style="margin-top:8px">No transactions yet.</div>
+        <div>${icon('inbox', 46)}</div>
+        <div style="margin-top:10px">No transactions yet.</div>
         <span class="link" id="mk">Create your first escrow →</span>
       </div>`));
       card.querySelector('#mk').onclick = () => go('new');
@@ -461,7 +476,7 @@
   let bellTimer = null;
   function buildBell() {
     const wrap = el(`<span class="bell" style="position:relative">
-      <a id="bellBtn" title="Notifications">🔔<span id="bellCount" class="bell-count" hidden>0</span></a>
+      <a id="bellBtn" title="Notifications">${icon('bell', 20)}<span id="bellCount" class="bell-count" hidden>0</span></a>
       <div id="bellPanel" class="bell-panel" hidden></div>
     </span>`);
     wrap.querySelector('#bellBtn').onclick = (e) => { e.stopPropagation(); toggleBell(wrap); };
@@ -509,6 +524,7 @@
   document.addEventListener('click', () => { const p = document.getElementById('bellPanel'); if (p) p.hidden = true; });
 
   // ---------- boot ----------
+  $('.brand').innerHTML = `${icon('shield', 24)} SafePay <span>Escrow</span>`;
   $('.brand').onclick = () => go(session.isAuthed ? 'dashboard' : 'login');
   window.addEventListener('hashchange', render);
   renderNav();
