@@ -22,7 +22,6 @@
     star: '<path fill="url(#gGold)" d="M12 2.6l2.9 5.88 6.5.95-4.7 4.58 1.1 6.47L12 17.9l-5.8 3.05 1.1-6.47L2.6 9.43l6.5-.95L12 2.6z"/>',
     bell: '<path fill="url(#gP)" d="M12 2a6 6 0 00-6 6c0 3.6-1 5.35-1.83 6.28-.62.7-.12 1.82.83 1.82h14c.95 0 1.45-1.12.83-1.82C19 13.35 18 11.6 18 8a6 6 0 00-6-6z"/><path fill="url(#gP)" d="M9.5 19.2a2.5 2.5 0 005 0h-5z"/>',
     inbox: '<path fill="url(#gB)" d="M5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2zm-.7 11H8a1 1 0 011 1 3 3 0 006 0 1 1 0 011-1h3.7L16.4 6.35A1 1 0 0015.5 6h-7a1 1 0 00-.9.55L4.3 14z"/>',
-    user: '<circle cx="12" cy="8" r="4.2" fill="url(#gP)"/><path fill="url(#gP)" d="M3.5 20a8.5 8.5 0 0117 0 1 1 0 01-1 1h-15a1 1 0 01-1-1z"/>',
     check: '<path fill="url(#gG)" d="M12 2a10 10 0 100 20 10 10 0 000-20zm-1.2 14.2l-4-4 1.5-1.5 2.5 2.5 5-5 1.5 1.5-6.5 6.5z"/>',
   };
   const icon = (name, size = 20) =>
@@ -143,8 +142,8 @@
           <aside class="auth-hero">
             <div class="auth-hero-glow"></div>
             <div class="auth-hero-content">
-              <div class="auth-brand">${icon('shield', 26)} SafePay <span>Escrow</span></div>
-              <h2 class="auth-tagline">Karibu! Nunua na uuze <span class="grad">bila wasiwasi.</span></h2>
+              <div class="auth-brand">${icon('shield', 40)} SafePay <span>Escrow</span></div>
+              <h2 class="auth-tagline">Karibu! Nunua na uuze bila wasiwasi.</h2>
               <p class="auth-lead"><strong>Pesa yako iko salama.</strong> We hold the buyer's money securely and only release it to the seller once delivery is confirmed — or an admin resolves a dispute.</p>
               <ul class="auth-features">
                 <li><span class="af-ic">${icon('lock', 22)}</span><div><strong>Pesa salama in escrow</strong><em>Funds are locked the moment a deal starts.</em></div></li>
@@ -159,7 +158,6 @@
           </aside>
           <section class="auth-form">
             <div class="auth-form-inner">
-              <div class="auth-avatar">${icon('user', 34)}</div>
               <h1>${isLogin ? 'Welcome back' : 'Create your account'}</h1>
               <p class="sub">${isLogin ? 'Log in to manage your escrow transactions.' : 'Sign up to buy and sell safely with escrow protection.'}</p>
               <form id="f">
@@ -526,7 +524,7 @@
   document.addEventListener('click', () => { const p = document.getElementById('bellPanel'); if (p) p.hidden = true; });
 
   // ---------- boot ----------
-  $('.brand').innerHTML = `${icon('shield', 24)} SafePay <span>Escrow</span>`;
+  $('.brand').innerHTML = `${icon('shield', 32)} SafePay <span>Escrow</span>`;
   $('.brand').onclick = () => go(session.isAuthed ? 'dashboard' : 'login');
   window.addEventListener('hashchange', render);
   renderNav();
