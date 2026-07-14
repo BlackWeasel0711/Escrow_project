@@ -135,26 +135,32 @@ body.auth-mode .view { max-width: none; margin: 0; padding: 0; }
 .auth-features strong { display: block; font-size: 14.5px; }
 .auth-features em { font-style: normal; color: var(--muted); font-size: 13px; }
 
-.auth-pay { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; color: var(--muted); font-size: 13px; }
-.pay-chip {
-  font-weight: 700; font-size: 12px; color: var(--text);
-  background: var(--panel-2); border: 1px solid var(--border);
-  padding: 5px 11px; border-radius: 999px;
+.auth-pay { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; color: var(--muted); font-size: 13px; }
+/* Solid brand-colored payment pills */
+.auth-pay .pay-chip {
+  font-weight: 700; font-size: 13px; color: #fff; border: none;
+  padding: 8px 18px; border-radius: 999px;
+  box-shadow: 0 6px 16px rgba(0,0,0,.35);
 }
+.auth-pay .pay-chip:nth-of-type(1) { background: linear-gradient(160deg, #12b562, #0a8f4a); }  /* M-Pesa green */
+.auth-pay .pay-chip:nth-of-type(2) { background: linear-gradient(160deg, #2b57c9, #16307e); }  /* PayPal blue */
+.auth-pay .pay-chip:nth-of-type(3) { background: linear-gradient(160deg, #2545c9, #14237e); }  /* Visa blue */
 
 /* Right form */
 .auth-form { display: flex; align-items: center; justify-content: center; padding: 48px 40px; }
 /* Frosted glass panel so the form separates clearly from the world-map background */
 .auth-form-inner {
-  width: 100%; max-width: 400px;
-  background: linear-gradient(180deg, rgba(24,26,52,.74), rgba(14,16,34,.82));
-  backdrop-filter: blur(16px) saturate(140%);
-  -webkit-backdrop-filter: blur(16px) saturate(140%);
-  border: 1px solid rgba(255,255,255,.10);
-  border-radius: 22px;
-  padding: 36px 32px;
-  box-shadow: 0 26px 64px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.07);
+  width: 100%; max-width: 424px;
+  background: linear-gradient(180deg, rgba(30,28,60,.62), rgba(16,16,38,.78));
+  backdrop-filter: blur(18px) saturate(140%);
+  -webkit-backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid rgba(139,92,246,.55);
+  border-radius: 26px;
+  padding: 34px 34px 30px;
+  box-shadow: 0 0 60px rgba(139,92,246,.22), 0 30px 70px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.08);
+  text-align: center;
 }
+.auth-form-inner label, .auth-form-inner .field { text-align: left; }
 .auth-form-inner h1 { font-size: 28px; letter-spacing: -.4px; }
 /* Brighter, softly-lit text for easy reading */
 .auth-form-inner .sub { color: #c6cbef; }
@@ -322,18 +328,42 @@ body:not(.auth-mode) .view > .row-between { justify-content: center; }
 @keyframes bellSwing { 0%,70%,100% { transform: rotate(0); } 80% { transform: rotate(14deg); } 90% { transform: rotate(-10deg); } }
 @keyframes floatGlow { 0%,100% { opacity: .8; } 50% { opacity: 1; } }
 
-/* ---------- World-map backdrop (real, accurate map) ---------- */
+/* ---------- Dotted world-map backdrop ---------- */
 .worldmap {
   position: fixed; inset: 0; z-index: -2; pointer-events: none;
-  background: url('assets/worldmap.svg') center 46% / contain no-repeat;
-  opacity: .62;
-  -webkit-mask-image: radial-gradient(150% 150% at 50% 46%, #000 80%, transparent 100%);
-  mask-image: radial-gradient(150% 150% at 50% 46%, #000 80%, transparent 100%);
+  /* dot pattern revealed only through continent shapes (SVG used as a mask) */
+  background: radial-gradient(circle at center, rgba(150,167,240,.9) 0 1.1px, transparent 1.5px);
+  background-size: 7px 7px;
+  -webkit-mask: url('assets/worldmap.svg') center 34% / 116% auto no-repeat;
+  mask: url('assets/worldmap.svg') center 34% / 116% auto no-repeat;
+  opacity: .5;
 }
 .bg-overlay {
   position: fixed; inset: 0; z-index: -1; pointer-events: none;
-  background: linear-gradient(180deg, rgba(11,12,28,.30), rgba(11,12,28,.46));
+  /* darken toward lower-left so the dotted map reads brightest upper-right (like the target) */
+  background:
+    radial-gradient(120% 100% at 82% 12%, transparent 20%, rgba(9,10,24,.55) 75%),
+    linear-gradient(160deg, rgba(9,10,24,.2), rgba(9,10,24,.5));
 }
+
+/* ---------- Glowing 3D shield hero graphic ---------- */
+.hero-shield {
+  position: fixed; top: 50%; left: 45%; transform: translate(-50%, -50%);
+  z-index: -1; pointer-events: none;
+  filter: drop-shadow(0 0 55px rgba(139,92,246,.55)) drop-shadow(0 20px 40px rgba(0,0,0,.4));
+}
+body:not(.auth-mode) .hero-shield { display: none; }
+@media (max-width: 900px) { .hero-shield { display: none; } }
+
+/* ---------- Login card avatar ---------- */
+.auth-avatar {
+  width: 74px; height: 74px; border-radius: 50%; margin: 0 auto 16px;
+  display: grid; place-items: center;
+  background: radial-gradient(circle at 50% 32%, rgba(139,92,246,.55), rgba(76,29,149,.35));
+  border: 1px solid rgba(139,92,246,.6);
+  box-shadow: 0 0 34px rgba(139,92,246,.45), inset 0 0 22px rgba(139,92,246,.25);
+}
+.auth-avatar .ico { filter: brightness(0) invert(1) drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
 
 /* ---------- Exodus-style deep background (app-wide) ---------- */
 body { background: var(--bg); }
@@ -374,14 +404,11 @@ body { background: var(--bg); }
 
 /* Auth: gradient hero + glassy form */
 .auth-hero, .auth-form { background-color: transparent; }
-.auth-hero {
-  background:
-    radial-gradient(120% 120% at 0% 0%, rgba(75,110,245,.5), transparent 55%),
-    linear-gradient(150deg, rgba(75,110,245,.94) 0%, rgba(139,92,246,.86) 52%, rgba(236,72,153,.8) 100%);
-  color: #fff;
-  /* fade the right edge so the two halves blend instead of looking like two windows */
-  -webkit-mask-image: linear-gradient(90deg, #000 60%, transparent 100%);
-  mask-image: linear-gradient(90deg, #000 60%, transparent 100%);
+/* Left panel is transparent — sits directly on the dark map + shield scene */
+.auth-hero { background: transparent; color: #fff; -webkit-mask-image: none; mask-image: none; }
+.auth-tagline .grad {
+  background: linear-gradient(100deg, #8b9dff 0%, #c77dff 55%, #ec4899 100%);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
 }
 .auth-hero .auth-lead, .auth-hero .auth-features em, .auth-hero .auth-pay { color: rgba(255,255,255,.9); }
 .auth-hero .af-ic { background: rgba(255,255,255,.16); border-color: rgba(255,255,255,.28); }
