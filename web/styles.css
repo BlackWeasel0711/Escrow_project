@@ -249,13 +249,16 @@ label { display: block; font-size: 11px; font-weight: 700; text-transform: upper
 /* Bigger, luminous, breathing SafePay shield logo */
 .brand .ico, .auth-brand .ico {
   filter: drop-shadow(0 0 14px rgba(139,92,246,.9)) drop-shadow(0 0 28px rgba(236,72,153,.55));
-  animation: brandGlow 2.8s ease-in-out infinite;
-  transition: transform .2s;
+  animation: brandGlow 3s ease-in-out infinite;
+  transition: transform .25s;
 }
-.brand:hover .ico, .auth-brand:hover .ico { transform: scale(1.08) rotate(-4deg); }
+/* Enlarged (~2x) + resizable: scales fluidly with the viewport */
+.auth-brand .ico { width: clamp(64px, 5.4vw, 88px); height: auto; }
+.brand .ico { width: clamp(34px, 2.6vw, 48px); height: auto; }
+.brand:hover .ico, .auth-brand:hover .ico { transform: scale(1.1) rotate(-5deg); }
 @keyframes brandGlow {
-  0%, 100% { filter: drop-shadow(0 0 11px rgba(139,92,246,.75)) drop-shadow(0 0 22px rgba(236,72,153,.4)); transform: scale(1); }
-  50%      { filter: drop-shadow(0 0 20px rgba(139,92,246,1)) drop-shadow(0 0 40px rgba(236,72,153,.75)); transform: scale(1.05); }
+  0%, 100% { filter: drop-shadow(0 0 12px rgba(139,92,246,.75)) drop-shadow(0 0 24px rgba(236,72,153,.4)); transform: translateY(0) scale(1) rotate(0deg); }
+  50%      { filter: drop-shadow(0 0 22px rgba(139,92,246,1)) drop-shadow(0 0 46px rgba(236,72,153,.8)); transform: translateY(-4px) scale(1.07) rotate(4deg); }
 }
 @media (prefers-reduced-motion: reduce) { .brand .ico, .auth-brand .ico { animation: none; } }
 input, select, textarea {
