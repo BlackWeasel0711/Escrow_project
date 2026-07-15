@@ -329,12 +329,32 @@ private fun DetailScreen(vm: AppViewModel, state: UiState) {
             Text(money(tx.amountCents, tx.currency), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
             Text("${if (isBuyer) "You are the buyer" else "You are the seller"} • ${tx.method}",
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
+            tx.sellerReputation?.let { rep ->
+                val repText = if (rep.count > 0)
+                    "Seller reputation: ★ ${rep.average} · ${rep.count} review${if (rep.count == 1) "" else "s"}"
+                else "Seller reputation: no reviews yet"
+                Text(repText, style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
 
             Spacer(Modifier.height(20.dp))
 
-            // Actions by status
-            when (tx.status) {
-                "HELD" -> {
+            // Actions by status. Funds are locked in escrow while HELD, SHIPPED or DELIVERED.
+            val heldStates = setOf("HELD", "SHIPPED", "DELIVERED")
+            when {
+                tx.status in heldStates -> {
+                    if (!isBuyer && tx.status == "HELD") {
+                        Button(onClick = { vm.markShipped(tx.id) }, modifier = Modifier.fillMaxWidth()) {
+                            Text("Mark as shipped")
+                        }
+                        Spacer(Modifier.height(8.dp))
+                    }
+                    if (!isBuyer && tx.status == "SHIPPED") {
+                        Button(onClick = { vm.markDelivered(tx.id) }, modifier = Modifier.fillMaxWidth()) {
+                            Text("Mark as delivered")
+                        }
+                        Spacer(Modifier.height(8.dp))
+                    }
                     if (isBuyer) {
                         Button(onClick = { vm.confirmReceived(tx.id) }, modifier = Modifier.fillMaxWidth()) {
                             Text("Confirm received — release funds")
@@ -356,7 +376,7 @@ private fun DetailScreen(vm: AppViewModel, state: UiState) {
                         ) { Text("Submit dispute") }
                     }
                 }
-                "RELEASED" -> {
+                tx.status == "RELEASED" -> {
                     OutlinedButton(onClick = { showRate = !showRate }, modifier = Modifier.fillMaxWidth()) {
                         Text("Rate the other party")
                     }

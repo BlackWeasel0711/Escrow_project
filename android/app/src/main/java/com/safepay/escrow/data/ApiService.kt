@@ -21,6 +21,12 @@ interface ApiService {
     @POST("transactions")
     suspend fun createEscrow(@Body body: CreateEscrowRequest): Transaction
 
+    @POST("transactions/{id}/ship")
+    suspend fun markShipped(@Path("id") id: String): Transaction
+
+    @POST("transactions/{id}/delivered")
+    suspend fun markDelivered(@Path("id") id: String): Transaction
+
     @POST("transactions/{id}/confirm-received")
     suspend fun confirmReceived(@Path("id") id: String): Transaction
 

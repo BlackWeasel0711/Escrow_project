@@ -110,6 +110,18 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
             navigate(Screen.Detail(tx.id))
         }
 
+    fun markShipped(id: String) = launchGuarded {
+        api.markShipped(id)
+        toast("Marked as shipped — buyer notified")
+        loadDetail(id)
+    }
+
+    fun markDelivered(id: String) = launchGuarded {
+        api.markDelivered(id)
+        toast("Marked as delivered — buyer notified")
+        loadDetail(id)
+    }
+
     fun confirmReceived(id: String) = launchGuarded {
         api.confirmReceived(id)
         toast("Funds released to seller")

@@ -32,6 +32,13 @@ data class Transaction(
     val createdAt: String,
     val events: List<TransactionEvent> = emptyList(),
     val dispute: Dispute? = null,
+    val sellerReputation: Reputation? = null,
+)
+
+@Serializable
+data class Reputation(
+    val average: Double? = null,
+    val count: Int = 0,
 )
 
 @Serializable
