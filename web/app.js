@@ -30,6 +30,16 @@
   // Shield logo with a light-shine sweep clipped to the shield shape.
   const brandLogo = () => `<span class="brand-logo">${icon('shield', 40)}<span class="shine"></span></span>`;
 
+  // ---------- remembered emails (custom, theme-matched history) ----------
+  const EMAILS_KEY = 'safepay.emails';
+  const getEmails = () => { try { return JSON.parse(localStorage.getItem(EMAILS_KEY)) || []; } catch { return []; } };
+  const rememberEmail = (email) => {
+    email = (email || '').trim();
+    if (!email) return;
+    const list = [email, ...getEmails().filter((e) => e !== email)].slice(0, 6);
+    localStorage.setItem(EMAILS_KEY, JSON.stringify(list));
+  };
+
   let toastTimer;
   function toast(msg, kind = '') {
     const t = $('#toast');
@@ -165,7 +175,10 @@
               <p class="sub">${isLogin ? 'Log in to manage your escrow transactions.' : 'Sign up to buy and sell safely with escrow protection.'}</p>
               <form id="f" autocomplete="off">
                 <label>Email</label>
-                <div class="field"><input name="email" type="email" required autocomplete="off" placeholder="you@example.com" /></div>
+                <div class="email-wrap">
+                  <div class="field"><input name="email" type="email" required autocomplete="off" placeholder="you@example.com" /></div>
+                  <div class="email-history" hidden></div>
+                </div>
                 <label>Password</label>
                 <div class="field"><input name="password" type="password" required minlength="8" autocomplete="off" placeholder="At least 8 characters" /></div>
                 <button type="submit" class="auth-submit">${isLogin ? 'Log in' : 'Create account'} <span class="arr">→</span></button>
@@ -180,6 +193,26 @@
         </div>`);
       view.appendChild(wrap);
       $('#swap', wrap).onclick = () => go(isLogin ? 'register' : 'login');
+
+      // Custom, theme-matched email history — shows addresses used on this app.
+      const emailInput = $('input[name=email]', wrap);
+      const histBox = $('.email-history', wrap);
+      const showHist = () => {
+        const q = emailInput.value.trim().toLowerCase();
+        const emails = getEmails().filter((em) => !q || em.toLowerCase().includes(q));
+        if (!emails.length) { histBox.hidden = true; return; }
+        histBox.innerHTML = '';
+        emails.forEach((em) => {
+          const item = el(`<div class="eh-item">${icon('mail', 16)}<span>${esc(em)}</span></div>`);
+          item.onmousedown = (ev) => { ev.preventDefault(); emailInput.value = em; histBox.hidden = true; };
+          histBox.appendChild(item);
+        });
+        histBox.hidden = false;
+      };
+      emailInput.addEventListener('focus', showHist);
+      emailInput.addEventListener('input', showHist);
+      emailInput.addEventListener('blur', () => setTimeout(() => { histBox.hidden = true; }, 150));
+
       $('#f', wrap).onsubmit = async (e) => {
         e.preventDefault();
         const btn = $('button', e.target); btn.disabled = true;
@@ -190,6 +223,7 @@
             body: { email: fd.get('email'), password: fd.get('password') },
           });
           session.token = token;
+          rememberEmail(fd.get('email'));
           toast(isLogin ? 'Logged in' : 'Account created', 'ok');
           renderNav();
           go('dashboard');
