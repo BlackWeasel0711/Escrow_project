@@ -1,5 +1,11 @@
 export interface DepositResult {
   gatewayRef: string;
+  /**
+   * True when funds are NOT captured synchronously: the transaction stays in
+   * PAYMENT_PENDING until an out-of-band webhook confirms it (e.g. an M-Pesa STK
+   * push the buyer must approve on their phone). Omit/false = captured immediately.
+   */
+  pending?: boolean;
   raw?: unknown;
 }
 

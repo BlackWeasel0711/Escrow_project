@@ -8,6 +8,7 @@ import { disputesRouter } from './modules/disputes/disputes.routes';
 import { ratingsRouter } from './modules/ratings/ratings.routes';
 import { adminRouter } from './modules/admin/admin.routes';
 import { notificationsRouter } from './modules/notifications/notifications.routes';
+import { webhooksRouter } from './modules/payments/webhooks.routes';
 import { errorHandler } from './common/middleware/error.middleware';
 
 export const app = express();
@@ -54,6 +55,8 @@ app.use('/api/disputes', disputesRouter);
 app.use('/api/ratings', ratingsRouter);
 app.use('/api/notifications', notificationsRouter);
 app.use('/api/admin', adminRouter);
+// Public gateway callbacks (Safaricom/PayPal) — no auth; verified by gateway reference.
+app.use('/api/webhooks', webhooksRouter);
 
 // Optionally serve the web client from the same origin (single-service hosting).
 // Set SERVE_WEB_DIR to the web/ folder; the SPA is served for all non-API paths.

@@ -22,8 +22,26 @@ export function startMockGateways(port) {
 
       // ---- M-Pesa / Daraja ----
       if (method === 'GET' && path === '/oauth/v1/generate') return send({ access_token: 'mock-daraja-token', expires_in: '3599' });
-      if (method === 'POST' && path === '/mpesa/stkpush/v1/processrequest')
-        return send({ MerchantRequestID: rid('mr_'), CheckoutRequestID: rid('ws_CO_'), ResponseCode: '0', ResponseDescription: 'Success. Request accepted for processing', CustomerMessage: 'Success' });
+      if (method === 'POST' && path === '/mpesa/stkpush/v1/processrequest') {
+        const checkoutId = rid('ws_CO_');
+        // Simulate Safaricom's asynchronous confirmation: shortly after accepting the
+        // push, POST the success callback to the app's CallBackURL (as a real STK does).
+        try {
+          const cbUrl = JSON.parse(body || '{}').CallBackURL;
+          if (cbUrl) {
+            setTimeout(() => {
+              fetch(cbUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  Body: { stkCallback: { MerchantRequestID: rid('mr_'), CheckoutRequestID: checkoutId, ResultCode: 0, ResultDesc: 'The service request is processed successfully.' } },
+                }),
+              }).catch(() => {});
+            }, 300);
+          }
+        } catch {}
+        return send({ MerchantRequestID: rid('mr_'), CheckoutRequestID: checkoutId, ResponseCode: '0', ResponseDescription: 'Success. Request accepted for processing', CustomerMessage: 'Success' });
+      }
       if (method === 'POST' && path === '/mpesa/b2c/v1/paymentrequest')
         return send({ ConversationID: rid('AG_'), OriginatorConversationID: rid('oc_'), ResponseCode: '0', ResponseDescription: 'Accept the service request successfully.' });
       if (method === 'POST' && path === '/mpesa/reversal/v1/request')

@@ -18,6 +18,7 @@ tags:
   - name: Ratings
   - name: Notifications
   - name: Admin
+  - name: Webhooks
 
 paths:
   /auth/register:
@@ -94,7 +95,64 @@ paths:
       responses:
         '200': { description: Released, content: { application/json: { schema: { $ref: '#/components/schemas/Transaction' } } } }
         '403': { description: Only the buyer may confirm, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '409': { description: Not in a held status, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+
+  /transactions/{id}/ship:
+    post:
+      tags: [Transactions]
+      summary: Seller marks the item as shipped (HELD → SHIPPED)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                note: { type: string, maxLength: 300 }
+      responses:
+        '200': { description: Shipped, content: { application/json: { schema: { $ref: '#/components/schemas/Transaction' } } } }
+        '403': { description: Only the seller may update shipping, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
         '409': { description: Not in HELD status, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+
+  /transactions/{id}/delivered:
+    post:
+      tags: [Transactions]
+      summary: Seller marks the item as delivered (SHIPPED → DELIVERED)
+      security: [{ bearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/Id' }]
+      responses:
+        '200': { description: Delivered, content: { application/json: { schema: { $ref: '#/components/schemas/Transaction' } } } }
+        '403': { description: Only the seller may update shipping, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+        '409': { description: Not in SHIPPED status, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+
+  /webhooks/mpesa:
+    post:
+      tags: [Webhooks]
+      summary: M-Pesa (Daraja) STK callback — confirms an async deposit (PAYMENT_PENDING → HELD)
+      description: >
+        Public endpoint Safaricom calls after the buyer approves the STK push on their phone.
+        On ResultCode 0 the transaction is captured (HELD); otherwise it is CANCELLED. Always
+        returns 200 with `{ ResultCode: 0, ResultDesc: "Accepted" }` so Daraja stops retrying.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                Body:
+                  type: object
+                  properties:
+                    stkCallback:
+                      type: object
+                      properties:
+                        CheckoutRequestID: { type: string }
+                        ResultCode: { type: integer }
+                        ResultDesc: { type: string }
+      responses:
+        '200': { description: Acknowledged }
 
   /disputes:
     post:

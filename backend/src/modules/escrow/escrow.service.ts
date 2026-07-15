@@ -67,24 +67,72 @@ export async function createEscrow(params: {
   // Kick off the deposit immediately; in the PayPal/Visa flows this returns a
   // reference the frontend then uses to complete buyer approval/3DS.
   const gateway = getGateway(params.method);
-  const { gatewayRef } = await gateway.deposit({
+  const deposit = await gateway.deposit({
     amountCents: params.amountCents,
     currency: 'KES',
     reference: transaction.id,
   });
+  const amount = money(params.amountCents, transaction.currency);
 
+  // Asynchronous capture (e.g. M-Pesa STK push): the money is not captured yet.
+  // Stay in PAYMENT_PENDING and store the gateway reference; our webhook flips it
+  // to HELD once the buyer approves the prompt on their phone.
+  if (deposit.pending) {
+    const awaiting = await prisma.transaction.update({
+      where: { id: transaction.id },
+      data: { gatewayRef: deposit.gatewayRef },
+    });
+    await notify(params.buyerId, `Check your phone — approve the ${amount} M-Pesa prompt to fund "${params.description}".`, transaction.id);
+    await notify(seller.id, `A ${amount} escrow for "${params.description}" is awaiting the buyer's payment.`, transaction.id);
+    return awaiting;
+  }
+
+  // Synchronous capture (simulated / PayPal / Visa): funds are locked now.
   const held = await prisma.transaction.update({
     where: { id: transaction.id },
-    data: { status: TransactionStatus.HELD, gatewayRef },
+    data: { status: TransactionStatus.HELD, gatewayRef: deposit.gatewayRef },
   });
   await logEvent(transaction.id, TransactionStatus.PAYMENT_PENDING, TransactionStatus.HELD, 'Funds captured and locked');
   await recordPayment(held, PaymentKind.DEPOSIT);
 
-  const amount = money(params.amountCents, held.currency);
   await notify(seller.id, `You have a new escrow of ${amount} for "${params.description}". Funds are held until the buyer confirms delivery.`, transaction.id);
   await notify(params.buyerId, `Your payment of ${amount} is held safely in escrow for "${params.description}".`, transaction.id);
 
   return held;
+}
+
+/**
+ * Confirms (or rejects) an asynchronous deposit once the gateway calls back —
+ * e.g. Safaricom's M-Pesa STK callback after the buyer approves the prompt.
+ * Idempotent: only acts on a transaction still in PAYMENT_PENDING, so duplicate
+ * webhook deliveries are safely ignored.
+ */
+export async function confirmDeposit(gatewayRef: string, success: boolean) {
+  if (!gatewayRef) return null;
+  const tx = await prisma.transaction.findFirst({
+    where: { gatewayRef, status: TransactionStatus.PAYMENT_PENDING },
+  });
+  if (!tx) return null;
+
+  if (success) {
+    const held = await prisma.transaction.update({
+      where: { id: tx.id },
+      data: { status: TransactionStatus.HELD },
+    });
+    await logEvent(tx.id, TransactionStatus.PAYMENT_PENDING, TransactionStatus.HELD, 'Payment confirmed — funds captured and locked');
+    await recordPayment(held, PaymentKind.DEPOSIT);
+    const amount = money(tx.amountCents, tx.currency);
+    await notifyBoth(tx.buyerId, tx.sellerId, `Payment of ${amount} confirmed and held safely in escrow for "${tx.description}".`, tx.id);
+    return held;
+  }
+
+  const cancelled = await prisma.transaction.update({
+    where: { id: tx.id },
+    data: { status: TransactionStatus.CANCELLED },
+  });
+  await logEvent(tx.id, TransactionStatus.PAYMENT_PENDING, TransactionStatus.CANCELLED, 'Payment failed or was cancelled by the buyer');
+  await notify(tx.buyerId, `Your M-Pesa payment for "${tx.description}" was not completed, so the escrow was cancelled.`, tx.id);
+  return cancelled;
 }
 
 export async function listMyTransactions(userId: string) {

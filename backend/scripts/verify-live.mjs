@@ -34,6 +34,17 @@ async function api(p, { method = 'GET', token, body } = {}) {
   return { status: res.status, data };
 }
 
+/** Polls a transaction until it reaches the target status (or gives up). */
+async function waitForStatus(id, token, target, tries = 25) {
+  let tx;
+  for (let i = 0; i < tries; i++) {
+    tx = (await api(`/transactions/${id}`, { token })).data;
+    if (tx?.status === target) return tx;
+    await sleep(150);
+  }
+  return tx;
+}
+
 async function releasePath(method, mockPort) {
   console.log(`\n--- ${method}: deposit -> release (real gateway calls) ---`);
   const suffix = `${method.toLowerCase()}_live`;
@@ -42,10 +53,18 @@ async function releasePath(method, mockPort) {
 
   const created = await api('/transactions', { method: 'POST', token: buyer, body: { sellerEmail: `s_${suffix}@t.test`, description: `Live ${method}`, amountCents: 250000, method } });
   check(`${method}: deposit succeeded (real STK/order/intent)`, created.status === 201, `HTTP ${created.status}: ${JSON.stringify(created.data)}`);
-  check(`${method}: status HELD`, created.data?.status === 'HELD', `got ${created.data?.status}`);
-  check(`${method}: gatewayRef is a REAL ref (not simulated)`, created.data?.gatewayRef && !/SIMULATED/.test(created.data.gatewayRef), `got ${created.data?.gatewayRef}`);
+  let tx = created.data;
+  if (tx?.status === 'PAYMENT_PENDING') {
+    // Asynchronous M-Pesa STK: push accepted, funds not captured until the webhook fires.
+    check(`${method}: STK push accepted — awaiting buyer approval (PAYMENT_PENDING)`, true);
+    tx = await waitForStatus(tx.id, buyer, 'HELD');
+    check(`${method}: webhook confirmation captured funds (HELD)`, tx?.status === 'HELD', `got ${tx?.status}`);
+  } else {
+    check(`${method}: status HELD`, tx?.status === 'HELD', `got ${tx?.status}`);
+  }
+  check(`${method}: gatewayRef is a REAL ref (not simulated)`, tx?.gatewayRef && !/SIMULATED/.test(tx.gatewayRef), `got ${tx?.gatewayRef}`);
 
-  const rel = await api(`/transactions/${created.data.id}/confirm-received`, { method: 'POST', token: buyer });
+  const rel = await api(`/transactions/${tx.id}/confirm-received`, { method: 'POST', token: buyer });
   check(`${method}: release succeeded (real payout/capture)`, rel.status === 200 && rel.data?.status === 'RELEASED', `HTTP ${rel.status}: ${JSON.stringify(rel.data)}`);
 }
 
@@ -54,7 +73,8 @@ async function refundPath(method, adminToken) {
   const suffix = `${method.toLowerCase()}_ref`;
   const buyer = (await api('/auth/register', { method: 'POST', body: { email: `b_${suffix}@t.test`, password: 'password123' } })).data.token;
   await api('/auth/register', { method: 'POST', body: { email: `s_${suffix}@t.test`, password: 'password123' } });
-  const tx = (await api('/transactions', { method: 'POST', token: buyer, body: { sellerEmail: `s_${suffix}@t.test`, description: `Refund ${method}`, amountCents: 180000, method } })).data;
+  let tx = (await api('/transactions', { method: 'POST', token: buyer, body: { sellerEmail: `s_${suffix}@t.test`, description: `Refund ${method}`, amountCents: 180000, method } })).data;
+  if (tx?.status === 'PAYMENT_PENDING') tx = await waitForStatus(tx.id, buyer, 'HELD'); // let the STK webhook capture first
   await api('/disputes', { method: 'POST', token: buyer, body: { transactionId: tx.id, reason: 'not delivered' } });
   const d = (await api('/disputes', { token: adminToken })).data.find((x) => x.transactionId === tx.id);
   const ruling = await api(`/disputes/${d.id}/rule`, { method: 'POST', token: adminToken, body: { ruling: 'REFUND' } });
@@ -94,7 +114,7 @@ async function main() {
         // M-Pesa / Daraja
         MPESA_BASE_URL: mockBase, MPESA_CONSUMER_KEY: 'mock', MPESA_CONSUMER_SECRET: 'mock',
         MPESA_SHORTCODE: '174379', MPESA_PASSKEY: 'mock', MPESA_TEST_MSISDN: '254708374149',
-        MPESA_CALLBACK_URL: 'http://localhost/cb', MPESA_INITIATOR_NAME: 'testapi',
+        MPESA_CALLBACK_URL: `http://127.0.0.1:${PORT_API}/api/webhooks/mpesa`, MPESA_INITIATOR_NAME: 'testapi',
         MPESA_SECURITY_CREDENTIAL: 'mock', MPESA_B2C_SHORTCODE: '600000',
         // PayPal
         PAYPAL_BASE_URL: mockBase, PAYPAL_CLIENT_ID: 'mock', PAYPAL_CLIENT_SECRET: 'mock',
