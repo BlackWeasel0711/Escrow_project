@@ -2,6 +2,15 @@
 
 A multi-payment escrow platform: buyers pay into escrow, funds are held until delivery is confirmed (or a dispute is resolved by an admin).
 
+## 🌐 Live demo
+
+**https://reading-metres-stand-smile.trycloudflare.com**
+
+> ⚠️ This is a **temporary** demo link (a Cloudflare quick-tunnel) — it only works while the demo
+> machine is running the app, and the address changes if it restarts. For a **permanent** URL,
+> deploy the repo to Render with one click using [`render.yaml`](render.yaml) (see `docs/README.md`).
+> Seeded logins: `admin@safepay.test / admin12345`, `buyer@safepay.test / buyer12345`.
+
 ## Structure
 
 - `backend/` — REST API (Node.js/TypeScript/Express/Prisma/PostgreSQL). Start here — see `backend/README.md`.
