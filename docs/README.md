@@ -25,7 +25,7 @@
 ```
 
 - **Auth**: email/password, bcrypt (12 rounds), stateless JWT (7-day expiry). Role claim (`USER`/`ADMIN`) gates admin routes.
-- **Escrow lifecycle**: `PENDING → HELD → (DISPUTED) → RELEASED | REFUNDED`. Every transition is written to `TransactionEvent` for an auditable timeline visible in both the user and admin views.
+- **Escrow lifecycle**: `CREATED → PAYMENT_PENDING → HELD → SHIPPED → DELIVERED → RELEASED`, with `→ DISPUTED → RELEASED | REFUNDED` reachable from any held stage. Every transition is written to `TransactionEvent` for an auditable timeline visible in both the user and admin views.
 - **Payments**: each gateway implements one `PaymentGateway` interface (`deposit`/`release`/`refund`). `SIMULATE_PAYMENTS=true` swaps in a fake gateway so the whole flow runs with no real accounts.
 
 ## Deployment

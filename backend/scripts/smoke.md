@@ -33,7 +33,7 @@ curl -s $API/disputes/$DID/rule -H "Authorization: Bearer $ADMIN" -H 'Content-Ty
 # 5. Verify final state + full timeline visible to the buyer
 curl -s $API/transactions/$TXID -H "Authorization: Bearer $BUYER" \
   | jq '{status, events: [.events[].toStatus]}'
-# expect: status RELEASED, events [PENDING, HELD, DISPUTED, RELEASED]
+# expect: status RELEASED, events [CREATED, PAYMENT_PENDING, HELD, DISPUTED, RELEASED]
 
 # 6. Admin overview reflects the movement
 curl -s $API/admin/overview -H "Authorization: Bearer $ADMIN" | jq .

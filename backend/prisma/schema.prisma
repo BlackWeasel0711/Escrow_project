@@ -19,8 +19,9 @@ enum PaymentMethod {
 }
 
 enum TransactionStatus {
-  PENDING    // created, awaiting payment confirmation from gateway
-  HELD       // funds captured and locked in escrow
+  CREATED         // escrow just created, no payment attempted yet
+  PAYMENT_PENDING // payment initiated with the gateway, awaiting capture
+  HELD            // funds captured and locked in escrow
   SHIPPED    // seller marked the item as shipped
   DELIVERED  // seller marked the item as delivered
   DISPUTED   // buyer or seller opened a dispute while held
@@ -79,7 +80,7 @@ model Transaction {
   amountCents   Int
   currency      String             @default("KES")
   method        PaymentMethod
-  status        TransactionStatus  @default(PENDING)
+  status        TransactionStatus  @default(CREATED)
   gatewayRef    String?            // id returned by PayPal/M-Pesa/Stripe for this payment
   createdAt     DateTime           @default(now())
   updatedAt     DateTime           @updatedAt

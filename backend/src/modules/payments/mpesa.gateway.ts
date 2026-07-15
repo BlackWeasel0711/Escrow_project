@@ -52,7 +52,7 @@ export const mpesaGateway: PaymentGateway = {
     if (!res.ok) throw new Error(`Daraja STK push failed: ${res.status}`);
     const data = (await res.json()) as { CheckoutRequestID: string };
     // Actual payment confirmation arrives asynchronously at CallBackURL —
-    // the transaction should stay PENDING until that webhook fires.
+    // the transaction should stay PAYMENT_PENDING until that webhook fires.
     return { gatewayRef: data.CheckoutRequestID, raw: data };
   },
 

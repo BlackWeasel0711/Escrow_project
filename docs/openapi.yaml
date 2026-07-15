@@ -313,7 +313,7 @@ components:
         error: { type: string }
         details: { type: array, items: { type: object }, description: Present for validation errors }
     PaymentMethod: { type: string, enum: [PAYPAL, MPESA, VISA] }
-    TransactionStatus: { type: string, enum: [PENDING, HELD, DISPUTED, RELEASED, REFUNDED, CANCELLED] }
+    TransactionStatus: { type: string, enum: [CREATED, PAYMENT_PENDING, HELD, SHIPPED, DELIVERED, DISPUTED, RELEASED, REFUNDED, CANCELLED] }
     User:
       type: object
       properties:

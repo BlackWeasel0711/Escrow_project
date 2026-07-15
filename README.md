@@ -22,7 +22,7 @@ A multi-payment escrow platform: buyers pay into escrow, funds are held until de
 
 Backend core is scaffolded and runnable in simulated-payments mode (no real gateway accounts needed yet):
 - Email/password auth (JWT)
-- Escrow transaction lifecycle: `PENDING → HELD → SHIPPED → DELIVERED → RELEASED` (seller shipping workflow), with `→ DISPUTED → RELEASED/REFUNDED` at any held stage
+- Escrow transaction lifecycle: `CREATED → PAYMENT_PENDING → HELD → SHIPPED → DELIVERED → RELEASED` (seller shipping workflow), with `→ DISPUTED → RELEASED/REFUNDED` at any held stage
 - Payment ledger: every deposit/release/refund recorded as a `Payment` row for admin/audit
 - Seller reputation (average rating + review count) surfaced on each transaction
 - Payment gateway adapters for PayPal, M-Pesa, and Visa (via Stripe), behind one interface — switch `SIMULATE_PAYMENTS=false` once real sandbox credentials are added

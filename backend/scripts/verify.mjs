@@ -88,7 +88,7 @@ async function runMethod(method, adminToken) {
   const final = (await api(`/transactions/${txId}`, { token: buyer.token })).data;
   check(`${method}: final status RELEASED`, final.status === 'RELEASED', `got ${final.status}`);
   const chain = final.events.map((e) => e.toStatus).join(',');
-  check(`${method}: timeline is PENDING,HELD,DISPUTED,RELEASED`, chain === 'PENDING,HELD,DISPUTED,RELEASED', `got ${chain}`);
+  check(`${method}: timeline is CREATED,PAYMENT_PENDING,HELD,DISPUTED,RELEASED`, chain === 'CREATED,PAYMENT_PENDING,HELD,DISPUTED,RELEASED', `got ${chain}`);
 
   // authorization: seller cannot confirm-received; a stranger cannot view
   const sellerConfirm = await api(`/transactions/${txId}/confirm-received`, { method: 'POST', token: seller.token });
@@ -123,7 +123,7 @@ async function runRefundPath(adminToken) {
   const final = (await api(`/transactions/${tx.id}`, { token: buyer.token })).data;
   check('REFUND: final status REFUNDED', final.status === 'REFUNDED', `got ${final.status}`);
   const chain = final.events.map((e) => e.toStatus).join(',');
-  check('REFUND: timeline is PENDING,HELD,DISPUTED,REFUNDED', chain === 'PENDING,HELD,DISPUTED,REFUNDED', `got ${chain}`);
+  check('REFUND: timeline is CREATED,PAYMENT_PENDING,HELD,DISPUTED,REFUNDED', chain === 'CREATED,PAYMENT_PENDING,HELD,DISPUTED,REFUNDED', `got ${chain}`);
   const notifs = (await api('/notifications', { token: buyer.token })).data;
   check('REFUND: buyer notified of refund', notifs.items.some((n) => /refunded to the buyer/i.test(n.message)));
 }
@@ -151,8 +151,8 @@ async function runShippingPath(adminToken) {
 
   const final = (await api(`/transactions/${txId}`, { token: buyer.token })).data;
   const chain = final.events.map((e) => e.toStatus).join(',');
-  check('SHIP: timeline is PENDING,HELD,SHIPPED,DELIVERED,RELEASED',
-    chain === 'PENDING,HELD,SHIPPED,DELIVERED,RELEASED', `got ${chain}`);
+  check('SHIP: timeline is CREATED,PAYMENT_PENDING,HELD,SHIPPED,DELIVERED,RELEASED',
+    chain === 'CREATED,PAYMENT_PENDING,HELD,SHIPPED,DELIVERED,RELEASED', `got ${chain}`);
   check('SHIP: buyer notified of shipment', (await api('/notifications', { token: buyer.token })).data.items.some((n) => /shipped/i.test(n.message)));
 
   // rate the seller, then reputation is surfaced on the transaction detail

@@ -4,7 +4,7 @@ export interface DepositResult {
 }
 
 export interface PaymentGateway {
-  /** Capture funds from the buyer into escrow (moves PENDING -> HELD). */
+  /** Capture funds from the buyer into escrow (moves PAYMENT_PENDING -> HELD). */
   deposit(params: { amountCents: number; currency: string; reference: string }): Promise<DepositResult>;
   /** Pay held funds out to the seller (moves HELD -> RELEASED). */
   release(params: { gatewayRef: string; amountCents: number }): Promise<void>;

@@ -50,10 +50,19 @@ export async function createEscrow(params: {
       description: params.description,
       amountCents: params.amountCents,
       method: params.method,
-      status: TransactionStatus.PENDING,
+      status: TransactionStatus.CREATED,
     },
   });
-  await logEvent(transaction.id, null, TransactionStatus.PENDING, 'Escrow created');
+  await logEvent(transaction.id, null, TransactionStatus.CREATED, 'Escrow created');
+
+  // Move to PAYMENT_PENDING the moment we hand off to the gateway, so the timeline
+  // records the "awaiting payment" step even if capture is instant (simulated) or
+  // asynchronous (a real M-Pesa STK push the buyer must approve on their phone).
+  await prisma.transaction.update({
+    where: { id: transaction.id },
+    data: { status: TransactionStatus.PAYMENT_PENDING },
+  });
+  await logEvent(transaction.id, TransactionStatus.CREATED, TransactionStatus.PAYMENT_PENDING, 'Awaiting payment confirmation');
 
   // Kick off the deposit immediately; in the PayPal/Visa flows this returns a
   // reference the frontend then uses to complete buyer approval/3DS.
@@ -68,7 +77,7 @@ export async function createEscrow(params: {
     where: { id: transaction.id },
     data: { status: TransactionStatus.HELD, gatewayRef },
   });
-  await logEvent(transaction.id, TransactionStatus.PENDING, TransactionStatus.HELD, 'Funds captured and locked');
+  await logEvent(transaction.id, TransactionStatus.PAYMENT_PENDING, TransactionStatus.HELD, 'Funds captured and locked');
   await recordPayment(held, PaymentKind.DEPOSIT);
 
   const amount = money(params.amountCents, held.currency);
