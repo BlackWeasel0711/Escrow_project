@@ -174,11 +174,18 @@
               <h1>${isLogin ? 'Welcome back' : 'Create your account'}</h1>
               <p class="sub">${isLogin ? 'Log in to manage your escrow transactions.' : 'Sign up to buy and sell safely with escrow protection.'}</p>
               <form id="f" autocomplete="off">
+                ${isLogin ? '' : `
+                <label>Full name</label>
+                <div class="field"><input name="fullName" type="text" required minlength="2" autocomplete="off" placeholder="e.g. Jane Wanjiku" /></div>`}
                 <label>Email</label>
                 <div class="email-wrap">
                   <div class="field"><input name="email" type="email" required autocomplete="off" placeholder="you@example.com" /></div>
                   <div class="email-history" hidden></div>
                 </div>
+                ${isLogin ? '' : `
+                <label>M-Pesa phone number</label>
+                <div class="field"><input name="phone" type="tel" required minlength="10" autocomplete="off" placeholder="e.g. 0712 345678" /></div>
+                <p class="field-hint">${icon('lock', 12)} Where your money is sent when a deal completes.</p>`}
                 <label>Password</label>
                 <div class="field"><input name="password" type="password" required minlength="8" autocomplete="off" placeholder="At least 8 characters" /></div>
                 <button type="submit" class="auth-submit">${isLogin ? 'Log in' : 'Create account'} <span class="arr">→</span></button>
@@ -218,10 +225,9 @@
         const btn = $('button', e.target); btn.disabled = true;
         const fd = new FormData(e.target);
         try {
-          const { token } = await api(`/auth/${mode}`, {
-            method: 'POST',
-            body: { email: fd.get('email'), password: fd.get('password') },
-          });
+          const body = { email: fd.get('email'), password: fd.get('password') };
+          if (!isLogin) { body.fullName = fd.get('fullName'); body.phone = fd.get('phone'); }
+          const { token } = await api(`/auth/${mode}`, { method: 'POST', body });
           session.token = token;
           rememberEmail(fd.get('email'));
           toast(isLogin ? 'Logged in' : 'Account created', 'ok');
@@ -349,6 +355,7 @@
       <div class="row-between"><div><div class="muted">Amount</div><div style="font-size:22px;font-weight:700">${money(t.amountCents, t.currency)}</div></div>
       <div><div class="muted">Payment</div><div>${t.method}</div></div>
       <div><div class="muted">Your role</div><div>${isBuyer ? 'Buyer' : 'Seller'}</div></div>
+      <div><div class="muted">Seller</div><div>${esc(t.seller?.fullName || t.seller?.email || '—')}</div></div>
       <div><div class="muted">Seller reputation</div><div>${repText}</div></div>
       <div><div class="muted">Gateway ref</div><div class="mono">${esc(t.gatewayRef || '—')}</div></div></div>
     </div>`);

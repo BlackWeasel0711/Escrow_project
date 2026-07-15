@@ -47,6 +47,8 @@ model User {
   id           String   @id @default(uuid())
   email        String   @unique
   passwordHash String
+  fullName     String?  // profile: legal/display name, shown to counterparties
+  phone        String?  // profile: M-Pesa number — the destination for payouts
   role         Role     @default(USER)
   createdAt    DateTime @default(now())
 

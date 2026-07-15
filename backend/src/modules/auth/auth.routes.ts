@@ -9,10 +9,16 @@ const credentialsSchema = z.object({
   password: z.string().min(8, 'Password must be at least 8 characters'),
 });
 
+const registerSchema = credentialsSchema.extend({
+  fullName: z.string().trim().min(2, 'Please enter your full name'),
+  // M-Pesa number — the payout destination. Kept lenient on format (07…, 2547…, +2547…).
+  phone: z.string().trim().min(10, 'Please enter a valid phone number').max(20),
+});
+
 authRouter.post('/register', async (req, res, next) => {
   try {
-    const { email, password } = credentialsSchema.parse(req.body);
-    const result = await authService.register(email, password);
+    const { email, password, fullName, phone } = registerSchema.parse(req.body);
+    const result = await authService.register(email, password, fullName, phone);
     res.status(201).json(result);
   } catch (err) {
     next(err);

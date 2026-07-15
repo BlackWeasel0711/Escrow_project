@@ -55,8 +55,8 @@ async function runMethod(method, adminToken) {
   console.log(`\n--- Payment method: ${method} ---`);
   // fresh buyer/seller per method to keep it isolated
   const suffix = method.toLowerCase();
-  const buyer = (await api('/auth/register', { method: 'POST', body: { email: `buyer_${suffix}@t.test`, password: 'password123' } })).data;
-  const seller = (await api('/auth/register', { method: 'POST', body: { email: `seller_${suffix}@t.test`, password: 'password123' } })).data;
+  const buyer = (await api('/auth/register', { method: 'POST', body: { email: `buyer_${suffix}@t.test`, password: 'password123', fullName: 'Test User', phone: '254700000000' } })).data;
+  const seller = (await api('/auth/register', { method: 'POST', body: { email: `seller_${suffix}@t.test`, password: 'password123', fullName: 'Test User', phone: '254700000000' } })).data;
   check(`${method}: buyer & seller registered`, !!buyer?.token && !!seller?.token);
 
   // deposit -> HELD
@@ -112,8 +112,8 @@ async function runMethod(method, adminToken) {
 
 async function runRefundPath(adminToken) {
   console.log('\n--- Dispute resolved as REFUND ---');
-  const buyer = (await api('/auth/register', { method: 'POST', body: { email: 'refbuyer@t.test', password: 'password123' } })).data;
-  await api('/auth/register', { method: 'POST', body: { email: 'refseller@t.test', password: 'password123' } });
+  const buyer = (await api('/auth/register', { method: 'POST', body: { email: 'refbuyer@t.test', password: 'password123', fullName: 'Test User', phone: '254700000000' } })).data;
+  await api('/auth/register', { method: 'POST', body: { email: 'refseller@t.test', password: 'password123', fullName: 'Test User', phone: '254700000000' } });
   const tx = (await api('/transactions', { method: 'POST', token: buyer.token, body: { sellerEmail: 'refseller@t.test', description: 'Refund case', amountCents: 90000, method: 'VISA' } })).data;
   await api('/disputes', { method: 'POST', token: buyer.token, body: { transactionId: tx.id, reason: 'Item never arrived' } });
   const queue = (await api('/disputes', { token: adminToken })).data;
@@ -130,8 +130,8 @@ async function runRefundPath(adminToken) {
 
 async function runShippingPath(adminToken) {
   console.log('\n--- Seller shipping workflow (HELD → SHIPPED → DELIVERED → RELEASED) ---');
-  const buyer = (await api('/auth/register', { method: 'POST', body: { email: 'shipbuyer@t.test', password: 'password123' } })).data;
-  const seller = (await api('/auth/register', { method: 'POST', body: { email: 'shipseller@t.test', password: 'password123' } })).data;
+  const buyer = (await api('/auth/register', { method: 'POST', body: { email: 'shipbuyer@t.test', password: 'password123', fullName: 'Test User', phone: '254700000000' } })).data;
+  const seller = (await api('/auth/register', { method: 'POST', body: { email: 'shipseller@t.test', password: 'password123', fullName: 'Test User', phone: '254700000000' } })).data;
   const tx = (await api('/transactions', { method: 'POST', token: buyer.token, body: { sellerEmail: 'shipseller@t.test', description: 'Shipped goods', amountCents: 120000, method: 'MPESA' } })).data;
   const txId = tx.id;
 
@@ -161,6 +161,7 @@ async function runShippingPath(adminToken) {
   const withRep = (await api(`/transactions/${txId}`, { token: buyer.token })).data;
   check('SHIP: seller reputation surfaced', withRep.sellerReputation?.count >= 1 && withRep.sellerReputation?.average === 4,
     `got ${JSON.stringify(withRep.sellerReputation)}`);
+  check('SHIP: seller profile name surfaced', withRep.seller?.fullName === 'Test User', `got ${withRep.seller?.fullName}`);
 
   // admin payment ledger records deposit + release for this tx
   const payments = (await api('/admin/payments', { token: adminToken })).data;
@@ -213,8 +214,8 @@ async function main() {
 
     // plain confirm-received release path (no dispute)
     console.log('\n--- Plain release (confirm-received) ---');
-    const b = (await api('/auth/register', { method: 'POST', body: { email: 'plainbuyer@t.test', password: 'password123' } })).data;
-    await api('/auth/register', { method: 'POST', body: { email: 'plainseller@t.test', password: 'password123' } });
+    const b = (await api('/auth/register', { method: 'POST', body: { email: 'plainbuyer@t.test', password: 'password123', fullName: 'Test User', phone: '254700000000' } })).data;
+    await api('/auth/register', { method: 'POST', body: { email: 'plainseller@t.test', password: 'password123', fullName: 'Test User', phone: '254700000000' } });
     const tx = (await api('/transactions', { method: 'POST', token: b.token, body: { sellerEmail: 'plainseller@t.test', description: 'Direct release', amountCents: 5000, method: 'MPESA' } })).data;
     const rel = await api(`/transactions/${tx.id}/confirm-received`, { method: 'POST', token: b.token });
     check('confirm-received releases funds', rel.data?.status === 'RELEASED', `got ${rel.data?.status}`);
@@ -238,6 +239,14 @@ async function main() {
       payments.some((p) => p.kind === 'DEPOSIT') && payments.some((p) => p.kind === 'RELEASE'));
     const refundPayments = payments.filter((p) => p.kind === 'REFUND');
     check('admin payments include REFUND kind (from refund ruling)', refundPayments.length > 0, `got ${refundPayments.length}`);
+
+    // seller profile: admin users list carries name + phone
+    const users = (await api('/admin/users', { token: admin.token })).data;
+    check('admin users include profile name + phone', Array.isArray(users) && users.some((u) => u.fullName && u.phone));
+
+    // registration requires the seller profile (name + phone), not just email/password
+    const noProfile = await api('/auth/register', { method: 'POST', body: { email: 'noprofile@t.test', password: 'password123' } });
+    check('register without name/phone returns 400', noProfile.status === 400, `got ${noProfile.status}`);
 
     // validation error -> 400 (not 500)
     const bad = await api('/auth/register', { method: 'POST', body: { email: 'not-an-email', password: 'x' } });

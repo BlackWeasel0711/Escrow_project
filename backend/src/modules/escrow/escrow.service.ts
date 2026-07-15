@@ -158,7 +158,7 @@ export async function getTransaction(userId: string, transactionId: string) {
       events: { orderBy: { createdAt: 'asc' } },
       dispute: { include: { evidence: true } },
       rating: true,
-      seller: { select: { id: true, email: true } },
+      seller: { select: { id: true, email: true, fullName: true } },
     },
   });
   if (!tx) throw new HttpError(404, 'Transaction not found');

@@ -7,6 +7,14 @@ import kotlinx.serialization.Serializable
 data class Credentials(val email: String, val password: String)
 
 @Serializable
+data class RegisterRequest(
+    val email: String,
+    val password: String,
+    val fullName: String,
+    val phone: String,
+)
+
+@Serializable
 data class TokenResponse(val token: String)
 
 @Serializable
@@ -33,6 +41,14 @@ data class Transaction(
     val events: List<TransactionEvent> = emptyList(),
     val dispute: Dispute? = null,
     val sellerReputation: Reputation? = null,
+    val seller: PartySummary? = null,
+)
+
+@Serializable
+data class PartySummary(
+    val id: String,
+    val email: String,
+    val fullName: String? = null,
 )
 
 @Serializable

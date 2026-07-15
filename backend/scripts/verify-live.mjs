@@ -48,8 +48,8 @@ async function waitForStatus(id, token, target, tries = 25) {
 async function releasePath(method, mockPort) {
   console.log(`\n--- ${method}: deposit -> release (real gateway calls) ---`);
   const suffix = `${method.toLowerCase()}_live`;
-  const buyer = (await api('/auth/register', { method: 'POST', body: { email: `b_${suffix}@t.test`, password: 'password123' } })).data.token;
-  await api('/auth/register', { method: 'POST', body: { email: `s_${suffix}@t.test`, password: 'password123' } });
+  const buyer = (await api('/auth/register', { method: 'POST', body: { email: `b_${suffix}@t.test`, password: 'password123', fullName: 'Test User', phone: '254700000000' } })).data.token;
+  await api('/auth/register', { method: 'POST', body: { email: `s_${suffix}@t.test`, password: 'password123', fullName: 'Test User', phone: '254700000000' } });
 
   const created = await api('/transactions', { method: 'POST', token: buyer, body: { sellerEmail: `s_${suffix}@t.test`, description: `Live ${method}`, amountCents: 250000, method } });
   check(`${method}: deposit succeeded (real STK/order/intent)`, created.status === 201, `HTTP ${created.status}: ${JSON.stringify(created.data)}`);
@@ -71,8 +71,8 @@ async function releasePath(method, mockPort) {
 async function refundPath(method, adminToken) {
   console.log(`\n--- ${method}: deposit -> dispute -> REFUND (real reversal/refund) ---`);
   const suffix = `${method.toLowerCase()}_ref`;
-  const buyer = (await api('/auth/register', { method: 'POST', body: { email: `b_${suffix}@t.test`, password: 'password123' } })).data.token;
-  await api('/auth/register', { method: 'POST', body: { email: `s_${suffix}@t.test`, password: 'password123' } });
+  const buyer = (await api('/auth/register', { method: 'POST', body: { email: `b_${suffix}@t.test`, password: 'password123', fullName: 'Test User', phone: '254700000000' } })).data.token;
+  await api('/auth/register', { method: 'POST', body: { email: `s_${suffix}@t.test`, password: 'password123', fullName: 'Test User', phone: '254700000000' } });
   let tx = (await api('/transactions', { method: 'POST', token: buyer, body: { sellerEmail: `s_${suffix}@t.test`, description: `Refund ${method}`, amountCents: 180000, method } })).data;
   if (tx?.status === 'PAYMENT_PENDING') tx = await waitForStatus(tx.id, buyer, 'HELD'); // let the STK webhook capture first
   await api('/disputes', { method: 'POST', token: buyer, body: { transactionId: tx.id, reason: 'not delivered' } });

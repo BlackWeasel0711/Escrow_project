@@ -26,7 +26,7 @@ export async function getOverview() {
 
 export async function listUsers() {
   return prisma.user.findMany({
-    select: { id: true, email: true, role: true, createdAt: true },
+    select: { id: true, email: true, fullName: true, phone: true, role: true, createdAt: true },
     orderBy: { createdAt: 'desc' },
   });
 }
@@ -77,8 +77,8 @@ export async function getTransaction(transactionId: string) {
       dispute: { include: { evidence: true } },
       rating: true,
       payments: { orderBy: { createdAt: 'asc' } },
-      buyer: { select: { id: true, email: true } },
-      seller: { select: { id: true, email: true } },
+      buyer: { select: { id: true, email: true, fullName: true, phone: true } },
+      seller: { select: { id: true, email: true, fullName: true, phone: true } },
     },
   });
   if (!tx) throw new HttpError(404, 'Transaction not found');

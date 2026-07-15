@@ -81,9 +81,12 @@ class AppViewModel(app: Application) : AndroidViewModel(app) {
         }
     }
 
-    fun authenticate(email: String, password: String, register: Boolean) = launchGuarded {
-        val creds = com.safepay.escrow.data.Credentials(email.trim(), password)
-        val res = if (register) api.register(creds) else api.login(creds)
+    fun authenticate(email: String, password: String, register: Boolean, fullName: String = "", phone: String = "") = launchGuarded {
+        val res = if (register) {
+            api.register(com.safepay.escrow.data.RegisterRequest(email.trim(), password, fullName.trim(), phone.trim()))
+        } else {
+            api.login(com.safepay.escrow.data.Credentials(email.trim(), password))
+        }
         session.token = res.token
         syncSessionFlags()
         toast(if (register) "Account created" else "Logged in")

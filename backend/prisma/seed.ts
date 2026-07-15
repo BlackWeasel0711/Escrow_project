@@ -11,18 +11,18 @@ const prisma = new PrismaClient({ adapter });
  * Passwords come from env (falling back to demo defaults) — override in real deployments.
  */
 async function main() {
-  const accounts: Array<{ email: string; password: string; role: Role }> = [
-    { email: process.env.SEED_ADMIN_EMAIL || 'admin@safepay.test', password: process.env.SEED_ADMIN_PASSWORD || 'admin12345', role: Role.ADMIN },
-    { email: 'buyer@safepay.test', password: 'buyer12345', role: Role.USER },
-    { email: 'seller@safepay.test', password: 'seller12345', role: Role.USER },
+  const accounts: Array<{ email: string; password: string; role: Role; fullName: string; phone: string }> = [
+    { email: process.env.SEED_ADMIN_EMAIL || 'admin@safepay.test', password: process.env.SEED_ADMIN_PASSWORD || 'admin12345', role: Role.ADMIN, fullName: 'Platform Admin', phone: '254700000000' },
+    { email: 'buyer@safepay.test', password: 'buyer12345', role: Role.USER, fullName: 'Demo Buyer', phone: '254711111111' },
+    { email: 'seller@safepay.test', password: 'seller12345', role: Role.USER, fullName: 'Demo Seller', phone: '254722222222' },
   ];
 
   for (const a of accounts) {
     const passwordHash = await bcrypt.hash(a.password, 12);
     await prisma.user.upsert({
       where: { email: a.email },
-      update: { role: a.role, passwordHash },
-      create: { email: a.email, passwordHash, role: a.role },
+      update: { role: a.role, passwordHash, fullName: a.fullName, phone: a.phone },
+      create: { email: a.email, passwordHash, role: a.role, fullName: a.fullName, phone: a.phone },
     });
     console.log(`  ✓ ${a.role.padEnd(5)} ${a.email}  (password: ${a.password})`);
   }

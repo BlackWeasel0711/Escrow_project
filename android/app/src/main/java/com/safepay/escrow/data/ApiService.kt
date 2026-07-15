@@ -7,7 +7,7 @@ import retrofit2.http.Path
 
 interface ApiService {
     @POST("auth/register")
-    suspend fun register(@Body body: Credentials): TokenResponse
+    suspend fun register(@Body body: RegisterRequest): TokenResponse
 
     @POST("auth/login")
     suspend fun login(@Body body: Credentials): TokenResponse

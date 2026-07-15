@@ -91,6 +91,8 @@ fun AppRoot(vm: AppViewModel) {
 private fun AuthScreen(vm: AppViewModel, register: Boolean) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var fullName by remember { mutableStateOf("") }
+    var phone by remember { mutableStateOf("") }
 
     Column(
         Modifier.fillMaxSize().padding(24.dp).verticalScroll(rememberScrollState()),
@@ -103,12 +105,30 @@ private fun AuthScreen(vm: AppViewModel, register: Boolean) {
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(Modifier.height(24.dp))
+        if (register) {
+            OutlinedTextField(
+                value = fullName, onValueChange = { fullName = it },
+                label = { Text("Full name") }, singleLine = true,
+                modifier = Modifier.fillMaxWidth()
+            )
+            Spacer(Modifier.height(12.dp))
+        }
         OutlinedTextField(
             value = email, onValueChange = { email = it },
             label = { Text("Email") }, singleLine = true,
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
             modifier = Modifier.fillMaxWidth()
         )
+        if (register) {
+            Spacer(Modifier.height(12.dp))
+            OutlinedTextField(
+                value = phone, onValueChange = { phone = it },
+                label = { Text("M-Pesa phone number") }, singleLine = true,
+                supportingText = { Text("Where your money is sent when a deal completes.") },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone),
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
         Spacer(Modifier.height(12.dp))
         OutlinedTextField(
             value = password, onValueChange = { password = it },
@@ -119,8 +139,9 @@ private fun AuthScreen(vm: AppViewModel, register: Boolean) {
         )
         Spacer(Modifier.height(20.dp))
         Button(
-            onClick = { vm.authenticate(email, password, register) },
-            enabled = email.isNotBlank() && password.length >= 8,
+            onClick = { vm.authenticate(email, password, register, fullName, phone) },
+            enabled = email.isNotBlank() && password.length >= 8 &&
+                (!register || (fullName.trim().length >= 2 && phone.trim().length >= 10)),
             modifier = Modifier.fillMaxWidth()
         ) { Text(if (register) "Sign up" else "Log in") }
         Spacer(Modifier.height(8.dp))
@@ -329,6 +350,10 @@ private fun DetailScreen(vm: AppViewModel, state: UiState) {
             Text(money(tx.amountCents, tx.currency), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
             Text("${if (isBuyer) "You are the buyer" else "You are the seller"} • ${tx.method}",
                 color = MaterialTheme.colorScheme.onSurfaceVariant)
+            (tx.seller?.fullName ?: tx.seller?.email)?.let { name ->
+                Text("Seller: $name", style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
             tx.sellerReputation?.let { rep ->
                 val repText = if (rep.count > 0)
                     "Seller reputation: ★ ${rep.average} · ${rep.count} review${if (rep.count == 1) "" else "s"}"
