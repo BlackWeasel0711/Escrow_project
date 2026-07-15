@@ -163,11 +163,11 @@
             <div class="auth-form-inner">
               <h1>${isLogin ? 'Welcome back' : 'Create your account'}</h1>
               <p class="sub">${isLogin ? 'Log in to manage your escrow transactions.' : 'Sign up to buy and sell safely with escrow protection.'}</p>
-              <form id="f">
+              <form id="f" autocomplete="off">
                 <label>Email</label>
-                <div class="field"><input name="email" type="email" required autocomplete="email" placeholder="you@example.com" /></div>
+                <div class="field"><input name="email" type="email" required autocomplete="off" placeholder="you@example.com" /></div>
                 <label>Password</label>
-                <div class="field"><input name="password" type="password" required minlength="8" autocomplete="${isLogin ? 'current-password' : 'new-password'}" placeholder="At least 8 characters" /></div>
+                <div class="field"><input name="password" type="password" required minlength="8" autocomplete="off" placeholder="At least 8 characters" /></div>
                 <button type="submit" class="auth-submit">${isLogin ? 'Log in' : 'Create account'} <span class="arr">→</span></button>
               </form>
               <p class="auth-swap">
