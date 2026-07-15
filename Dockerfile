@@ -25,7 +25,9 @@ COPY backend/prisma ./prisma
 RUN npx prisma generate
 COPY --from=build /app/dist ./dist
 COPY web ./web
-# Serve the web client from the same origin as the API.
+COPY docs ./docs
+# Serve the web client and the API reference from the same origin as the API.
 ENV SERVE_WEB_DIR=/app/web
+ENV SERVE_DOCS_DIR=/app/docs
 EXPOSE 4000
 CMD ["sh", "-c", "npx prisma db push --skip-generate --accept-data-loss && node dist/server.js"]

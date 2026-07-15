@@ -58,6 +58,14 @@ app.use('/api/admin', adminRouter);
 // Public gateway callbacks (Safaricom/PayPal) — no auth; verified by gateway reference.
 app.use('/api/webhooks', webhooksRouter);
 
+// Optionally serve the API reference (Swagger UI + openapi.yaml) at /docs.
+// Set SERVE_DOCS_DIR to the docs/ folder. Must be registered before the SPA
+// catch-all so /docs/* resolves to real files, not the web index.
+const docsDir = process.env.SERVE_DOCS_DIR;
+if (docsDir) {
+  app.use('/docs', express.static(path.resolve(docsDir)));
+}
+
 // Optionally serve the web client from the same origin (single-service hosting).
 // Set SERVE_WEB_DIR to the web/ folder; the SPA is served for all non-API paths.
 const webDir = process.env.SERVE_WEB_DIR;
@@ -65,7 +73,7 @@ if (webDir) {
   const root = path.resolve(webDir);
   app.use(express.static(root));
   app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api') || req.path === '/health') return next();
+    if (req.path.startsWith('/api') || req.path.startsWith('/docs') || req.path === '/health') return next();
     res.sendFile(path.join(root, 'index.html'));
   });
 }

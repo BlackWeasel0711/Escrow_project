@@ -43,8 +43,9 @@ await new Promise((resolve, reject) => {
 
 console.log('Starting API + web on http://localhost:4000 ...');
 const webDir = path.resolve(process.cwd(), '..', 'web');
+const docsDir = path.resolve(process.cwd(), '..', 'docs');
 const server = spawn(process.execPath, ['-r', 'ts-node/register/transpile-only', 'src/server.ts'],
-  { env: { ...process.env, DATABASE_URL, JWT_SECRET: 'dev-local-secret', SIMULATE_PAYMENTS: 'true', PORT: String(PORT_API), SERVE_WEB_DIR: webDir }, shell: false, stdio: 'inherit' });
+  { env: { ...process.env, DATABASE_URL, JWT_SECRET: 'dev-local-secret', SIMULATE_PAYMENTS: 'true', PORT: String(PORT_API), SERVE_WEB_DIR: webDir, SERVE_DOCS_DIR: docsDir }, shell: false, stdio: 'inherit' });
 
 async function shutdown() {
   console.log('\nShutting down...');
