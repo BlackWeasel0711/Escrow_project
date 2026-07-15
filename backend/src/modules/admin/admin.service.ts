@@ -2,11 +2,14 @@ import { DisputeStatus, TransactionStatus } from '@prisma/client';
 import { prisma } from '../../prisma';
 import { HttpError } from '../../common/middleware/error.middleware';
 
+// Statuses in which money is still locked in escrow.
+const HELD_STATES = [TransactionStatus.HELD, TransactionStatus.SHIPPED, TransactionStatus.DELIVERED];
+
 export async function getOverview() {
   const [heldAgg, openDisputes, userCount, statusCounts] = await Promise.all([
     prisma.transaction.aggregate({
       _sum: { amountCents: true },
-      where: { status: TransactionStatus.HELD },
+      where: { status: { in: HELD_STATES } },
     }),
     prisma.dispute.count({ where: { status: { in: [DisputeStatus.OPEN, DisputeStatus.UNDER_REVIEW] } } }),
     prisma.user.count(),
@@ -35,6 +38,36 @@ export async function listAllTransactions() {
   });
 }
 
+/** Payment ledger — every deposit/release/refund across the platform. */
+export async function listPayments() {
+  return prisma.payment.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: {
+      transaction: {
+        select: {
+          id: true,
+          description: true,
+          currency: true,
+          buyer: { select: { email: true } },
+          seller: { select: { email: true } },
+        },
+      },
+    },
+  });
+}
+
+/** Every rating left on the platform (buyer -> seller reviews). */
+export async function listReviews() {
+  return prisma.rating.findMany({
+    orderBy: { createdAt: 'desc' },
+    include: {
+      rater: { select: { email: true } },
+      ratee: { select: { email: true } },
+      transaction: { select: { id: true, description: true } },
+    },
+  });
+}
+
 /** Full detail for any transaction — admin is not restricted to being a party. */
 export async function getTransaction(transactionId: string) {
   const tx = await prisma.transaction.findUnique({
@@ -43,6 +76,7 @@ export async function getTransaction(transactionId: string) {
       events: { orderBy: { createdAt: 'asc' } },
       dispute: { include: { evidence: true } },
       rating: true,
+      payments: { orderBy: { createdAt: 'asc' } },
       buyer: { select: { id: true, email: true } },
       seller: { select: { id: true, email: true } },
     },

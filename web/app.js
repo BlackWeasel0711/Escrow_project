@@ -341,25 +341,44 @@
       <span class="badge ${t.status}">${t.status}</span>
     </div>`));
 
+    const rep = t.sellerReputation;
+    const repText = rep && rep.count
+      ? `<span class="stars">${'★'.repeat(Math.round(rep.average))}${'☆'.repeat(5 - Math.round(rep.average))}</span> ${rep.average} · ${rep.count} review${rep.count === 1 ? '' : 's'}`
+      : 'No reviews yet';
     const info = el(`<div class="card">
       <div class="row-between"><div><div class="muted">Amount</div><div style="font-size:22px;font-weight:700">${money(t.amountCents, t.currency)}</div></div>
       <div><div class="muted">Payment</div><div>${t.method}</div></div>
       <div><div class="muted">Your role</div><div>${isBuyer ? 'Buyer' : 'Seller'}</div></div>
+      <div><div class="muted">Seller reputation</div><div>${repText}</div></div>
       <div><div class="muted">Gateway ref</div><div class="mono">${esc(t.gatewayRef || '—')}</div></div></div>
     </div>`);
     view.appendChild(info);
 
+    // Funds are locked in escrow while HELD, SHIPPED or DELIVERED.
+    const heldStates = ['HELD', 'SHIPPED', 'DELIVERED'];
+    const post = (path, okMsg, confirmMsg) => async () => {
+      if (confirmMsg && !confirm(confirmMsg)) return;
+      try { await api(`/transactions/${id}/${path}`, { method: 'POST' }); toast(okMsg, 'ok'); render(); }
+      catch (e) { toast(e.message, 'err'); }
+    };
+
     // Actions
     const actions = el('<div class="card"><h2>Actions</h2><div class="btn-row" id="acts"></div></div>');
     const acts = $('#acts', actions);
-    if (t.status === 'HELD') {
+    if (heldStates.includes(t.status)) {
+      if (!isBuyer && t.status === 'HELD') {
+        const s = el('<button>Mark as shipped</button>');
+        s.onclick = post('ship', 'Buyer notified — marked shipped');
+        acts.appendChild(s);
+      }
+      if (!isBuyer && t.status === 'SHIPPED') {
+        const dv = el('<button>Mark as delivered</button>');
+        dv.onclick = post('delivered', 'Buyer notified — marked delivered');
+        acts.appendChild(dv);
+      }
       if (isBuyer) {
         const b = el('<button>Confirm received — release funds</button>');
-        b.onclick = async () => {
-          if (!confirm('Release the held funds to the seller? This cannot be undone.')) return;
-          try { await api(`/transactions/${id}/confirm-received`, { method: 'POST' }); toast('Funds released to seller', 'ok'); render(); }
-          catch (e) { toast(e.message, 'err'); }
-        };
+        b.onclick = post('confirm-received', 'Funds released to seller', 'Release the held funds to the seller? This cannot be undone.');
         acts.appendChild(b);
       }
       const d = el('<button class="warn">Open a dispute</button>');
@@ -507,6 +526,46 @@
     if (!all.length) txCard.appendChild(el('<div class="empty">No transactions.</div>'));
     else txCard.appendChild(table);
     view.appendChild(txCard);
+
+    // Payment ledger
+    const [payments, reviews] = await Promise.all([api('/admin/payments'), api('/admin/reviews')]);
+    const payCard = el('<div class="card" style="margin-top:16px"><h2>Payment ledger</h2></div>');
+    if (!payments.length) payCard.appendChild(el('<div class="empty">No payments yet.</div>'));
+    else {
+      const pt = el(`<table><thead><tr><th>Type</th><th>Amount</th><th>Method</th><th>Transaction</th><th>Status</th><th>When</th></tr></thead><tbody></tbody></table>`);
+      const ptb = $('tbody', pt);
+      for (const p of payments) {
+        const tr = el(`<tr class="clickable">
+          <td><span class="badge kind-${p.kind}">${p.kind}</span></td>
+          <td>${money(p.amountCents, p.transaction?.currency || 'KES')}</td>
+          <td>${p.method}</td>
+          <td>${esc(p.transaction?.description || p.transactionId)}</td>
+          <td class="muted">${esc(p.status)}</td>
+          <td class="muted">${when(p.createdAt)}</td></tr>`);
+        if (p.transaction?.id) tr.onclick = () => go('tx', { id: p.transaction.id });
+        ptb.appendChild(tr);
+      }
+      payCard.appendChild(pt);
+    }
+    view.appendChild(payCard);
+
+    // Reviews
+    const revCard = el('<div class="card" style="margin-top:16px"><h2>Reviews</h2></div>');
+    if (!reviews.length) revCard.appendChild(el('<div class="empty">No reviews yet.</div>'));
+    else {
+      for (const r of reviews) {
+        revCard.appendChild(el(`<div style="border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:10px">
+          <div class="row-between">
+            <div><span class="stars">${'★'.repeat(r.score)}${'☆'.repeat(5 - r.score)}</span>
+              <span class="muted">${esc(r.rater?.email || '')} → ${esc(r.ratee?.email || '')}</span></div>
+            <div class="muted">${when(r.createdAt)}</div>
+          </div>
+          ${r.comment ? `<p>${esc(r.comment)}</p>` : ''}
+          <p class="muted">on ${esc(r.transaction?.description || r.transactionId)}</p>
+        </div>`));
+      }
+    }
+    view.appendChild(revCard);
   });
 
   // ---------- notifications bell ----------

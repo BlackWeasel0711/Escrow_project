@@ -21,10 +21,18 @@ enum PaymentMethod {
 enum TransactionStatus {
   PENDING    // created, awaiting payment confirmation from gateway
   HELD       // funds captured and locked in escrow
+  SHIPPED    // seller marked the item as shipped
+  DELIVERED  // seller marked the item as delivered
   DISPUTED   // buyer or seller opened a dispute while held
   RELEASED   // funds paid out to seller
   REFUNDED   // funds returned to buyer
   CANCELLED  // never funded / cancelled before hold
+}
+
+enum PaymentKind {
+  DEPOSIT    // buyer -> escrow
+  RELEASE    // escrow -> seller
+  REFUND     // escrow -> buyer
 }
 
 enum DisputeStatus {
@@ -79,6 +87,21 @@ model Transaction {
   events    TransactionEvent[]
   dispute   Dispute?
   rating    Rating?
+  payments  Payment[]
+}
+
+model Payment {
+  id            String        @id @default(uuid())
+  transactionId String
+  transaction   Transaction   @relation(fields: [transactionId], references: [id])
+  method        PaymentMethod
+  kind          PaymentKind
+  amountCents   Int
+  status        String        @default("SUCCESS") // SUCCESS | PENDING | FAILED
+  gatewayRef    String?
+  createdAt     DateTime      @default(now())
+
+  @@index([transactionId])
 }
 
 model TransactionEvent {

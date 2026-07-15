@@ -29,6 +29,22 @@ adminRouter.get('/transactions', async (_req, res, next) => {
   }
 });
 
+adminRouter.get('/payments', async (_req, res, next) => {
+  try {
+    res.json(await adminService.listPayments());
+  } catch (err) {
+    next(err);
+  }
+});
+
+adminRouter.get('/reviews', async (_req, res, next) => {
+  try {
+    res.json(await adminService.listReviews());
+  } catch (err) {
+    next(err);
+  }
+});
+
 adminRouter.get('/transactions/:id', async (req, res, next) => {
   try {
     res.json(await adminService.getTransaction(req.params.id));
