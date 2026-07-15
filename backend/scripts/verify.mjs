@@ -128,6 +128,51 @@ async function runRefundPath(adminToken) {
   check('REFUND: buyer notified of refund', notifs.items.some((n) => /refunded to the buyer/i.test(n.message)));
 }
 
+async function runShippingPath(adminToken) {
+  console.log('\n--- Seller shipping workflow (HELD → SHIPPED → DELIVERED → RELEASED) ---');
+  const buyer = (await api('/auth/register', { method: 'POST', body: { email: 'shipbuyer@t.test', password: 'password123' } })).data;
+  const seller = (await api('/auth/register', { method: 'POST', body: { email: 'shipseller@t.test', password: 'password123' } })).data;
+  const tx = (await api('/transactions', { method: 'POST', token: buyer.token, body: { sellerEmail: 'shipseller@t.test', description: 'Shipped goods', amountCents: 120000, method: 'MPESA' } })).data;
+  const txId = tx.id;
+
+  // buyer cannot mark shipped; seller can
+  const buyerShip = await api(`/transactions/${txId}/ship`, { method: 'POST', token: buyer.token });
+  check('SHIP: buyer blocked from marking shipped', buyerShip.status === 403, `got ${buyerShip.status}`);
+  const shipped = await api(`/transactions/${txId}/ship`, { method: 'POST', token: seller.token });
+  check('SHIP: seller marks shipped -> SHIPPED', shipped.data?.status === 'SHIPPED', `got ${shipped.data?.status}`);
+
+  // cannot deliver twice-skipping states; deliver from SHIPPED
+  const delivered = await api(`/transactions/${txId}/delivered`, { method: 'POST', token: seller.token });
+  check('SHIP: seller marks delivered -> DELIVERED', delivered.data?.status === 'DELIVERED', `got ${delivered.data?.status}`);
+
+  // buyer confirms from DELIVERED -> RELEASED
+  const released = await api(`/transactions/${txId}/confirm-received`, { method: 'POST', token: buyer.token });
+  check('SHIP: buyer confirm from DELIVERED -> RELEASED', released.data?.status === 'RELEASED', `got ${released.data?.status}`);
+
+  const final = (await api(`/transactions/${txId}`, { token: buyer.token })).data;
+  const chain = final.events.map((e) => e.toStatus).join(',');
+  check('SHIP: timeline is PENDING,HELD,SHIPPED,DELIVERED,RELEASED',
+    chain === 'PENDING,HELD,SHIPPED,DELIVERED,RELEASED', `got ${chain}`);
+  check('SHIP: buyer notified of shipment', (await api('/notifications', { token: buyer.token })).data.items.some((n) => /shipped/i.test(n.message)));
+
+  // rate the seller, then reputation is surfaced on the transaction detail
+  const rate = await api('/ratings', { method: 'POST', token: buyer.token, body: { transactionId: txId, score: 4, comment: 'Fast shipping' } });
+  check('SHIP: buyer rates seller', rate.status === 201, `got ${rate.status}`);
+  const withRep = (await api(`/transactions/${txId}`, { token: buyer.token })).data;
+  check('SHIP: seller reputation surfaced', withRep.sellerReputation?.count >= 1 && withRep.sellerReputation?.average === 4,
+    `got ${JSON.stringify(withRep.sellerReputation)}`);
+
+  // admin payment ledger records deposit + release for this tx
+  const payments = (await api('/admin/payments', { token: adminToken })).data;
+  const mine = payments.filter((p) => p.transactionId === txId);
+  check('SHIP: payment ledger has DEPOSIT for tx', mine.some((p) => p.kind === 'DEPOSIT'));
+  check('SHIP: payment ledger has RELEASE for tx', mine.some((p) => p.kind === 'RELEASE'));
+
+  // admin reviews list includes the new review
+  const reviews = (await api('/admin/reviews', { token: adminToken })).data;
+  check('SHIP: admin reviews list includes rating', reviews.some((r) => r.transactionId === txId && r.score === 4));
+}
+
 async function main() {
   fs.rmSync(dataDir, { recursive: true, force: true });
   const pg = new EmbeddedPostgres({ databaseDir: dataDir, user: 'postgres', password: 'postgres', port: PORT_DB, persistent: false });
@@ -180,10 +225,19 @@ async function main() {
     // dispute resolved as REFUND (the other ruling branch)
     await runRefundPath(admin.token);
 
+    // seller shipping workflow + payment ledger + reviews + reputation
+    await runShippingPath(admin.token);
+
     // admin overview reflects data
     const overview = (await api('/admin/overview', { token: admin.token })).data;
     check('admin overview has userCount', typeof overview.userCount === 'number' && overview.userCount > 0);
     check('admin overview byStatus includes RELEASED', !!overview.byStatus?.RELEASED);
+    const payments = (await api('/admin/payments', { token: admin.token })).data;
+    check('admin payments ledger populated', Array.isArray(payments) && payments.length > 0, `got ${payments?.length}`);
+    check('admin payments include DEPOSIT and RELEASE kinds',
+      payments.some((p) => p.kind === 'DEPOSIT') && payments.some((p) => p.kind === 'RELEASE'));
+    const refundPayments = payments.filter((p) => p.kind === 'REFUND');
+    check('admin payments include REFUND kind (from refund ruling)', refundPayments.length > 0, `got ${refundPayments.length}`);
 
     // validation error -> 400 (not 500)
     const bad = await api('/auth/register', { method: 'POST', body: { email: 'not-an-email', password: 'x' } });

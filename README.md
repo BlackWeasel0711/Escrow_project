@@ -22,7 +22,9 @@ A multi-payment escrow platform: buyers pay into escrow, funds are held until de
 
 Backend core is scaffolded and runnable in simulated-payments mode (no real gateway accounts needed yet):
 - Email/password auth (JWT)
-- Escrow transaction lifecycle: `PENDING → HELD → DISPUTED → RELEASED/REFUNDED`
+- Escrow transaction lifecycle: `PENDING → HELD → SHIPPED → DELIVERED → RELEASED` (seller shipping workflow), with `→ DISPUTED → RELEASED/REFUNDED` at any held stage
+- Payment ledger: every deposit/release/refund recorded as a `Payment` row for admin/audit
+- Seller reputation (average rating + review count) surfaced on each transaction
 - Payment gateway adapters for PayPal, M-Pesa, and Visa (via Stripe), behind one interface — switch `SIMULATE_PAYMENTS=false` once real sandbox credentials are added
 - Dispute center (open case, attach evidence, admin ruling)
 - Ratings after completed transactions
@@ -39,7 +41,9 @@ All four deliverables are now in place:
 **Verified end-to-end.** `cd backend && npm run verify` stands up a throwaway PostgreSQL, applies the
 schema, seeds, boots the API, and drives the full lifecycle — deposit → hold → dispute → release, the
 plain confirm-received release, **and** a dispute resolved as a refund — across **all three payment
-methods**, asserting both parties are notified at every step. **55/55 checks pass** with no external
+methods** — plus the full seller shipping workflow (HELD → SHIPPED → DELIVERED → RELEASED), the
+payment ledger, admin payments/reviews, and seller reputation — asserting both parties are notified
+at every step. **69/69 checks pass** with no external
 setup. This satisfies the brief's acceptance criterion (a test transaction moving through each state,
 visible in both the admin overview and the user's timeline).
 
