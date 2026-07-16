@@ -167,6 +167,7 @@
                 <span>Lipa na</span>
                 <b class="pay-chip">M-Pesa</b><b class="pay-chip">PayPal</b><b class="pay-chip">Visa</b>
               </div>
+              <p class="hero-disclaimer">SafePay holds funds in escrow until delivery is confirmed. Demo environment — payments are simulated.</p>
             </div>
           </aside>
           <section class="auth-form">
