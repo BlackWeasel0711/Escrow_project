@@ -4,7 +4,7 @@ A multi-payment escrow platform: buyers pay into escrow, funds are held until de
 
 ## 🌐 Live demo
 
-**https://lol-email-eligibility-little.trycloudflare.com**
+**https://fleet-expenditures-hugh-liability.trycloudflare.com**
 
 > ⚠️ This is a **temporary** demo link (a Cloudflare quick-tunnel) — it only works while the demo
 > machine is running the app, and the address changes if it restarts. For a **permanent** URL,

@@ -18,11 +18,17 @@ const PORT_API = 4000;
 const DATABASE_URL = `postgresql://postgres:postgres@127.0.0.1:${PORT_DB}/escrow`;
 const dataDir = path.join(os.tmpdir(), 'safepay-devlocal-pgdata');
 
-fs.rmSync(dataDir, { recursive: true, force: true });
+// DEV_LOCAL_KEEP_DATA=1 (used by the watchdog) restarts on the EXISTING database
+// instead of wiping it, so accounts/transactions survive a crash-restart.
+const keepData = !!process.env.DEV_LOCAL_KEEP_DATA;
+const alreadyInitialised = fs.existsSync(path.join(dataDir, 'PG_VERSION'));
+if (!keepData) fs.rmSync(dataDir, { recursive: true, force: true });
+// A hard kill can leave a stale lock file behind — remove it so postgres can start.
+fs.rmSync(path.join(dataDir, 'postmaster.pid'), { force: true });
 const pg = new EmbeddedPostgres({ databaseDir: dataDir, user: 'postgres', password: 'postgres', port: PORT_DB, persistent: true });
 
 console.log('Starting embedded PostgreSQL...');
-await pg.initialise();
+if (!keepData || !alreadyInitialised) await pg.initialise();
 await pg.start();
 try { await pg.createDatabase('escrow'); } catch {}
 
@@ -31,7 +37,12 @@ const ddl = execFileSync('npx', ['prisma', 'migrate', 'diff', '--from-empty',
   '--to-schema-datamodel', 'prisma/schema.prisma', '--script'], { encoding: 'utf8', shell: true });
 const client = new Client(DATABASE_URL);
 await client.connect();
-await client.query(ddl);
+try {
+  await client.query(ddl);
+} catch (e) {
+  if (!keepData) throw e;
+  console.log('Schema already present — keeping existing data.');
+}
 await client.end();
 
 console.log('Seeding demo accounts...');
