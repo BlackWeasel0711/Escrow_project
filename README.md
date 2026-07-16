@@ -7,9 +7,17 @@ A multi-payment escrow platform: buyers pay into escrow, funds are held until de
 **https://fleet-expenditures-hugh-liability.trycloudflare.com**
 
 > ⚠️ This is a **temporary** demo link (a Cloudflare quick-tunnel) — it only works while the demo
-> machine is running the app, and the address changes if it restarts. For a **permanent** URL,
-> deploy the repo to Render with one click using [`render.yaml`](render.yaml) (see `docs/README.md`).
+> machine is running the app, and the address changes if it restarts. Note: some VPN/security DNS
+> providers block `trycloudflare.com` entirely; if the link won't resolve, try another network.
 > Seeded logins: `admin@safepay.test / admin12345`, `buyer@safepay.test / buyer12345`.
+
+## 🚀 Permanent hosting — one click
+
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/BlackWeasel0711/Escrow_project)
+
+Click the button (or open `https://render.com/deploy?repo=https://github.com/BlackWeasel0711/Escrow_project`),
+sign in with GitHub, set `SEED_ADMIN_EMAIL` / `SEED_ADMIN_PASSWORD`, and Apply — Render provisions the
+database + web service from [`render.yaml`](render.yaml) and gives you a permanent `*.onrender.com` URL.
 
 ## Structure
 
