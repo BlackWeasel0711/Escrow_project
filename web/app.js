@@ -152,26 +152,14 @@
       view.innerHTML = '';
       const wrap = el(`
         <div class="auth-shell">
-          <aside class="auth-hero">
-            <div class="auth-hero-glow"></div>
-            <div class="auth-hero-content">
-              <div class="auth-brand">${brandLogo()} SafePay <span>Escrow</span></div>
-              <h2 class="auth-tagline">Karibu! Nunua na uuze bila wasiwasi.</h2>
-              <p class="auth-lead"><strong>Pesa yako iko salama.</strong> We hold the buyer's money securely and only release it to the seller once delivery is confirmed — or an admin resolves a dispute.</p>
-              <ul class="auth-features">
-                <li><span class="af-ic">${icon('lock', 44)}</span><div><strong>Pesa salama in escrow</strong><em>Funds are locked the moment a deal starts.</em></div></li>
-                <li><span class="af-ic">${icon('scales', 44)}</span><div><strong>Fair dispute resolution</strong><em>Open a case with evidence, an admin decides.</em></div></li>
-                <li><span class="af-ic">${icon('star', 44)}</span><div><strong>Trusted reputations</strong><em>Ratings after every completed deal.</em></div></li>
-              </ul>
-              <div class="auth-pay">
-                <span>Lipa na</span>
-                <b class="pay-chip">M-Pesa</b><b class="pay-chip">PayPal</b><b class="pay-chip">Visa</b>
-              </div>
-              <p class="hero-disclaimer">SafePay holds funds in escrow until delivery is confirmed. Demo environment — payments are simulated.</p>
-            </div>
-          </aside>
+          <div class="auth-hero-center">
+            <div class="auth-brand">${brandLogo()} SafePay <span>Escrow</span></div>
+            <h2 class="auth-tagline">Karibu! Nunua na uuze bila wasiwasi.</h2>
+            <p class="auth-lead"><strong>Pesa yako iko salama.</strong> We hold the buyer's money in escrow and release it to the seller only once delivery is confirmed — or an admin resolves the dispute.</p>
+          </div>
           <section class="auth-form">
             <div class="auth-form-inner">
+              <span class="kenya-line" aria-hidden="true"></span>
               <h1>${isLogin ? 'Welcome back' : 'Create your account'}</h1>
               <p class="sub">${isLogin ? 'Log in to manage your escrow transactions.' : 'Sign up to buy and sell safely with escrow protection.'}</p>
               <form id="f" autocomplete="off">
@@ -198,6 +186,18 @@
               <p class="auth-trust">${icon('lock', 14)} 256-bit encrypted · Your credentials are never shared</p>
             </div>
           </section>
+          <div class="auth-below">
+            <ul class="auth-features">
+              <li><span class="af-ic">${icon('lock', 44)}</span><div><strong>Pesa salama in escrow</strong><em>Funds are locked the moment a deal starts.</em></div></li>
+              <li><span class="af-ic">${icon('scales', 44)}</span><div><strong>Fair dispute resolution</strong><em>Open a case with evidence, an admin decides.</em></div></li>
+              <li><span class="af-ic">${icon('star', 44)}</span><div><strong>Trusted reputations</strong><em>Ratings after every completed deal.</em></div></li>
+            </ul>
+            <div class="auth-pay">
+              <span>Lipa na</span>
+              <b class="pay-chip">M-Pesa</b><b class="pay-chip">PayPal</b><b class="pay-chip">Visa</b>
+            </div>
+            <p class="hero-disclaimer">SafePay holds funds in escrow until delivery is confirmed. Demo environment — payments are simulated.</p>
+          </div>
         </div>`);
       view.appendChild(wrap);
       $('#swap', wrap).onclick = () => go(isLogin ? 'register' : 'login');
