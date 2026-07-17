@@ -16,16 +16,16 @@
   --border-strong: rgba(255,255,255,.14);
   --text: #eef2ee;
   --muted: #9aa79c;
-  --accent: #16a15a;        /* Kenya green — the one accent (M-Pesa country) */
-  --accent-2: #1bb567;
-  --accent-soft: rgba(22,161,90,.16);
+  --accent: #19b862;        /* vivid M-Pesa green — Kenya's color of money */
+  --accent-2: #22d174;
+  --accent-soft: rgba(25,184,98,.2);
   --ok: #3dd68c;
-  --danger: #d43a3f;        /* flag red, reserved for danger */
-  --warn: #d9a520;
+  --danger: #d21034;        /* Kenya flag red */
+  --warn: #f2b035;
   --info: #58a6ff;
-  --amber: #e0a458;         /* savanna dawn */
-  /* hero headline gradient: mist white > savanna green > dawn amber */
-  --grad: linear-gradient(96deg, #ffffff 0%, #cfe9d6 48%, #ecc894 100%);
+  --amber: #ffb35c;         /* Mara sunset gold */
+  /* hero headline gradient: white > bright green > gold > sunset orange */
+  --grad: linear-gradient(96deg, #ffffff 0%, #8df0b6 32%, #ffd469 66%, #ff9d5e 100%);
   --radius: 16px;
   --shadow-card: 0 1px 0 rgba(255,255,255,.04) inset, 0 20px 50px rgba(0,0,0,.35);
   --shadow-float: 0 30px 80px rgba(0,0,0,.55);
@@ -56,9 +56,9 @@ h1, h2, h3, .brand, .auth-brand, .auth-tagline {
     linear-gradient(180deg, #101711 0%, #0d120e 55%, #0a0f0b 100%);
 }
 .aurora span { position: absolute; display: block; border-radius: 50%; filter: blur(90px); opacity: .5; }
-.aurora .a1 { width: 42vw; height: 42vw; left: -8vw; top: -14vw; background: radial-gradient(circle, rgba(22,161,90,.26), transparent 65%); }
-.aurora .a2 { width: 30vw; height: 30vw; right: -6vw; top: 2vh;  background: radial-gradient(circle, rgba(224,164,88,.14), transparent 65%); }
-.aurora .a3 { width: 38vw; height: 38vw; left: 24vw; bottom: -24vw; background: radial-gradient(circle, rgba(22,161,90,.12), transparent 65%); }
+.aurora .a1 { width: 42vw; height: 42vw; left: -8vw; top: -14vw; background: radial-gradient(circle, rgba(34,209,116,.34), transparent 65%); }
+.aurora .a2 { width: 30vw; height: 30vw; right: -6vw; top: 2vh;  background: radial-gradient(circle, rgba(255,179,92,.22), transparent 65%); }
+.aurora .a3 { width: 38vw; height: 38vw; left: 24vw; bottom: -24vw; background: radial-gradient(circle, rgba(34,209,116,.18), transparent 65%); }
 .aurora .a4 { display: none; }
 .aurora-grid {
   position: absolute; inset: 0;
@@ -96,8 +96,8 @@ h1, h2, h3, .brand, .auth-brand, .auth-tagline {
 .topbar::after {
   content: ""; position: absolute; left: 0; right: 0; bottom: -1px; height: 2px;
   background: linear-gradient(90deg,
-    #000 0 31%, #fff 31% 34.5%, #c8102e 34.5% 65.5%, #fff 65.5% 69%, #007a33 69% 100%);
-  opacity: .8;
+    #000 0 31%, #fff 31% 34.5%, #d21034 34.5% 65.5%, #fff 65.5% 69%, #0faf54 69% 100%);
+  opacity: 1;
 }
 .brand { font-weight: 640; font-size: 18px; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; letter-spacing: .01em; }
 .brand span { color: var(--muted); font-weight: 560; }
@@ -121,14 +121,31 @@ h1, h2, h3, .brand, .auth-brand, .auth-tagline {
 /* Kenyan savanna dawn — cinematic, photographic feel built from light alone */
 body.auth-mode {
   background:
-    radial-gradient(64% 34% at 50% 60%, rgba(255,214,150,.28), rgba(255,214,150,0) 72%),
-    radial-gradient(120% 46% at 50% 112%, rgba(4,7,5,.92), transparent 62%),
+    radial-gradient(70% 38% at 50% 62%, rgba(255,196,110,.42), rgba(255,170,90,0) 72%),
+    radial-gradient(120% 46% at 50% 112%, rgba(4,7,5,.9), transparent 62%),
     linear-gradient(180deg,
-      #0a100c 0%, #0f2016 26%, #1c3a28 44%,
-      #4f5c39 58%, #b98549 66%, #6b4a28 72%,
-      #17130c 80%, #0a0d0a 100%);
+      #061109 0%, #0b2a17 20%, #10502b 38%,
+      #6d7a2e 52%, #f0a03c 62%, #e2622d 68%, #8e3417 74%,
+      #170e08 82%, #0a0c09 100%);
   background-attachment: fixed;
 }
+/* the sun — a warm disc breathing slowly on the horizon */
+body.auth-mode::before {
+  content: ""; position: fixed; left: 50%; top: 58%;
+  width: 46vmin; height: 46vmin; transform: translate(-50%, -50%);
+  z-index: -1; pointer-events: none; border-radius: 50%;
+  background: radial-gradient(circle,
+    rgba(255,240,200,.85) 0 7%,
+    rgba(255,196,110,.45) 18%,
+    rgba(255,160,80,.18) 38%,
+    transparent 62%);
+  animation: sunBreathe 9s ease-in-out infinite;
+}
+@keyframes sunBreathe {
+  0%, 100% { opacity: .85; transform: translate(-50%, -50%) scale(1); }
+  50%      { opacity: 1;   transform: translate(-50%, -50%) scale(1.06); }
+}
+@media (prefers-reduced-motion: reduce) { body.auth-mode::before { animation: none; } }
 /* acacia + hills silhouette on the horizon */
 body.auth-mode::after {
   content: ""; position: fixed; left: 0; right: 0; bottom: 0; height: 42vh;
@@ -181,10 +198,14 @@ body.auth-mode .view { max-width: none; margin: 0; padding: 0; display: block; m
 
 .auth-pay { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; color: rgba(238,242,238,.75); font-size: 13px; }
 .pay-chip {
-  font-weight: 600; font-size: 12px; color: #fff;
-  background: rgba(0,0,0,.30); border: 1px solid rgba(255,255,255,.22);
+  font-weight: 640; font-size: 12px; color: #fff;
+  background: rgba(0,0,0,.35); border: 1px solid rgba(255,255,255,.22);
   padding: 5px 13px; border-radius: 999px;
 }
+/* each rail wears its own color — M-Pesa green, PayPal blue, Visa gold */
+.auth-pay .pay-chip:nth-of-type(1) { border-color: rgba(34,209,116,.65); box-shadow: 0 0 14px rgba(34,209,116,.3); color: #9df5c3; }
+.auth-pay .pay-chip:nth-of-type(2) { border-color: rgba(96,165,250,.6);  box-shadow: 0 0 14px rgba(96,165,250,.25); color: #bcd9ff; }
+.auth-pay .pay-chip:nth-of-type(3) { border-color: rgba(255,196,90,.6);  box-shadow: 0 0 14px rgba(255,196,90,.25);  color: #ffe1a6; }
 
 /* Mercury-style bottom disclaimer pill */
 .hero-disclaimer {
@@ -210,10 +231,10 @@ body.auth-mode .view { max-width: none; margin: 0; padding: 0; display: block; m
 }
 /* Kenya flag detail — black · white · red · white · green */
 .kenya-line {
-  display: block; width: 58px; height: 4px; border-radius: 2px; margin: 0 auto 16px;
+  display: block; width: 66px; height: 5px; border-radius: 3px; margin: 0 auto 16px;
   background: linear-gradient(90deg,
-    #000 0 29%, #fff 29% 35%, #c8102e 35% 65%, #fff 65% 71%, #007a33 71% 100%);
-  box-shadow: 0 1px 10px rgba(0,0,0,.45);
+    #000 0 29%, #fff 29% 35%, #d21034 35% 65%, #fff 65% 71%, #0faf54 71% 100%);
+  box-shadow: 0 0 14px rgba(210,16,52,.35), 0 0 14px rgba(15,175,84,.35);
 }
 /* a single top highlight instead of rotating beams */
 .auth-form-inner::before {
@@ -267,12 +288,17 @@ input:-webkit-autofill:active, input:autofill {
 .eh-item span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 
 .auth-submit {
-  width: 100%; margin-top: 22px; padding: 14px; font-size: 15px; font-weight: 620;
+  width: 100%; margin-top: 22px; padding: 14px; font-size: 15px; font-weight: 640;
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  background: var(--accent); border-radius: 999px;
-  box-shadow: 0 10px 26px rgba(22,161,90,.35);
+  background: linear-gradient(120deg, #22d174, #12a355 55%, #0d8a47);
+  background-size: 150% 150%;
+  border-radius: 999px;
+  box-shadow: 0 12px 32px rgba(30,200,105,.45), inset 0 1px 0 rgba(255,255,255,.25);
 }
-.auth-submit:hover { background: var(--accent-2); transform: translateY(-1px); box-shadow: 0 14px 32px rgba(22,161,90,.42); }
+.auth-submit:hover {
+  background-position: 100% 0; transform: translateY(-1px);
+  box-shadow: 0 16px 40px rgba(34,209,116,.55), inset 0 1px 0 rgba(255,255,255,.3);
+}
 .auth-submit .arr { transition: transform .15s; }
 .auth-submit:hover .arr { transform: translateX(3px); }
 
@@ -300,10 +326,20 @@ input:-webkit-autofill:active, input:autofill {
   box-shadow: var(--shadow-card);
   transition: border-color .18s ease, transform .18s ease;
 }
-.card:hover { border-color: var(--border-strong); }
+.card:hover {
+  border-color: rgba(34,209,116,.4);
+  box-shadow: 0 1px 0 rgba(255,255,255,.04) inset, 0 22px 56px rgba(0,0,0,.42), 0 0 24px rgba(34,209,116,.12);
+}
 .card + .card { margin-top: 16px; }
 
-h1 { font-size: 27px; margin: 0 0 6px; color: var(--text); }
+/* Headings carry the sunrise: white → green → gold */
+h1 {
+  font-size: 27px; margin: 0 0 6px;
+  background: linear-gradient(100deg, #ffffff 0%, #a9edc5 55%, #ffd88a 100%);
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.auth-form-inner h1 { background: none; -webkit-text-fill-color: #fff; color: #fff; }
 h2 { font-size: 17px; margin: 0 0 14px; font-weight: 640; }
 .sub { color: var(--muted); margin: 0 0 22px; }
 
@@ -348,16 +384,26 @@ input:focus, select:focus, textarea:focus {
 }
 textarea { resize: vertical; min-height: 72px; }
 
-/* Buttons — pill, single accent, no rainbow */
+/* Buttons — green-gold energy, pill shaped, with a light sweep */
 button {
   cursor: pointer; border: none; border-radius: 999px;
   padding: 10px 20px; font-size: 14px; font-weight: 600;
-  background: var(--accent); color: #fff;
-  box-shadow: 0 8px 20px rgba(22,161,90,.28);
-  transition: background .15s, box-shadow .18s, transform .14s;
+  background: linear-gradient(120deg, #22d174, #12a355 60%, #0d8a47);
+  background-size: 150% 150%;
+  color: #fff;
+  position: relative; overflow: hidden;
+  box-shadow: 0 8px 22px rgba(30,200,105,.35), inset 0 1px 0 rgba(255,255,255,.22);
+  transition: background-position .3s, box-shadow .18s, transform .14s;
 }
-button:hover { background: var(--accent-2); }
-button:not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 12px 26px rgba(22,161,90,.35); }
+button:not(.ghost):not(.danger):not(.warn)::after {
+  content: ""; position: absolute; top: 0; left: 0; width: 40%; height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.4), transparent);
+  transform: translateX(-130%);
+}
+button:not(.ghost):not(.danger):not(.warn):hover::after { animation: shimmer .9s ease; }
+@keyframes shimmer { to { transform: translateX(260%); } }
+button:hover { background-position: 100% 0; }
+button:not(:disabled):hover { transform: translateY(-1px); box-shadow: 0 12px 30px rgba(34,209,116,.45), inset 0 1px 0 rgba(255,255,255,.25); }
 button:not(:disabled):active { transform: translateY(0) scale(.99); }
 button:disabled { opacity: .5; cursor: not-allowed; box-shadow: none; }
 button.ghost { background: transparent; color: var(--text); border: 1px solid var(--border-strong); box-shadow: none; }
