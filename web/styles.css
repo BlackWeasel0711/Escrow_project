@@ -213,9 +213,10 @@ body.auth-mode .view { max-width: none; margin: 0; padding: 0; display: block; m
 }
 /* each promise is an outlined card — its line glows in its flag color */
 .auth-features li {
-  display: flex; gap: 9px; align-items: center; text-align: left;
+  display: flex; flex-direction: column; gap: 6px;
+  align-items: center; justify-content: center; text-align: center;
   flex: 1 1 0; min-width: 0;
-  padding: 9px 12px;
+  padding: 12px 10px;
   border: 1px solid rgba(255,255,255,.22);
   border-radius: 14px;
   background: linear-gradient(180deg, rgba(6,10,7,.48), rgba(6,10,7,.34));
