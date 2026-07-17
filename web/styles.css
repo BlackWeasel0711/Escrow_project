@@ -208,12 +208,23 @@ body.auth-mode .view { max-width: none; margin: 0; padding: 0; display: block; m
   margin-top: 26px; display: flex; flex-direction: column; align-items: flex-start; gap: 18px;
 }
 .auth-features {
-  list-style: none; margin: 0; padding: 16px 2px;
-  display: flex; flex-wrap: wrap; justify-content: flex-start; gap: clamp(16px, 3vw, 40px);
-  border-top: 1px solid rgba(255,255,255,.16);
-  border-bottom: 1px solid rgba(255,255,255,.16);
+  list-style: none; margin: 0; padding: 0;
+  display: flex; flex-wrap: wrap; justify-content: flex-start; gap: 14px;
 }
-.auth-features li { display: flex; gap: 12px; align-items: center; text-align: left; max-width: 240px; }
+/* each promise is an outlined card — its line glows in its flag color */
+.auth-features li {
+  display: flex; gap: 12px; align-items: center; text-align: left; max-width: 260px;
+  padding: 13px 17px;
+  border: 1px solid rgba(255,255,255,.22);
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(6,10,7,.48), rgba(6,10,7,.34));
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 12px 30px rgba(0,0,0,.3), inset 0 1px 0 rgba(255,255,255,.12);
+}
+.auth-features li:nth-child(1) { border-color: rgba(52,224,140,.55);  box-shadow: 0 12px 30px rgba(0,0,0,.3), 0 0 18px rgba(52,224,140,.18), inset 0 1px 0 rgba(255,255,255,.12); }
+.auth-features li:nth-child(2) { border-color: rgba(255,110,110,.5);  box-shadow: 0 12px 30px rgba(0,0,0,.3), 0 0 18px rgba(255,110,110,.16), inset 0 1px 0 rgba(255,255,255,.12); }
+.auth-features li:nth-child(3) { border-color: rgba(255,205,105,.55); box-shadow: 0 12px 30px rgba(0,0,0,.3), 0 0 18px rgba(255,205,105,.18), inset 0 1px 0 rgba(255,255,255,.12); }
 .af-ic { flex: none; display: grid; place-items: center; }
 .af-ic .ico { width: 28px; height: 28px; filter: drop-shadow(0 3px 8px rgba(0,0,0,.55)); }
 /* each promise glows in a flag color: green money, red justice, gold reputation */
