@@ -213,10 +213,10 @@ body.auth-mode .view { max-width: none; margin: 0; padding: 0; display: block; m
 }
 /* each promise is an outlined card — its line glows in its flag color */
 .auth-features li {
-  display: flex; flex-direction: column; gap: 6px;
+  display: flex; flex-direction: column; gap: 3px;
   align-items: center; justify-content: center; text-align: center;
   flex: 1 1 0; min-width: 0;
-  padding: 12px 10px;
+  padding: 10px 10px;
   border: 1px solid rgba(255,255,255,.22);
   border-radius: 14px;
   background: linear-gradient(180deg, rgba(6,10,7,.48), rgba(6,10,7,.34));
@@ -235,8 +235,8 @@ body.auth-mode .view { max-width: none; margin: 0; padding: 0; display: block; m
 .auth-features li:nth-child(3) .af-ic .ico { filter: drop-shadow(0 0 14px rgba(255,205,105,.85)) drop-shadow(0 3px 8px rgba(0,0,0,.55)); }
 .auth-features li { transition: transform .2s; }
 .auth-features li:hover { transform: translateY(-2px); }
-.auth-features strong { display: block; font-size: 11.5px; font-weight: 640; letter-spacing: -.01em; text-shadow: 0 1px 12px rgba(0,0,0,.5); }
-.auth-features em { font-style: normal; color: rgba(238,242,238,.72); font-size: 10.5px; line-height: 1.4; }
+.auth-features strong { display: block; font-size: 13.5px; font-weight: 660; letter-spacing: -.01em; text-shadow: 0 1px 12px rgba(0,0,0,.5); margin-bottom: 1px; }
+.auth-features em { font-style: normal; color: rgba(238,242,238,.78); font-size: 12px; line-height: 1.35; }
 
 .auth-pay { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: center; color: rgba(238,242,238,.75); font-size: 13px; }
 .pay-chip {
