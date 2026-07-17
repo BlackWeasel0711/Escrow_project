@@ -43,7 +43,7 @@ body {
 }
 h1, h2, h3, .brand, .auth-brand, .auth-tagline {
   font-family: "Archivo", "Inter", system-ui, sans-serif;
-  font-weight: 640; letter-spacing: -.025em;
+  font-weight: 740; letter-spacing: -.025em;
 }
 
 /* ---------- Atmosphere (calm, misty — no hard shapes) ---------- */
@@ -131,15 +131,16 @@ body.auth-mode {
 }
 /* the sun — a warm disc breathing slowly on the horizon */
 body.auth-mode::before {
-  content: ""; position: fixed; left: 50%; top: 58%;
-  width: 46vmin; height: 46vmin; transform: translate(-50%, -50%);
+  content: ""; position: fixed; left: 50%; top: 57%;
+  width: 58vmin; height: 58vmin; transform: translate(-50%, -50%);
   z-index: -1; pointer-events: none; border-radius: 50%;
   background: radial-gradient(circle,
-    rgba(255,240,200,.85) 0 7%,
-    rgba(255,196,110,.45) 18%,
-    rgba(255,160,80,.18) 38%,
-    transparent 62%);
-  animation: sunBreathe 9s ease-in-out infinite;
+    rgba(255,246,214,.95) 0 6%,
+    rgba(255,205,120,.55) 16%,
+    rgba(255,160,80,.25) 36%,
+    rgba(255,120,60,.10) 52%,
+    transparent 64%);
+  animation: sunBreathe 8s ease-in-out infinite;
 }
 @keyframes sunBreathe {
   0%, 100% { opacity: .85; transform: translate(-50%, -50%) scale(1); }
@@ -169,16 +170,20 @@ body.auth-mode .view { max-width: none; margin: 0; padding: 0; display: block; m
 
 /* The one loud moment: huge centered headline, mist-to-dawn gradient */
 .auth-tagline {
-  font-size: clamp(38px, 5vw, 58px); line-height: 1.06;
-  margin: 26px 0 14px; font-weight: 660; text-wrap: balance;
-  background: var(--grad);
+  font-size: clamp(42px, 5.6vw, 66px); line-height: 1.04;
+  margin: 26px 0 16px; font-weight: 800; text-wrap: balance;
+  background: linear-gradient(96deg,
+    #ffffff 0%, #7bf5ae 26%, #ffd469 52%, #ff8f4d 76%, #ff5e57 100%);
+  background-size: 220% 100%;
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 2px 24px rgba(0,0,0,.35));
+  filter: drop-shadow(0 4px 30px rgba(255,170,90,.28)) drop-shadow(0 2px 18px rgba(0,0,0,.4));
+  animation: sunriseFlow 7s ease-in-out infinite alternate;
 }
+@keyframes sunriseFlow { from { background-position: 0% 0; } to { background-position: 100% 0; } }
 .auth-lead {
-  color: rgba(238,242,238,.85); font-size: 16px; margin: 0 auto;
-  max-width: 54ch; text-shadow: 0 1px 18px rgba(0,0,0,.45); text-wrap: pretty;
+  color: rgba(245,248,242,.92); font-size: 17px; margin: 0 auto;
+  max-width: 54ch; text-shadow: 0 1px 18px rgba(0,0,0,.5); text-wrap: pretty;
 }
 .auth-lead strong { color: #fff; font-weight: 620; }
 
@@ -192,7 +197,13 @@ body.auth-mode .view { max-width: none; margin: 0; padding: 0; display: block; m
 }
 .auth-features li { display: flex; gap: 12px; align-items: center; text-align: left; max-width: 240px; }
 .af-ic { flex: none; display: grid; place-items: center; }
-.af-ic .ico { width: 26px; height: 26px; filter: saturate(.9) drop-shadow(0 3px 8px rgba(0,0,0,.5)); opacity: .95; }
+.af-ic .ico { width: 28px; height: 28px; filter: drop-shadow(0 3px 8px rgba(0,0,0,.55)); }
+/* each promise glows in a flag color: green money, red justice, gold reputation */
+.auth-features li:nth-child(1) .af-ic .ico { filter: drop-shadow(0 0 14px rgba(52,224,140,.85)) drop-shadow(0 3px 8px rgba(0,0,0,.55)); }
+.auth-features li:nth-child(2) .af-ic .ico { filter: drop-shadow(0 0 14px rgba(255,96,96,.75)) drop-shadow(0 3px 8px rgba(0,0,0,.55)); }
+.auth-features li:nth-child(3) .af-ic .ico { filter: drop-shadow(0 0 14px rgba(255,205,105,.85)) drop-shadow(0 3px 8px rgba(0,0,0,.55)); }
+.auth-features li { transition: transform .2s; }
+.auth-features li:hover { transform: translateY(-2px); }
 .auth-features strong { display: block; font-size: 13.5px; font-weight: 620; letter-spacing: -.01em; text-shadow: 0 1px 12px rgba(0,0,0,.5); }
 .auth-features em { font-style: normal; color: rgba(238,242,238,.72); font-size: 12px; }
 
@@ -236,12 +247,29 @@ body.auth-mode .view { max-width: none; margin: 0; padding: 0; display: block; m
     #000 0 29%, #fff 29% 35%, #d21034 35% 65%, #fff 65% 71%, #0faf54 71% 100%);
   box-shadow: 0 0 14px rgba(210,16,52,.35), 0 0 14px rgba(15,175,84,.35);
 }
-/* a single top highlight instead of rotating beams */
+/* top highlight */
 .auth-form-inner::before {
   content: ""; position: absolute; top: 0; left: 12%; right: 12%; height: 1px;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,.35), transparent);
   pointer-events: none;
 }
+/* two symmetrical beams — one M-Pesa green, one sunset gold — circling the card */
+@property --beamAngle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+.auth-form-inner::after {
+  content: ""; position: absolute; inset: -1px; border-radius: inherit; padding: 1.8px;
+  background: conic-gradient(from var(--beamAngle),
+    transparent 0 8%, #34e08c 13%, #d9ffe6 16%, #34e08c 19%, transparent 24% 58%,
+    #ffd469 63%, #fff3d0 66%, #ffd469 69%, transparent 74% 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask-composite: exclude;
+  filter: drop-shadow(0 0 8px rgba(52,224,140,.85)) drop-shadow(0 0 8px rgba(255,212,105,.6));
+  animation: beamSpin 6s linear infinite;
+  pointer-events: none; z-index: 2;
+}
+@keyframes beamSpin { to { --beamAngle: 360deg; } }
+@media (prefers-reduced-motion: reduce) { .auth-form-inner::after { animation: none; } }
 .auth-form-inner label, .auth-form-inner .field { text-align: left; }
 .auth-form-inner h1 { font-size: 26px; font-weight: 680; letter-spacing: -.02em; color: #fff; }
 .auth-form-inner .sub { color: var(--muted); }
@@ -353,9 +381,14 @@ label {
 /* Brand shield — calm and confident (no pulsing) */
 .brand-logo {
   position: relative; display: inline-block; flex: none; line-height: 0;
-  width: clamp(52px, 4vw, 64px); height: clamp(52px, 4vw, 64px);
-  filter: drop-shadow(0 4px 14px rgba(22,161,90,.45));
+  width: clamp(56px, 4.4vw, 70px); height: clamp(56px, 4.4vw, 70px);
+  filter: drop-shadow(0 0 16px rgba(34,209,116,.8)) drop-shadow(0 0 30px rgba(255,180,90,.35));
+  animation: brandGlow 3.5s ease-in-out infinite;
   transition: transform .22s;
+}
+@keyframes brandGlow {
+  0%, 100% { filter: drop-shadow(0 0 12px rgba(34,209,116,.65)) drop-shadow(0 0 24px rgba(255,180,90,.25)); }
+  50%      { filter: drop-shadow(0 0 22px rgba(34,209,116,1)) drop-shadow(0 0 44px rgba(255,180,90,.55)); }
 }
 .brand .brand-logo { width: 34px; height: 34px; }
 .brand-logo .ico { width: 100%; height: 100%; }
