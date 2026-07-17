@@ -147,30 +147,45 @@ body.auth-mode::before {
   50%      { opacity: 1;   transform: translate(-50%, -50%) scale(1.06); }
 }
 @media (prefers-reduced-motion: reduce) { body.auth-mode::before { animation: none; } }
-/* acacia + hills silhouette on the horizon */
-body.auth-mode::after {
-  content: ""; position: fixed; left: 0; right: 0; bottom: 0; height: 42vh;
-  z-index: -1; pointer-events: none;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 360' preserveAspectRatio='xMidYMax slice'%3E%3Cpath d='M0 258 C 240 238 430 252 660 246 C 920 238 1150 254 1440 242 L1440 360 L0 360 Z' fill='%230a130c'/%3E%3Cpath d='M0 302 C 320 286 560 298 820 294 C 1080 290 1260 300 1440 294 L1440 360 L0 360 Z' fill='%23070d08'/%3E%3Cellipse cx='1010' cy='196' rx='96' ry='19' fill='%23070d08'/%3E%3Cellipse cx='946' cy='209' rx='50' ry='12' fill='%23070d08'/%3E%3Cpath d='M1006 294 L1010 238 M1010 238 L990 212 M1010 238 L1032 208 M1002 256 L976 228 M1014 252 L1046 222' stroke='%23070d08' stroke-width='7' stroke-linecap='round' fill='none'/%3E%3Cellipse cx='262' cy='250' rx='46' ry='10' fill='%23070d08'/%3E%3Cpath d='M260 298 L262 260 M262 260 L248 250 M262 260 L278 248' stroke='%23070d08' stroke-width='5' stroke-linecap='round' fill='none'/%3E%3C/svg%3E") bottom center / cover no-repeat;
-}
 body.auth-mode .topbar { display: none; }
-body.auth-mode .aurora, body.auth-mode .worldmap, body.auth-mode .bg-overlay { display: none; }
+body.auth-mode .aurora, body.auth-mode .bg-overlay { display: none; }
+/* the world, glowing over the sunset — every continent visible */
+body.auth-mode .worldmap {
+  display: block; opacity: .4; z-index: -1;
+  background: url('assets/worldmap.svg') center 36% / min(118%, 1500px) no-repeat;
+  filter: drop-shadow(0 0 22px rgba(255,220,150,.25)) saturate(1.05);
+  animation: mapFloat 50s ease-in-out infinite alternate;
+}
+@keyframes mapFloat {
+  from { transform: scale(1) translate(0, 0); }
+  to   { transform: scale(1.06) translate(-1.4%, 1%); }
+}
+@media (prefers-reduced-motion: reduce) { body.auth-mode .worldmap { animation: none; } }
 body.auth-mode .view { max-width: none; margin: 0; padding: 0; display: block; min-height: 100vh; }
 
-/* Centered stage, Mercury-style */
+/* Split stage: hero text left · form right · promises bottom-left */
 .auth-shell {
-  min-height: 100vh; width: 100%; max-width: none;
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  padding: 48px 20px 44px;
+  min-height: 100vh; width: 100%; max-width: 1220px; margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  grid-template-areas:
+    "hero form"
+    "below form";
+  align-items: center; column-gap: clamp(28px, 5vw, 72px); row-gap: 8px;
+  padding: 48px clamp(20px, 4vw, 48px) 44px;
   background: transparent; border: none; border-radius: 0; box-shadow: none;
 }
-.auth-hero-center { text-align: center; display: flex; flex-direction: column; align-items: center; max-width: 780px; }
+.auth-hero-center {
+  grid-area: hero; align-self: end;
+  text-align: left; display: flex; flex-direction: column; align-items: flex-start;
+  max-width: 620px;
+}
 .auth-brand { font-size: 19px; display: inline-flex; align-items: center; gap: 10px; font-weight: 640; }
 .auth-brand span { color: rgba(238,242,238,.75); font-weight: 560; }
 
 /* The one loud moment: huge centered headline, mist-to-dawn gradient */
 .auth-tagline {
-  font-size: clamp(42px, 5.6vw, 66px); line-height: 1.04;
+  font-size: clamp(36px, 4.2vw, 56px); line-height: 1.05;
   margin: 26px 0 16px; font-weight: 800; text-wrap: balance;
   background: linear-gradient(96deg,
     #ffffff 0%, #7bf5ae 26%, #ffd469 52%, #ff8f4d 76%, #ff5e57 100%);
@@ -182,16 +197,19 @@ body.auth-mode .view { max-width: none; margin: 0; padding: 0; display: block; m
 }
 @keyframes sunriseFlow { from { background-position: 0% 0; } to { background-position: 100% 0; } }
 .auth-lead {
-  color: rgba(245,248,242,.92); font-size: 17px; margin: 0 auto;
-  max-width: 54ch; text-shadow: 0 1px 18px rgba(0,0,0,.5); text-wrap: pretty;
+  color: rgba(245,248,242,.92); font-size: 17px; margin: 0;
+  max-width: 52ch; text-shadow: 0 1px 18px rgba(0,0,0,.5); text-wrap: pretty;
 }
 .auth-lead strong { color: #fff; font-weight: 620; }
 
-/* Below-the-form: feature row, pay chips, disclaimer — all centered */
-.auth-below { margin-top: 36px; display: flex; flex-direction: column; align-items: center; gap: 20px; }
+/* Bottom-left: feature row, pay chips, disclaimer */
+.auth-below {
+  grid-area: below; align-self: start;
+  margin-top: 26px; display: flex; flex-direction: column; align-items: flex-start; gap: 18px;
+}
 .auth-features {
-  list-style: none; margin: 0; padding: 16px 10px;
-  display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(18px, 4vw, 48px);
+  list-style: none; margin: 0; padding: 16px 2px;
+  display: flex; flex-wrap: wrap; justify-content: flex-start; gap: clamp(16px, 3vw, 40px);
   border-top: 1px solid rgba(255,255,255,.16);
   border-bottom: 1px solid rgba(255,255,255,.16);
 }
@@ -226,8 +244,8 @@ body.auth-mode .view { max-width: none; margin: 0; padding: 0; display: block; m
   border-radius: 999px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
 }
 
-/* Floating glass form, centered under the headline */
-.auth-form { display: flex; align-items: center; justify-content: center; padding: 30px 0 0; width: 100%; background: transparent; }
+/* Floating glass form — right column */
+.auth-form { grid-area: form; display: flex; align-items: center; justify-content: center; padding: 0; width: 100%; background: transparent; }
 .auth-form-inner {
   position: relative;
   width: min(432px, 100%);
@@ -334,10 +352,17 @@ input:-webkit-autofill:active, input:autofill {
 .auth-trust { margin-top: 24px; color: var(--muted); font-size: 12px; opacity: .85; }
 .field-hint { margin: -6px 0 12px; color: var(--muted); font-size: 12px; text-align: left; }
 
-@media (max-width: 860px) {
-  .auth-shell { padding: 36px 16px 40px; }
+@media (max-width: 940px) {
+  .auth-shell {
+    grid-template-columns: 1fr;
+    grid-template-areas: "hero" "form" "below";
+    row-gap: 24px; padding: 36px 16px 40px; align-items: start;
+  }
+  .auth-hero-center { align-self: start; text-align: center; align-items: center; margin: 0 auto; }
+  .auth-lead { margin: 0 auto; }
+  .auth-below { align-items: center; margin: 0 auto; }
+  .auth-features { justify-content: center; flex-direction: column; gap: 12px; align-items: flex-start; }
   .auth-tagline { font-size: clamp(30px, 8.5vw, 40px); }
-  .auth-features { flex-direction: column; gap: 12px; align-items: flex-start; }
   .auth-form-inner { padding: 28px 22px 24px; }
 }
 
