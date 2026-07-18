@@ -820,3 +820,11 @@ body.intro-open { overflow: hidden; }
   100% { opacity: 0;   filter: blur(1px);  transform: translate(-50%,-50%) rotate(var(--ang)) translateX(80vmin) scale(1.5); }
 }
 @media (prefers-reduced-motion: reduce) { .amb { animation: none !important; opacity: .3; filter: blur(3px); } }
+/* Earth backdrop: show the WHOLE picture, comfortably fitted (not cropped/zoomed) */
+.intro-earth {
+  background-size: contain !important;
+  background-position: center center !important;
+  background-color: #071634;
+}
+/* remove the on-screen hint / counter / skip overlay */
+.intro-ui { display: none !important; }
