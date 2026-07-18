@@ -828,3 +828,7 @@ body.intro-open { overflow: hidden; }
 }
 /* remove the on-screen hint / counter / skip overlay */
 .intro-ui { display: none !important; }
+/* remove the pictures surrounding main.png (orbit ring + blurry train) */
+.intro-orbit, .intro-train { display: none !important; }
+/* Earth backdrop a bit smaller, fully visible, centred */
+.intro-earth { inset: 5vh 7vw !important; }
