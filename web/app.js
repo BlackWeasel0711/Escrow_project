@@ -202,34 +202,22 @@
           </div>
         </div>`);
       view.appendChild(wrap);
-      const gearLayer = $('.auth-rise', wrap);
-      if (gearLayer) {
-        const gears = [
-          { x: 50, y: 50, r: 19, n: 8, dur: 30, dir: 1 },
-          { x: 25, y: 66, r: 13, n: 7, dur: 21, dir: -1 },
-          { x: 73, y: 33, r: 15, n: 7, dur: 24, dir: 1 },
-          { x: 82, y: 71, r: 11, n: 6, dur: 17, dir: -1 },
-          { x: 13, y: 30, r: 10, n: 6, dur: 15, dir: 1 },
-        ];
-        gears.forEach((gg, gi) => {
-          const gear = document.createElement('div');
-          gear.className = 'gear';
-          gear.style.left = gg.x + '%';
-          gear.style.top = gg.y + '%';
-          gear.style.setProperty('--r', gg.r + 'vmin');
-          gear.style.setProperty('--tw', (gg.r * 0.62) + 'vmin');
-          gear.style.animation = 'gearSpin ' + gg.dur + 's linear infinite' + (gg.dir < 0 ? ' reverse' : '');
-          for (let k = 0; k < gg.n; k++) {
-            const tooth = document.createElement('div');
-            tooth.className = 'gear-tooth';
-            tooth.style.setProperty('--a', (k * 360 / gg.n) + 'deg');
-            const im = document.createElement('img');
-            im.src = 'pictures/' + (((gi * 3 + k) % 10) + 1) + '.png';
-            tooth.appendChild(im);
-            gear.appendChild(tooth);
-          }
-          gearLayer.appendChild(gear);
-        });
+      const riseLayer = $('.auth-rise', wrap);
+      if (riseLayer) {
+        for (let k = 0; k < 12; k++) {
+          const rim = document.createElement('img');
+          rim.src = 'pictures/' + ((k % 10) + 1) + '.png';
+          rim.className = 'rise-img';
+          const setDir = () => {
+            rim.style.setProperty('--ang', Math.round(Math.random() * 360) + 'deg');
+            rim.style.setProperty('--dist', (26 + Math.random() * 24).toFixed(1) + 'vmin');
+          };
+          setDir();
+          rim.style.animationDelay = (k * 0.5).toFixed(2) + 's';
+          rim.style.animationDuration = (5 + Math.random() * 3).toFixed(1) + 's';
+          rim.addEventListener('animationiteration', setDir);
+          riseLayer.appendChild(rim);
+        }
       }
       $('#swap', wrap).onclick = () => go(isLogin ? 'register' : 'login');
 

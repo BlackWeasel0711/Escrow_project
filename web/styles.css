@@ -713,3 +713,11 @@ body.auth-mode .worldmap { display: none !important; }
   filter: brightness(1.08) saturate(1.05);
 }
 @media (prefers-reduced-motion: reduce) { .gear { animation: none !important; } }
+/* continuous rise, new random direction each cycle (no pause) */
+.gear, .gear-tooth { display: none !important; }   /* retire the gears */
+@keyframes riseOut {
+  0%   { opacity: 0; filter: blur(16px) brightness(.5);  transform: translate(-50%,-50%) rotate(var(--ang)) translateY(0)                        rotate(calc(-1 * var(--ang))) scale(.16); }
+  22%  { opacity: 1; }
+  55%  { opacity: 1; filter: blur(0) brightness(1.2);    transform: translate(-50%,-50%) rotate(var(--ang)) translateY(calc(-1 * var(--dist)))    rotate(calc(-1 * var(--ang))) scale(1); }
+  100% { opacity: 0; filter: blur(3px) brightness(1);    transform: translate(-50%,-50%) rotate(var(--ang)) translateY(calc(-1.25 * var(--dist))) rotate(calc(-1 * var(--ang))) scale(1.1); }
+}
