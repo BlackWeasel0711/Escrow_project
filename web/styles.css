@@ -844,3 +844,5 @@ body.intro-open { overflow: hidden; }
   100% { opacity: 0;   filter: blur(1px);  transform: translate(-50%,-50%) translate(var(--dx, 0), -38vmin) scale(1.5); }
 }
 @media (prefers-reduced-motion: reduce) { .amb { animation: none !important; opacity: .3; } }
+/* pictures rush in blurry from a distance, all around the centre (auto-plays) */
+.amb { animation-name: approach !important; }

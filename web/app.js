@@ -667,7 +667,7 @@
       const im = document.createElement('img');
       im.src = pics[k % pics.length];
       im.className = 'amb';
-      im.style.setProperty('--dx', ((k % 2 ? 1 : -1) * (20 + (k % 5) * 6)) + 'vmin');
+      im.style.setProperty('--ang', (k * 22.5 + (k % 3) * 11) + 'deg');
       im.style.animationDelay = (k * 0.5).toFixed(2) + 's';
       im.style.animationDuration = (7 + (k % 4)) + 's';
       train.appendChild(im);
@@ -699,7 +699,7 @@
     }
     overlay.addEventListener('click', (e) => {
       if (e.target.closest('.intro-skip')) { finish(); return; }
-      next();
+      finish();
     });
   }
 
