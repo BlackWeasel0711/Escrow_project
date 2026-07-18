@@ -152,6 +152,8 @@
       view.innerHTML = '';
       const wrap = el(`
         <div class="auth-shell">
+          <div class="auth-earth" aria-hidden="true"><span class="ae-globe"></span><span class="ae-clouds"></span><span class="ae-atmo"></span></div>
+          <div class="auth-rise" aria-hidden="true"></div>
           <div class="auth-hero-center">
             <div class="auth-brand">${brandLogo()} SafePay <span>Escrow</span></div>
             <h2 class="auth-tagline">Karibu! Nunua na uuze bila wasiwasi.</h2>
@@ -200,6 +202,19 @@
           </div>
         </div>`);
       view.appendChild(wrap);
+      const riseLayer = $('.auth-rise', wrap);
+      if (riseLayer) {
+        for (let k = 0; k < 12; k++) {
+          const rim = document.createElement('img');
+          rim.src = 'pictures/' + ((k % 10) + 1) + '.png';
+          rim.className = 'rise-img';
+          rim.style.setProperty('--ang', Math.round(Math.random() * 360) + 'deg');
+          rim.style.setProperty('--dist', (28 + Math.random() * 20).toFixed(1) + 'vmin');
+          rim.style.animationDelay = (k * 0.55).toFixed(2) + 's';
+          rim.style.animationDuration = (6 + Math.random() * 3).toFixed(1) + 's';
+          riseLayer.appendChild(rim);
+        }
+      }
       $('#swap', wrap).onclick = () => go(isLogin ? 'register' : 'login');
 
       // Custom, theme-matched email history — shows addresses used on this app.
