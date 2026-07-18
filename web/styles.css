@@ -759,3 +759,17 @@ body.auth-mode {
     linear-gradient(180deg, #081524 0%, #0f2740 46%, #14324e 100%) !important;
 }
 body.auth-mode .worldmap { display: none !important; }
+/* ============================================================
+   LOGIN — clean tinted WORLD MAP instead of the globe (icy backdrop kept)
+   ============================================================ */
+body.auth-mode .auth-earth { display: none !important; }
+body.auth-mode .worldmap {
+  display: block !important;
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background: linear-gradient(118deg, #4ff0ad 0%, #35cfe8 46%, #74b7ff 100%) !important;
+  -webkit-mask: url('assets/worldmap.svg') center 46% / min(96%, 1520px) no-repeat;
+          mask: url('assets/worldmap.svg') center 46% / min(96%, 1520px) no-repeat;
+  opacity: .9;
+  filter: drop-shadow(0 0 22px rgba(90,215,255,.5)) drop-shadow(0 0 40px rgba(70,240,170,.25));
+}
+@media (prefers-reduced-motion: reduce) { body.auth-mode .worldmap { animation: none !important; } }
