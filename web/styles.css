@@ -790,7 +790,7 @@ body.intro-open { overflow: hidden; }
   position: absolute; inset: 0; left: 0; top: 0; width: auto; height: auto;
   transform: none; border-radius: 0;
   background:
-    url('pictures/earth.png') center 44% / cover no-repeat,
+    url('pictures/background.png') center 44% / cover no-repeat,
     radial-gradient(circle at 50% 46%, #57aef0 0%, #2f8fe0 40%, #1f66c0 66%, #0f3c82 86%, #071634 100%);
   filter: brightness(1.06) saturate(1.08);
 }
@@ -803,3 +803,20 @@ body.intro-open { overflow: hidden; }
 }
 .orbit-img { filter: brightness(1.2) saturate(1.1) contrast(1.03) !important; }
 .hero { filter: brightness(1.12) saturate(1.06); }
+/* blurry "train from a distance" ambient (behind the clear orbit ring) */
+.intro-train { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+.amb {
+  position: absolute; left: 50%; top: 50%;
+  width: 150px; height: auto; border-radius: 12px; object-fit: cover;
+  opacity: 0; transform-origin: center;
+  box-shadow: 0 14px 40px rgba(0,0,0,.45);
+  animation-name: approach; animation-timing-function: cubic-bezier(.4,.05,.7,.6);
+  animation-iteration-count: infinite;
+}
+@keyframes approach {
+  0%   { opacity: 0;   filter: blur(14px); transform: translate(-50%,-50%) rotate(var(--ang)) translateX(0)     scale(.06); }
+  16%  { opacity: .5; }
+  70%  { opacity: .45; filter: blur(3px);  }
+  100% { opacity: 0;   filter: blur(1px);  transform: translate(-50%,-50%) rotate(var(--ang)) translateX(80vmin) scale(1.5); }
+}
+@media (prefers-reduced-motion: reduce) { .amb { animation: none !important; opacity: .3; filter: blur(3px); } }

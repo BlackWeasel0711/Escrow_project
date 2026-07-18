@@ -635,6 +635,7 @@
         <div class="intro-sky"></div>
         <div class="intro-earth"><span class="earth-globe"></span><span class="earth-clouds"></span><span class="earth-atmo"></span></div>
         <div class="intro-stage">
+          <div class="intro-train"></div>
           <div class="intro-orbit"></div>
           <div class="intro-ring"><img class="intro-main" alt="" src="pictures/main.png" /></div>
         </div>
@@ -660,6 +661,17 @@
       orbit.appendChild(slot);
     }
 
+    // Blurry pictures rushing in from the distance, like an approaching train.
+    const train = $('.intro-train', overlay);
+    for (let k = 0; k < 16; k++) {
+      const im = document.createElement('img');
+      im.src = pics[k % pics.length];
+      im.className = 'amb';
+      im.style.setProperty('--ang', (k * 22.5 + (k % 3) * 9) + 'deg');
+      im.style.animationDelay = (k * 0.5).toFixed(2) + 's';
+      im.style.animationDuration = (7 + (k % 4)) + 's';
+      train.appendChild(im);
+    }
     const stage = $('.intro-stage', overlay);
     const countB = $('.intro-count b', overlay);
     let i = 0, ending = false;
