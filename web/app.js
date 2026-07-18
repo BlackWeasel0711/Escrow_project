@@ -627,10 +627,76 @@
   function stopBellPolling() { if (bellTimer) { clearInterval(bellTimer); bellTimer = null; } }
   document.addEventListener('click', () => { const p = document.getElementById('bellPanel'); if (p) p.hidden = true; });
 
+  // ---------- intro splash (plays once when the project opens) ----------
+  function runIntro() {
+    const pics = Array.from({ length: 10 }, (_, i) => `pictures/${i + 1}.png`);
+    const overlay = el(`
+      <div id="intro" class="intro">
+        <div class="intro-sky"></div>
+        <div class="intro-earth"><span class="earth-globe"></span><span class="earth-clouds"></span><span class="earth-atmo"></span></div>
+        <div class="intro-stage">
+          <div class="intro-train"></div>
+          <div class="intro-ring"><img class="intro-main" alt="" src="pictures/main.png" /></div>
+        </div>
+        <div class="intro-ui">
+          <div class="intro-count"><b>0</b> / 10</div>
+          <div class="intro-hint">Click anywhere to continue <span>›</span></div>
+          <button class="intro-skip" type="button">Skip intro</button>
+        </div>
+      </div>`);
+    document.body.appendChild(overlay);
+    document.body.classList.add('intro-open');
+
+    // Ambient "train coming from a distance": images stream out from the centre,
+    // starting tiny + blurry (far away) and growing as they rush past the viewer.
+    const train = $('.intro-train', overlay);
+    const AMB = 16;
+    for (let k = 0; k < AMB; k++) {
+      const im = document.createElement('img');
+      im.src = pics[k % pics.length];
+      im.className = 'amb';
+      im.style.setProperty('--ang', (k * (360 / AMB) + (k % 3) * 11) + 'deg');
+      im.style.animationDelay = (k * 0.5).toFixed(2) + 's';
+      im.style.animationDuration = (7 + (k % 4)) + 's';
+      train.appendChild(im);
+    }
+
+    const stage = $('.intro-stage', overlay);
+    const countB = $('.intro-count b', overlay);
+    let i = 0, ending = false;
+
+    // Each click brings the next picture rushing in — big and clear — then past.
+    function reveal(src) {
+      const im = document.createElement('img');
+      im.src = src; im.className = 'hero';
+      im.style.setProperty('--ang', (i * 67 % 360) + 'deg');
+      stage.appendChild(im);
+      setTimeout(() => im.remove(), 2300);
+    }
+    function next() {
+      if (ending) return;
+      if (i >= pics.length) { finish(); return; }
+      reveal(pics[i]);
+      i++;
+      countB.textContent = String(i);
+      if (i >= pics.length) $('.intro-hint', overlay).innerHTML = 'Click to enter <span>›</span>';
+    }
+    function finish() {
+      if (ending) return; ending = true;
+      overlay.classList.add('done');
+      setTimeout(() => { overlay.remove(); document.body.classList.remove('intro-open'); }, 750);
+    }
+    overlay.addEventListener('click', (e) => {
+      if (e.target.closest('.intro-skip')) { finish(); return; }
+      next();
+    });
+  }
+
   // ---------- boot ----------
   $('.brand').innerHTML = `${brandLogo()} SafePay <span>Escrow</span>`;
   $('.brand').onclick = () => go(session.isAuthed ? 'dashboard' : 'login');
   window.addEventListener('hashchange', render);
   renderNav();
   render();
+  runIntro();
 })();
