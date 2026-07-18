@@ -775,3 +775,5 @@ body.auth-mode .worldmap {
 @media (prefers-reduced-motion: reduce) { body.auth-mode .worldmap { animation: none !important; } }
 /* pictures appear only once (first step), a bit bigger, then settle away */
 .rise-img { width: 150px !important; animation-iteration-count: 1 !important; }
+/* pictures repeat continuously (never stop) — still only on the login page, kept bigger */
+.rise-img { animation-iteration-count: infinite !important; width: 150px !important; }
