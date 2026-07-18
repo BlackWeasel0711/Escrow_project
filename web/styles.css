@@ -777,3 +777,14 @@ body.auth-mode .worldmap {
 .rise-img { width: 150px !important; animation-iteration-count: 1 !important; }
 /* pictures repeat continuously (never stop) — still only on the login page, kept bigger */
 .rise-img { animation-iteration-count: infinite !important; width: 150px !important; }
+/* re-assert the world map at highest priority (last rule wins) */
+body.auth-mode .auth-earth { display: none !important; }
+body.auth-mode .worldmap {
+  display: block !important;
+  position: fixed !important; inset: 0 !important; z-index: 0 !important; pointer-events: none !important;
+  background: linear-gradient(118deg, #4ff0ad 0%, #35cfe8 46%, #74b7ff 100%) !important;
+  -webkit-mask: url('assets/worldmap.svg') center 46% / min(96%, 1520px) no-repeat !important;
+          mask: url('assets/worldmap.svg') center 46% / min(96%, 1520px) no-repeat !important;
+  opacity: .95 !important;
+  filter: drop-shadow(0 0 22px rgba(90,215,255,.55)) drop-shadow(0 0 44px rgba(70,240,170,.3)) !important;
+}
