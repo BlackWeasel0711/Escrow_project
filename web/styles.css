@@ -781,3 +781,25 @@ body.intro-open { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) {
   .intro-ring, .intro-orbit, .orbit-img, .earth-clouds, .intro-sky { animation: none !important; }
 }
+
+/* ============================================================
+   INTRO OVERRIDE — Earth photo as full background, lock centred
+   Drop your Earth image at  web/pictures/earth.png
+   ============================================================ */
+.intro-earth {
+  position: absolute; inset: 0; left: 0; top: 0; width: auto; height: auto;
+  transform: none; border-radius: 0;
+  background:
+    url('pictures/earth.png') center 44% / cover no-repeat,
+    radial-gradient(circle at 50% 46%, #57aef0 0%, #2f8fe0 40%, #1f66c0 66%, #0f3c82 86%, #071634 100%);
+  filter: brightness(1.06) saturate(1.08);
+}
+.intro-earth .earth-globe,
+.intro-earth .earth-clouds,
+.intro-earth .earth-atmo { display: none; }
+.intro-earth::after {
+  content: ""; position: absolute; inset: 0;
+  background: radial-gradient(circle at 50% 46%, rgba(3,10,25,0) 32%, rgba(3,10,25,.5) 100%);
+}
+.orbit-img { filter: brightness(1.2) saturate(1.1) contrast(1.03) !important; }
+.hero { filter: brightness(1.12) saturate(1.06); }
