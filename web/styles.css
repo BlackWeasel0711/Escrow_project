@@ -832,3 +832,15 @@ body.intro-open { overflow: hidden; }
 .intro-orbit, .intro-train { display: none !important; }
 /* Earth backdrop a bit smaller, fully visible, centred */
 .intro-earth { inset: 5vh 7vw !important; }
+/* --- diagonal "train from the distance" rising from the bottom of main.png --- */
+.intro-train { display: block !important; }     /* pictures visible again */
+.intro-orbit { display: none !important; }      /* ring stays removed */
+.intro-ring { width: min(56vmin, 480px) !important; height: min(56vmin, 480px) !important; }  /* centre a bit bigger */
+.amb { animation-name: rise !important; }
+@keyframes rise {
+  0%   { opacity: 0;   filter: blur(16px); transform: translate(-50%,-50%) translate(0, 30vmin) scale(.07); }
+  16%  { opacity: .6; }
+  72%  { opacity: .5;  filter: blur(2px); }
+  100% { opacity: 0;   filter: blur(1px);  transform: translate(-50%,-50%) translate(var(--dx, 0), -38vmin) scale(1.5); }
+}
+@media (prefers-reduced-motion: reduce) { .amb { animation: none !important; opacity: .3; } }
