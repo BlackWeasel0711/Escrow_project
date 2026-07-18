@@ -773,3 +773,5 @@ body.auth-mode .worldmap {
   filter: drop-shadow(0 0 22px rgba(90,215,255,.5)) drop-shadow(0 0 40px rgba(70,240,170,.25));
 }
 @media (prefers-reduced-motion: reduce) { body.auth-mode .worldmap { animation: none !important; } }
+/* pictures appear only once (first step), a bit bigger, then settle away */
+.rise-img { width: 150px !important; animation-iteration-count: 1 !important; }
