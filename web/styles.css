@@ -846,3 +846,15 @@ body.intro-open { overflow: hidden; }
 @media (prefers-reduced-motion: reduce) { .amb { animation: none !important; opacity: .3; } }
 /* pictures rush in blurry from a distance, all around the centre (auto-plays) */
 .amb { animation-name: approach !important; }
+/* ============================================================
+   LOGIN PAGE — world map removed, Earth (background.png) backdrop,
+   Kenyan warm theme kept
+   ============================================================ */
+body.auth-mode {
+  background:
+    radial-gradient(120% 76% at 50% 104%, rgba(255,150,60,.18), transparent 60%),
+    linear-gradient(rgba(6,10,8,.30), rgba(6,10,8,.58)),
+    url('pictures/background.png') center center / cover no-repeat fixed,
+    #0b100c;
+}
+body.auth-mode .worldmap { display: none !important; }
