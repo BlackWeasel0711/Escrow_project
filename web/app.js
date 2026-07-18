@@ -635,7 +635,7 @@
         <div class="intro-sky"></div>
         <div class="intro-earth"><span class="earth-globe"></span><span class="earth-clouds"></span><span class="earth-atmo"></span></div>
         <div class="intro-stage">
-          <div class="intro-train"></div>
+          <div class="intro-orbit"></div>
           <div class="intro-ring"><img class="intro-main" alt="" src="pictures/main.png" /></div>
         </div>
         <div class="intro-ui">
@@ -647,18 +647,17 @@
     document.body.appendChild(overlay);
     document.body.classList.add('intro-open');
 
-    // Ambient "train coming from a distance": images stream out from the centre,
-    // starting tiny + blurry (far away) and growing as they rush past the viewer.
-    const train = $('.intro-train', overlay);
-    const AMB = 16;
-    for (let k = 0; k < AMB; k++) {
+    // The 10 pictures sit evenly around a ring and slowly orbit the centre.
+    const orbit = $('.intro-orbit', overlay);
+    for (let k = 0; k < pics.length; k++) {
+      const slot = document.createElement('div');
+      slot.className = 'orbit-slot';
+      slot.style.setProperty('--a', (k * (360 / pics.length)) + 'deg');
       const im = document.createElement('img');
-      im.src = pics[k % pics.length];
-      im.className = 'amb';
-      im.style.setProperty('--ang', (k * (360 / AMB) + (k % 3) * 11) + 'deg');
-      im.style.animationDelay = (k * 0.5).toFixed(2) + 's';
-      im.style.animationDuration = (7 + (k % 4)) + 's';
-      train.appendChild(im);
+      im.className = 'orbit-img';
+      im.src = pics[k];
+      slot.appendChild(im);
+      orbit.appendChild(slot);
     }
 
     const stage = $('.intro-stage', overlay);

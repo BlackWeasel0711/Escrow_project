@@ -631,49 +631,50 @@ body:not(.auth-mode) .view > .row-between { justify-content: center; }
 body.intro-open { overflow: hidden; }
 .intro {
   position: fixed; inset: 0; z-index: 9999; overflow: hidden;
-  background: #01030a;
+  background: #071634;
   opacity: 1; transition: opacity .7s ease;
   cursor: pointer;
 }
 .intro.done { opacity: 0; pointer-events: none; }
 
-/* --- starfield sky --- */
+/* --- lighter starfield sky --- */
 .intro-sky {
   position: absolute; inset: -10% -10% -10% -10%;
   background:
     radial-gradient(1.4px 1.4px at 20% 30%, #fff, transparent 60%),
-    radial-gradient(1.6px 1.6px at 75% 18%, #cfe6ff, transparent 60%),
+    radial-gradient(1.6px 1.6px at 75% 18%, #eaf3ff, transparent 60%),
     radial-gradient(1.2px 1.2px at 42% 72%, #fff, transparent 60%),
     radial-gradient(1.8px 1.8px at 88% 62%, #dbeaff, transparent 60%),
     radial-gradient(1.2px 1.2px at 12% 82%, #fff, transparent 60%),
     radial-gradient(1.3px 1.3px at 62% 42%, #fff, transparent 60%),
     radial-gradient(1.5px 1.5px at 32% 12%, #eaf3ff, transparent 60%),
     radial-gradient(1.2px 1.2px at 92% 32%, #fff, transparent 60%),
-    radial-gradient(1200px 700px at 50% 120%, rgba(20,60,140,.35), transparent 70%),
-    #01030a;
+    radial-gradient(1300px 800px at 50% 120%, rgba(70,140,235,.5), transparent 72%),
+    radial-gradient(1100px 700px at 50% -10%, rgba(60,120,220,.28), transparent 70%),
+    linear-gradient(180deg, #0a1e46 0%, #0a2352 55%, #0d2b64 100%);
   background-repeat: repeat;
   animation: skyDrift 60s linear infinite alternate;
 }
 @keyframes skyDrift { to { transform: translate3d(-2%, -1.5%, 0); } }
 
-/* --- the coolest Earth --- */
+/* --- the Earth (medium, bright, clear) --- */
 .intro-earth {
-  position: absolute; left: 50%; top: 58%; transform: translate(-50%, -50%);
-  width: min(86vmin, 780px); height: min(86vmin, 780px); border-radius: 50%;
-  filter: drop-shadow(0 0 60px rgba(70,150,255,.45));
+  position: absolute; left: 50%; top: 56%; transform: translate(-50%, -50%);
+  width: min(62vmin, 560px); height: min(62vmin, 560px); border-radius: 50%;
+  filter: drop-shadow(0 0 70px rgba(120,190,255,.6));
 }
 .earth-globe, .earth-clouds, .earth-atmo { position: absolute; inset: 0; border-radius: 50%; }
 .earth-globe {
   background:
-    radial-gradient(circle at 34% 30%, rgba(255,255,255,.5), rgba(255,255,255,0) 22%),
-    radial-gradient(ellipse 42% 30% at 30% 62%, #2f9e5b, transparent 60%),
-    radial-gradient(ellipse 30% 22% at 68% 40%, #2c8f6f, transparent 60%),
-    radial-gradient(ellipse 26% 34% at 72% 74%, #3aa15a, transparent 62%),
-    radial-gradient(ellipse 20% 16% at 46% 24%, #caa76a, transparent 60%),
-    radial-gradient(circle at 50% 50%, #2f8fe0 0%, #1f6fce 34%, #0f4aa0 62%, #072f6e 82%, #041d47 100%);
+    radial-gradient(circle at 33% 28%, rgba(255,255,255,.65), rgba(255,255,255,0) 24%),
+    radial-gradient(ellipse 42% 30% at 30% 62%, #40c072, transparent 60%),
+    radial-gradient(ellipse 30% 22% at 68% 40%, #3cb488, transparent 60%),
+    radial-gradient(ellipse 26% 34% at 72% 74%, #49c46c, transparent 62%),
+    radial-gradient(ellipse 20% 16% at 46% 24%, #e0c584, transparent 60%),
+    radial-gradient(circle at 50% 50%, #56b3f2 0%, #2f8fe6 34%, #1f6fce 62%, #124f9e 82%, #0b3a72 100%);
   box-shadow:
-    inset -26px -30px 70px rgba(0,0,0,.7),
-    inset 20px 20px 60px rgba(120,200,255,.25);
+    inset -22px -26px 64px rgba(0,20,50,.55),
+    inset 22px 22px 56px rgba(150,215,255,.35);
 }
 .earth-clouds {
   background:
@@ -694,48 +695,48 @@ body.intro-open { overflow: hidden; }
 /* --- stage --- */
 .intro-stage { position: absolute; inset: 0; }
 
-/* main.png: slowly rotating centrepiece in a glowing circle */
+/* main.png: BIG slowly rotating centrepiece in a glowing circle */
 .intro-ring {
   position: absolute; left: 50%; top: 50%;
-  width: min(30vmin, 230px); height: min(30vmin, 230px);
+  width: min(40vmin, 320px); height: min(40vmin, 320px);
   transform: translate(-50%, -50%);
-  animation: spinSlow 60s linear infinite;
+  animation: spinSlow 70s linear infinite;
+  z-index: 4;
 }
 .intro-main {
   width: 100%; height: 100%; object-fit: cover; border-radius: 50%;
-  border: 2px solid rgba(255,255,255,.35);
-  box-shadow: 0 0 40px rgba(90,170,255,.6), 0 20px 60px rgba(0,0,0,.6);
-  background: rgba(0,0,0,.3);
+  border: 3px solid rgba(255,255,255,.5);
+  box-shadow: 0 0 50px rgba(120,190,255,.7), 0 24px 70px rgba(0,0,0,.55);
+  background: rgba(255,255,255,.06);
 }
 @keyframes spinSlow { to { transform: rotate(360deg); } }
 
-/* ambient train — images rush outward from the centre, small+blurry → large */
-.intro-train { position: absolute; inset: 0; }
-.amb, .hero {
-  position: absolute; left: 50%; top: 50%;
-  width: 150px; height: auto; border-radius: 12px;
-  object-fit: cover;
-  transform-origin: center;
-  pointer-events: none;
+/* the 10 pictures orbit the centre on a ring (like a spinning wheel of photos) */
+.intro-orbit {
+  position: absolute; left: 50%; top: 50%; width: 0; height: 0;
+  transform: translate(-50%, -50%);
+  animation: spinSlow 46s linear infinite;
+  z-index: 3;
 }
-.amb {
-  opacity: 0;
-  box-shadow: 0 14px 40px rgba(0,0,0,.5);
-  animation-name: approach; animation-timing-function: cubic-bezier(.4,.05,.7,.6);
-  animation-iteration-count: infinite;
+.orbit-slot {
+  --a: 0deg; --r: min(38vmin, 340px); --w: min(20vmin, 155px);
+  position: absolute; left: 0; top: 0;
+  width: var(--w); height: var(--w); margin: calc(var(--w) / -2);
+  transform: rotate(var(--a)) translateY(calc(-1 * var(--r))) rotate(calc(-1 * var(--a)));
 }
-@keyframes approach {
-  0%   { opacity: 0;   filter: blur(14px); transform: translate(-50%,-50%) rotate(var(--ang)) translateX(0)     scale(.06); }
-  14%  { opacity: .55; }
-  70%  { opacity: .5;  filter: blur(2px); }
-  100% { opacity: 0;   filter: blur(1px);  transform: translate(-50%,-50%) rotate(var(--ang)) translateX(78vmin) scale(1.5); }
+.orbit-img {
+  width: 100%; height: 100%; object-fit: cover; border-radius: 14px;
+  border: 2px solid rgba(255,255,255,.4);
+  box-shadow: 0 16px 44px rgba(0,0,0,.5);
+  animation: spinSlow 46s linear infinite reverse;   /* keep photos upright while the wheel turns */
 }
 
-/* click reveal — the next picture rushes in big & clear, then flies past */
+/* click reveal — the next picture rushes in big & clear from afar, then past */
 .hero {
-  z-index: 6; width: min(40vmin, 300px);
-  border-radius: 16px; border: 1px solid rgba(255,255,255,.25);
-  box-shadow: 0 30px 80px rgba(0,0,0,.65), 0 0 40px rgba(90,170,255,.35);
+  position: absolute; left: 50%; top: 50%; transform-origin: center; pointer-events: none;
+  z-index: 6; width: min(44vmin, 340px); height: auto; object-fit: cover;
+  border-radius: 16px; border: 1px solid rgba(255,255,255,.3);
+  box-shadow: 0 30px 80px rgba(0,0,0,.6), 0 0 44px rgba(120,190,255,.4);
   animation: heroApproach 2.2s cubic-bezier(.2,.6,.3,1) forwards;
 }
 @keyframes heroApproach {
@@ -771,6 +772,5 @@ body.intro-open { overflow: hidden; }
 .intro-brand-hint { position: absolute; top: 6vh; left: 0; right: 0; text-align: center; }
 
 @media (prefers-reduced-motion: reduce) {
-  .intro-ring, .amb, .earth-clouds, .intro-sky { animation: none !important; }
-  .amb { opacity: .35; filter: blur(3px); }
+  .intro-ring, .intro-orbit, .orbit-img, .earth-clouds, .intro-sky { animation: none !important; }
 }
