@@ -207,3 +207,56 @@ body.auth-mode{background:#fff}
 .deal-link{text-align:center;margin:14px 0 0;font-size:14px}
 .rate-row{display:flex;gap:6px;justify-content:center;font-size:34px;color:#e0a500;cursor:pointer;margin:6px 0 12px;line-height:1}
 .rate-row span{transition:transform .1s} .rate-row span:hover{transform:scale(1.15)}
+/* ============================================================
+   POLISH — motion, accessibility, responsiveness
+   ============================================================ */
+html { scroll-behavior: smooth; }
+:focus-visible { outline: 2px solid var(--forest); outline-offset: 2px; border-radius: 6px; }
+button:focus-visible { outline: 2px solid #9fe870; outline-offset: 2px; }
+
+/* gentle entrance for page content */
+.site > section, .site > footer, .view > * { animation: rise .45s cubic-bezier(.22,.61,.36,1) both; }
+.site > section:nth-child(2) { animation-delay: .05s; }
+.site > section:nth-child(3) { animation-delay: .1s; }
+@keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* slideshow: soft frame + slow Ken-Burns zoom on each slide */
+.slideshow::after { content: ""; position: absolute; inset: 0; border-radius: inherit; box-shadow: inset 0 0 0 1px rgba(20,40,0,.06), inset 0 -60px 80px rgba(20,40,0,.12); pointer-events: none; }
+.slide.on { animation: kenburns 6s ease-out both; }
+@keyframes kenburns { from { transform: scale(1.07); } to { transform: scale(1); } }
+
+/* accordion: hover + smooth body reveal */
+.acc summary:hover { background: var(--wash); }
+.acc[open] { border-color: var(--line-2); }
+.acc[open] .acc-body { animation: accfade .26s ease both; }
+@keyframes accfade { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+
+/* cards lift a little on hover */
+.card, .land-card, .stat { transition: transform .16s ease, box-shadow .18s ease, border-color .16s ease; }
+.land-card:hover { transform: translateY(-3px); box-shadow: 0 20px 44px rgba(20,40,0,.12); }
+
+/* ---------- responsive ---------- */
+@media (max-width: 860px) {
+  .hero2 { text-align: center; }
+  .hero2-copy .auth-brand, .hero2-cta { justify-content: center; }
+  .hero2-sub { margin-left: auto; margin-right: auto; }
+}
+@media (max-width: 640px) {
+  .stage-strip li { font-size: 13px; padding: 10px 16px; }
+  .stage-strip li::before { width: 22px; height: 22px; }
+}
+@media (max-width: 520px) {
+  .topbar { padding: 12px 14px; }
+  .brand { font-size: 17px; }
+  .nav { gap: 6px; }
+  .nav-cta { padding: 8px 14px; font-size: 13px; }
+  .hero2-title { font-size: clamp(32px, 9vw, 46px); }
+  .hero2-cta .btn-cta { flex: 1; justify-content: center; }
+  .modal { width: 100%; border-radius: 18px; }
+  .modal-body { padding: 26px 20px 24px; }
+  .wiz-step em, .stages2-note { font-size: 10px; }
+}
+@media (max-width: 420px) {
+  .deal-track .dt em { display: none; }
+  .stage-strip { gap: 8px; }
+}
