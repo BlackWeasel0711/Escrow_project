@@ -260,3 +260,15 @@ button:focus-visible { outline: 2px solid #9fe870; outline-offset: 2px; }
   .deal-track .dt em { display: none; }
   .stage-strip { gap: 8px; }
 }
+/* brand logo image, slowly rotating on the x-axis */
+.brand-logo { perspective: 420px; display: inline-flex; align-items: center; justify-content: center; }
+.brand-logo img {
+  width: 100%; height: 100%; object-fit: contain; display: block;
+  transform-style: preserve-3d; backface-visibility: visible;
+  animation: logoFlipX 6s linear infinite;
+}
+@keyframes logoFlipX { from { transform: rotateX(0deg); } to { transform: rotateX(360deg); } }
+.brand .brand-logo { width: 34px; height: 34px; }
+.auth-brand .brand-logo { width: 30px; height: 30px; }
+.hero2-copy .auth-brand .brand-logo, .site-foot .auth-brand .brand-logo { width: 32px; height: 32px; }
+@media (prefers-reduced-motion: reduce) { .brand-logo img { animation: none; } }
