@@ -278,3 +278,7 @@ button:focus-visible { outline: 2px solid #9fe870; outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) { .brand-logo img { animation: none !important; } }
 /* brand logo removed - text-only wordmark */
 .brand-logo { display: none !important; }
+
+/* logo stays (top bar + footer); remove only the duplicate brand line in the hero */
+.brand-logo { display: inline-flex !important; }
+.hero2-copy .auth-brand { display: none !important; }
