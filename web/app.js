@@ -854,7 +854,7 @@
   document.addEventListener('click', () => { const p = document.getElementById('bellPanel'); if (p) p.hidden = true; });
 
   // ---------- boot ----------
-  $('.brand').innerHTML = `${brandLogo()} SafePay <span>Escrow</span>`;
+  $('.brand').innerHTML = `<span class="brand-logo"><img src="111.png" alt="" /></span> SafePay <span>Escrow</span>`;
   $('.brand').onclick = () => go(session.isAuthed ? 'dashboard' : 'home');
   window.addEventListener('hashchange', render);
   route('new', (v) => { routes.dashboard(v); openOrderWizard(); });
