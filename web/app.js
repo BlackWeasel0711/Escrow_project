@@ -95,17 +95,19 @@
     location.hash = name + (params ? '?' + new URLSearchParams(params) : '');
   }
   async function render() {
-    const [name, qs] = (location.hash.replace(/^#/, '') || 'dashboard').split('?');
+    const [rawName, qs] = location.hash.replace(/^#/, '').split('?');
+    const name = rawName || (session.isAuthed ? 'dashboard' : 'home');
     const params = Object.fromEntries(new URLSearchParams(qs || ''));
     const fn = routes[name] || routes.dashboard;
 
     // route guards
-    const publicRoutes = ['login', 'register'];
-    if (!session.isAuthed && !publicRoutes.includes(name)) return go('login');
+    const publicRoutes = ['home', 'login', 'register'];
+    if (!session.isAuthed && !publicRoutes.includes(name)) return go('home');
     if (session.isAuthed && publicRoutes.includes(name)) return go('dashboard');
 
     // Immersive full-bleed layout for the auth screens.
     document.body.classList.toggle('auth-mode', name === 'login' || name === 'register');
+    document.body.classList.toggle('land-mode', name === 'home');
 
     const view = $('#view');
     view.innerHTML = '<div class="spinner"></div>';
@@ -143,6 +145,30 @@
 
   // ================= ROUTES =================
 
+  route('home', (view) => {
+    view.innerHTML = '';
+    const wrap = el(`
+      <div class="land">
+        <div class="land-hero">
+          <div class="auth-brand">${brandLogo()} SafePay <span>Escrow</span></div>
+          <h1 class="land-title">Buy and sell online, bila wasiwasi.</h1>
+          <p class="land-sub"><strong>Pesa yako iko salama.</strong> SafePay holds the buyer's money in escrow and releases it to the seller only once delivery is confirmed — or an admin resolves the dispute.</p>
+          <div class="land-cta">
+            <button id="toReg" class="land-primary">Get started <span class="arr">→</span></button>
+            <button id="toLogin" class="land-ghost">Log in</button>
+          </div>
+          <p class="land-trust">${icon('lock', 13)} 256-bit encrypted · M-Pesa · PayPal · Visa</p>
+        </div>
+        <div class="land-cards">
+          <div class="land-card"><span class="lc-ic">${icon('lock', 30)}</span><h3>Pesa salama in escrow</h3><p>Funds are locked the moment a deal starts, released only on confirmed delivery.</p></div>
+          <div class="land-card"><span class="lc-ic">${icon('scales', 30)}</span><h3>Fair dispute resolution</h3><p>Open a case with evidence; an admin reviews and decides who gets the money.</p></div>
+          <div class="land-card"><span class="lc-ic">${icon('star', 30)}</span><h3>Trusted reputations</h3><p>Ratings after every completed deal, so you always know who you deal with.</p></div>
+        </div>
+      </div>`);
+    view.appendChild(wrap);
+    $('#toLogin', wrap).onclick = () => go('login');
+    $('#toReg', wrap).onclick = () => go('register');
+  });
   route('login', authView('login'));
   route('register', authView('register'));
 
@@ -152,16 +178,19 @@
       view.innerHTML = '';
       const wrap = el(`
         <div class="auth-shell">
-          <div class="auth-earth" aria-hidden="true"><span class="ae-globe"></span><span class="ae-clouds"></span><span class="ae-atmo"></span></div>
-          <div class="auth-rise" aria-hidden="true"></div>
           <div class="auth-hero-center">
             <div class="auth-brand">${brandLogo()} SafePay <span>Escrow</span></div>
             <h2 class="auth-tagline">Karibu! Nunua na uuze bila wasiwasi.</h2>
             <p class="auth-lead"><strong>Pesa yako iko salama.</strong> We hold the buyer's money in escrow and release it to the seller only once delivery is confirmed — or an admin resolves the dispute.</p>
+            <ul class="auth-features">
+              <li><span class="af-ic">${icon('lock', 26)}</span><div><strong>Pesa salama in escrow</strong><em>Funds are locked the moment a deal starts.</em></div></li>
+              <li><span class="af-ic">${icon('scales', 26)}</span><div><strong>Fair dispute resolution</strong><em>Open a case with evidence, an admin decides.</em></div></li>
+              <li><span class="af-ic">${icon('star', 26)}</span><div><strong>Trusted reputations</strong><em>Ratings after every completed deal.</em></div></li>
+            </ul>
+            <div class="auth-pay"><span>Lipa na</span><b class="pay-chip">M-Pesa</b><b class="pay-chip">PayPal</b><b class="pay-chip">Visa</b></div>
           </div>
           <section class="auth-form">
             <div class="auth-form-inner">
-              <span class="kenya-line" aria-hidden="true"></span>
               <h1>${isLogin ? 'Welcome back' : 'Create your account'}</h1>
               <p class="sub">${isLogin ? 'Log in to manage your escrow transactions.' : 'Sign up to buy and sell safely with escrow protection.'}</p>
               <form id="f" autocomplete="off">
@@ -181,25 +210,10 @@
                 <div class="field"><input name="password" type="password" required minlength="8" autocomplete="off" placeholder="At least 8 characters" /></div>
                 <button type="submit" class="auth-submit">${isLogin ? 'Log in' : 'Create account'} <span class="arr">→</span></button>
               </form>
-              <p class="auth-swap">
-                ${isLogin ? "New to SafePay?" : 'Already have an account?'}
-                <span class="link" id="swap">${isLogin ? 'Create an account' : 'Log in'}</span>
-              </p>
+              <p class="auth-swap">${isLogin ? "New to SafePay?" : 'Already have an account?'} <span class="link" id="swap">${isLogin ? 'Create an account' : 'Log in'}</span></p>
               <p class="auth-trust">${icon('lock', 14)} 256-bit encrypted · Your credentials are never shared</p>
             </div>
           </section>
-          <div class="auth-below">
-            <ul class="auth-features">
-              <li><span class="af-ic">${icon('lock', 44)}</span><div><strong>Pesa salama in escrow</strong><em>Funds are locked the moment a deal starts.</em></div></li>
-              <li><span class="af-ic">${icon('scales', 44)}</span><div><strong>Fair dispute resolution</strong><em>Open a case with evidence, an admin decides.</em></div></li>
-              <li><span class="af-ic">${icon('star', 44)}</span><div><strong>Trusted reputations</strong><em>Ratings after every completed deal.</em></div></li>
-            </ul>
-            <div class="auth-pay">
-              <span>Lipa na</span>
-              <b class="pay-chip">M-Pesa</b><b class="pay-chip">PayPal</b><b class="pay-chip">Visa</b>
-            </div>
-            <p class="hero-disclaimer">SafePay holds funds in escrow until delivery is confirmed. Demo environment — payments are simulated.</p>
-          </div>
         </div>`);
       view.appendChild(wrap);
       const riseLayer = $('.auth-rise', wrap);
@@ -648,7 +662,7 @@
 
   // ---------- boot ----------
   $('.brand').innerHTML = `${brandLogo()} SafePay <span>Escrow</span>`;
-  $('.brand').onclick = () => go(session.isAuthed ? 'dashboard' : 'login');
+  $('.brand').onclick = () => go(session.isAuthed ? 'dashboard' : 'home');
   window.addEventListener('hashchange', render);
   renderNav();
   render();
