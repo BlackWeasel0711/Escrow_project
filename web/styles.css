@@ -284,3 +284,27 @@ button:focus-visible { outline: 2px solid #9fe870; outline-offset: 2px; }
 .hero2-copy .auth-brand { display: none !important; }
 /* logo image removed - text wordmark only */
 .brand-logo { display: none !important; }
+
+/* nav Log in / Sign up rendered from button.png (sprite: left half = Log in, right half = Sign up) */
+.nav-cta {
+  background-image: url('button.png') !important;
+  background-repeat: no-repeat;
+  background-color: transparent !important;
+  background-size: 274px 183px;
+  border: none !important;
+  border-radius: 999px;
+  box-shadow: none !important;
+  font-size: 0 !important;          /* label hidden visually, still read by screen readers */
+  padding: 0 !important;
+  height: 46px;
+  display: inline-block;
+  transition: transform .14s ease, filter .18s ease;
+}
+.nav-cta:hover { transform: translateY(-1px); filter: brightness(1.04) saturate(1.05); text-decoration: none; }
+.nav-cta.ghost { width: 118px; background-position: -12px -66px; }
+.nav-cta:not(.ghost) { width: 120px; background-position: -142px -66px; }
+@media (max-width: 520px) {
+  .nav-cta { height: 38px; background-size: 226px 151px; }
+  .nav-cta.ghost { width: 97px; background-position: -10px -54px; }
+  .nav-cta:not(.ghost) { width: 99px; background-position: -117px -54px; }
+}
