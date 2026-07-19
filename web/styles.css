@@ -367,3 +367,13 @@ button:focus-visible { outline: 2px solid #9fe870; outline-offset: 2px; }
 }
 @keyframes beamSpin { to { --beamAngle: 360deg; } }
 @media (prefers-reduced-motion: reduce) { .slideshow::before { animation: none; } }
+/* clear error message inside modal forms + toast above overlays */
+.form-err {
+  background: #ffe6e6; border: 1px solid #f0a9a9; color: #a71d1d;
+  padding: 12px 14px; border-radius: 12px; font-size: 14px; font-weight: 600;
+  margin: 0 0 14px; line-height: 1.4;
+  animation: errShake .32s cubic-bezier(.36,.07,.19,.97);
+}
+@keyframes errShake { 10%,90%{transform:translateX(-1px)} 20%,80%{transform:translateX(2px)} 30%,50%,70%{transform:translateX(-4px)} 40%,60%{transform:translateX(4px)} }
+.toast { z-index: 400 !important; }
+@media (prefers-reduced-motion: reduce) { .form-err { animation: none; } }

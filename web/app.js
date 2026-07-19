@@ -150,7 +150,13 @@
     back.querySelector('.modal-body').appendChild(node);
     const close = () => { back.remove(); document.removeEventListener('keydown', onKey); };
     function onKey(e) { if (e.key === 'Escape') close(); }
-    back.addEventListener('click', (e) => { if (e.target === back || e.target.closest('.modal-x')) close(); });
+    let pressedOnBack = false;
+    back.addEventListener('mousedown', (e) => { pressedOnBack = (e.target === back); });
+    back.addEventListener('click', (e) => {
+      if (e.target.closest('.modal-x')) { close(); return; }
+      if (e.target === back && pressedOnBack) close();
+      pressedOnBack = false;
+    });
     document.addEventListener('keydown', onKey);
     document.body.appendChild(back);
     return close;
@@ -163,6 +169,7 @@
       host.innerHTML = `
         <h2>${isLogin ? 'Welcome back' : 'Create your account'}</h2>
         <p class="sub">${isLogin ? 'Log in to manage your escrow.' : 'Sign up to buy and sell safely with escrow protection.'}</p>
+        <div class="form-err" id="aerr" hidden></div>
         <form id="af" autocomplete="off">
           ${isLogin ? '' : '<label>Full name</label><div class="field"><input name="fullName" required minlength="2" placeholder="e.g. Jane Wanjiku" /></div>'}
           <label>Email</label><div class="email-wrap"><div class="field"><input name="email" type="email" required autocomplete="off" placeholder="you@example.com" /></div><div class="email-history" hidden></div></div>
@@ -195,6 +202,7 @@
       host.querySelector('#af').onsubmit = async (e) => {
         e.preventDefault();
         const btn = host.querySelector('button[type=submit]'); btn.disabled = true;
+        const errBox = host.querySelector('#aerr'); if (errBox) errBox.hidden = true;
         const fd = new FormData(e.target);
         try {
           const b = { email: fd.get('email'), password: fd.get('password') };
@@ -203,7 +211,7 @@
           session.token = token; rememberEmail(fd.get('email'));
           toast(isLogin ? 'Logged in' : 'Account created', 'ok');
           close(); renderNav(); go('dashboard');
-        } catch (err) { toast(err.message, 'err'); btn.disabled = false; }
+        } catch (err) { if (errBox) { errBox.textContent = err.message; errBox.hidden = false; } toast(err.message, 'err'); btn.disabled = false; }
       };
     }
     draw();
@@ -250,7 +258,7 @@
           try {
             created = await api('/transactions', { method: 'POST', body: { sellerEmail: data.sellerEmail, description: data.description, amountCents: Math.round(parseFloat(data.amount) * 100), method: data.method, currency: 'KES' } });
             step = 3; draw();
-          } catch (err) { toast(err.message, 'err'); btn.disabled = false; }
+          } catch (err) { if (errBox) { errBox.textContent = err.message; errBox.hidden = false; } toast(err.message, 'err'); btn.disabled = false; }
         };
       } else {
         host.innerHTML = stepper() + `
