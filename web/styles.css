@@ -341,3 +341,12 @@ button:focus-visible { outline: 2px solid #9fe870; outline-offset: 2px; }
 .brand .brand-logo img { transform-style: preserve-3d; animation: logoSpinY 6s linear infinite; }
 @keyframes logoSpinY { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
 @media (prefers-reduced-motion: reduce) { .brand .brand-logo img { animation: none; } }
+/* bigger nav buttons so the icon and label are clearly readable */
+.nav-cta { height: 58px !important; }
+.nav-cta.ghost { width: 141px !important; background-size: 300px 200px !important; background-position: -8px -70px !important; }
+.nav-cta:not(.ghost) { width: 139px !important; background-size: 294px 196px !important; background-position: -147px -70px !important; }
+@media (max-width: 640px) {
+  .nav-cta { height: 46px !important; }
+  .nav-cta.ghost { width: 112px !important; background-size: 238px 159px !important; background-position: -7px -55px !important; }
+  .nav-cta:not(.ghost) { width: 110px !important; background-size: 233px 155px !important; background-position: -117px -55px !important; }
+}
