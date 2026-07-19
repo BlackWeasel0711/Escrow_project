@@ -350,3 +350,20 @@ button:focus-visible { outline: 2px solid #9fe870; outline-offset: 2px; }
   .nav-cta.ghost { width: 112px !important; background-size: 238px 159px !important; background-position: -7px -55px !important; }
   .nav-cta:not(.ghost) { width: 110px !important; background-size: 233px 155px !important; background-position: -117px -55px !important; }
 }
+/* two beams of light rotating along the slideshow edge */
+@property --beamAngle { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+.slideshow::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; padding: 3px;
+  background: conic-gradient(from var(--beamAngle),
+    transparent 0 6%, rgba(159,232,112,.55) 10%, #9fe870 14%, #ffffff 16%, #9fe870 18%, rgba(159,232,112,.55) 22%, transparent 27% 56%,
+    rgba(120,200,255,.55) 60%, #7ec8ff 64%, #ffffff 66%, #7ec8ff 68%, rgba(120,200,255,.55) 72%, transparent 77% 100%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+          mask-composite: exclude;
+  filter: drop-shadow(0 0 7px rgba(159,232,112,.85)) drop-shadow(0 0 9px rgba(126,200,255,.7));
+  animation: beamSpin 5s linear infinite;
+  pointer-events: none; z-index: 4;
+}
+@keyframes beamSpin { to { --beamAngle: 360deg; } }
+@media (prefers-reduced-motion: reduce) { .slideshow::before { animation: none; } }
