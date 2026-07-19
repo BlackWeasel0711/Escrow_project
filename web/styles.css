@@ -192,3 +192,18 @@ body.auth-mode{background:#fff}
 .wiz-summary span{color:var(--muted)} .wiz-summary b{color:var(--ink);text-align:right}
 .wiz-done{text-align:center;padding:8px 0}
 .wiz-check{width:84px;height:84px;border-radius:50%;background:var(--wash);display:grid;place-items:center;margin:6px auto 14px}
+/* ---------- staged deal-flow (modal) ---------- */
+.deal-meta{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:2px 0 18px;font-size:15px}
+.deal-meta b{font-weight:800;color:var(--forest)}
+.deal-track{display:flex;gap:4px;margin:0 0 20px}
+.deal-track .dt{flex:1;display:flex;flex-direction:column;align-items:center;gap:5px;position:relative;color:var(--muted);font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.02em;text-align:center}
+.deal-track .dt b{width:14px;height:14px;border-radius:50%;background:#e6e6df;position:relative;z-index:1}
+.deal-track .dt.on b{background:var(--forest)}
+.deal-track .dt.on em{color:var(--forest)}
+.deal-track .dt::after{content:"";position:absolute;top:6px;left:50%;right:-50%;height:2px;background:#e6e6df}
+.deal-track .dt:last-child::after{display:none}
+.deal-track .dt.on::after{background:var(--forest)}
+.deal-act{margin:0}
+.deal-link{text-align:center;margin:14px 0 0;font-size:14px}
+.rate-row{display:flex;gap:6px;justify-content:center;font-size:34px;color:#e0a500;cursor:pointer;margin:6px 0 12px;line-height:1}
+.rate-row span{transition:transform .1s} .rate-row span:hover{transform:scale(1.15)}

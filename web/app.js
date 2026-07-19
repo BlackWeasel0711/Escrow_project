@@ -247,6 +247,64 @@
     draw();
     close = openModal(host);
   }
+  async function openDealFlow(id) {
+    const host = el('<div class="deal"></div>');
+    const STAR = '☆', STARF = '★';
+    let close = () => {};
+    const stages = ['CREATED', 'PAYMENT_PENDING', 'HELD', 'SHIPPED', 'DELIVERED', 'RELEASED'];
+    function tracker(status) {
+      let cur = stages.indexOf(status); if (cur < 0) cur = 2;
+      return '<div class="deal-track">' + stages.map(function (s, i) { return '<span class="dt' + (i <= cur ? ' on' : '') + '"><b></b><em>' + s.replace('_', ' ') + '</em></span>'; }).join('') + '</div>';
+    }
+    async function load() {
+      host.innerHTML = '<div class="spinner"></div>';
+      let t; try { t = await api('/transactions/' + id); } catch (e) { host.innerHTML = '<p class="sub">' + esc(e.message) + '</p>'; return; }
+      draw(t);
+    }
+    function draw(t) {
+      const isBuyer = t.buyerId === session.userId;
+      const held = ['HELD', 'SHIPPED', 'DELIVERED'].includes(t.status);
+      let actions;
+      if (!isBuyer && t.status === 'HELD') actions = '<button class="btn-cta modal-submit" data-act="ship">Mark as shipped →</button>';
+      else if (!isBuyer && t.status === 'SHIPPED') actions = '<button class="btn-cta modal-submit" data-act="delivered">Mark as delivered →</button>';
+      else if (isBuyer && held) actions = '<button class="btn-cta modal-submit" data-act="confirm-received">Confirm received &amp; release →</button><button class="btn-cta ghost" data-act="dispute" style="width:100%;justify-content:center;margin-top:10px">Report a problem</button>';
+      else if (t.status === 'RELEASED' && isBuyer && !t.rating) actions = '<div class="rate-row" id="rate">' + [1, 2, 3, 4, 5].map(function (s) { return '<span data-s="' + s + '">' + STAR + '</span>'; }).join('') + '</div><button class="btn-cta modal-submit" id="rateBtn">Submit rating →</button>';
+      else actions = '<p class="sub" style="text-align:center;margin:10px 0 0">No action needed right now.</p>';
+      host.innerHTML = '<h2>' + esc(t.description) + '</h2>' +
+        '<div class="deal-meta"><span class="badge ' + t.status + '">' + t.status.replace('_', ' ') + '</span> <b>' + money(t.amountCents, t.currency) + '</b> <span class="muted">you are the ' + (isBuyer ? 'buyer' : 'seller') + '</span></div>' +
+        tracker(t.status) + '<div class="deal-act">' + actions + '</div>' +
+        '<p class="deal-link"><span class="link" id="full">View full details &amp; timeline</span></p>';
+      host.querySelector('#full').onclick = function () { close(); go('tx', { id: id }); };
+      host.querySelectorAll('[data-act]').forEach(function (b) {
+        b.onclick = async function () {
+          const act = b.dataset.act;
+          if (act === 'dispute') return drawDispute(t);
+          if (act === 'confirm-received' && !confirm('Release the held funds to the seller? This cannot be undone.')) return;
+          b.disabled = true;
+          try { await api('/transactions/' + id + '/' + act, { method: 'POST' }); toast('Deal updated', 'ok'); await load(); }
+          catch (e) { toast(e.message, 'err'); b.disabled = false; }
+        };
+      });
+      const rr = host.querySelector('#rate');
+      if (rr) {
+        let score = 0;
+        rr.querySelectorAll('span').forEach(function (st) { st.onclick = function () { score = +st.dataset.s; rr.querySelectorAll('span').forEach(function (x) { x.textContent = (+x.dataset.s <= score) ? STARF : STAR; }); }; });
+        host.querySelector('#rateBtn').onclick = async function () { if (!score) return toast('Pick a score', 'err'); try { await api('/ratings', { method: 'POST', body: { transactionId: id, score: score } }); toast('Thanks for rating', 'ok'); await load(); } catch (e) { toast(e.message, 'err'); } };
+      }
+    }
+    function drawDispute(t) {
+      host.innerHTML = '<h2>Report a problem</h2><p class="sub">Open a dispute. An admin reviews the evidence and decides.</p><label>What went wrong?</label><textarea id="reason" minlength="3" maxlength="1000" placeholder="Describe the problem"></textarea><label>Evidence URL (optional)</label><div class="field"><input id="ev" type="url" placeholder="https://link-to-photo" /></div><div class="btn-row"><button class="btn-cta ghost" id="dback">Back</button><button class="btn-cta danger" id="dsubmit">Submit dispute</button></div>';
+      host.querySelector('#dback').onclick = function () { draw(t); };
+      host.querySelector('#dsubmit').onclick = async function () {
+        const reason = host.querySelector('#reason').value.trim(); const ev = host.querySelector('#ev').value.trim();
+        if (reason.length < 3) return toast('Please describe the problem', 'err');
+        try { await api('/disputes', { method: 'POST', body: { transactionId: id, reason: reason, evidenceUrls: ev ? [ev] : [] } }); toast('Dispute opened', 'ok'); await load(); }
+        catch (e) { toast(e.message, 'err'); }
+      };
+    }
+    close = openModal(host);
+    await load();
+  }
   // ================= ROUTES =================
 
   route('home', (view) => {
@@ -439,7 +497,7 @@
           <td><span class="badge ${t.status}">${t.status}</span></td>
           <td class="muted">${when(t.createdAt)}</td>
         </tr>`);
-        tr.onclick = () => go('tx', { id: t.id });
+        tr.onclick = () => openDealFlow(t.id);
         tb.appendChild(tr);
       }
       card.appendChild(table);
