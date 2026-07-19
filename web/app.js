@@ -309,7 +309,7 @@
 
   route('home', (view) => {
     view.innerHTML = '';
-    const pics = Array.from({ length: 10 }, (_, i) => 'pictures/' + (i + 1) + '.png');
+    const pics = Array.from({ length: 10 }, (_, i) => 'assets/pictures/' + (i + 1) + '.png');
     const wrap = el(`
       <div class="site">
         <section class="hero2">
@@ -413,7 +413,7 @@
       if (riseLayer) {
         for (let k = 0; k < 12; k++) {
           const rim = document.createElement('img');
-          rim.src = 'pictures/' + ((k % 10) + 1) + '.png';
+          rim.src = 'assets/pictures/' + ((k % 10) + 1) + '.png';
           rim.className = 'rise-img';
           const setDir = () => {
             rim.style.setProperty('--ang', Math.round(Math.random() * 360) + 'deg');
