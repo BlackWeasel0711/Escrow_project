@@ -334,5 +334,10 @@ button:focus-visible { outline: 2px solid #9fe870; outline-offset: 2px; }
 }
 /* logo shown only next to the top-bar brand (static, no rotation) */
 .brand .brand-logo { display: inline-flex !important; width: 30px; height: 30px; flex: none; }
-.brand .brand-logo img { width: 100%; height: 100%; object-fit: contain; display: block; animation: none !important; transform: none !important; }
+.brand .brand-logo img { width: 100%; height: 100%; object-fit: contain; display: block; }
 .auth-brand .brand-logo { display: none !important; }
+/* top-bar logo turns slowly on the y-axis */
+.brand .brand-logo { perspective: 420px; }
+.brand .brand-logo img { transform-style: preserve-3d; animation: logoSpinY 6s linear infinite; }
+@keyframes logoSpinY { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+@media (prefers-reduced-motion: reduce) { .brand .brand-logo img { animation: none; } }

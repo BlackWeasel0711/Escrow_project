@@ -165,7 +165,7 @@
         <p class="sub">${isLogin ? 'Log in to manage your escrow.' : 'Sign up to buy and sell safely with escrow protection.'}</p>
         <form id="af" autocomplete="off">
           ${isLogin ? '' : '<label>Full name</label><div class="field"><input name="fullName" required minlength="2" placeholder="e.g. Jane Wanjiku" /></div>'}
-          <label>Email</label><div class="field"><input name="email" type="email" required placeholder="you@example.com" /></div>
+          <label>Email</label><div class="email-wrap"><div class="field"><input name="email" type="email" required autocomplete="off" placeholder="you@example.com" /></div><div class="email-history" hidden></div></div>
           ${isLogin ? '' : '<label>M-Pesa phone number</label><div class="field"><input name="phone" type="tel" required minlength="10" placeholder="e.g. 0712 345678" /></div>'}
           <label>Password</label><div class="field"><input name="password" type="password" required minlength="8" placeholder="At least 8 characters" /></div>
           <button type="submit" class="btn-cta modal-submit">${isLogin ? 'Log in' : 'Create account'} <span class="arr">→</span></button>
@@ -173,6 +173,25 @@
         <p class="auth-swap">${isLogin ? 'New to SafePay?' : 'Already have an account?'} <span class="link" id="swap">${isLogin ? 'Create an account' : 'Log in'}</span></p>
         <p class="auth-trust">${icon('lock', 13)} 256-bit encrypted · Your credentials are never shared</p>`;
       host.querySelector('#swap').onclick = () => { isLogin = !isLogin; draw(); };
+      const emailInput = host.querySelector('input[name=email]');
+      const histBox = host.querySelector('.email-history');
+      if (emailInput && histBox) {
+        const showHist = () => {
+          const q = emailInput.value.trim().toLowerCase();
+          const list = getEmails().filter((em) => !q || em.toLowerCase().includes(q));
+          if (!list.length) { histBox.hidden = true; return; }
+          histBox.innerHTML = '';
+          list.forEach((em) => {
+            const item = el('<div class="eh-item">' + icon('mail', 16) + '<span>' + esc(em) + '</span></div>');
+            item.onmousedown = (ev) => { ev.preventDefault(); emailInput.value = em; histBox.hidden = true; };
+            histBox.appendChild(item);
+          });
+          histBox.hidden = false;
+        };
+        emailInput.addEventListener('focus', showHist);
+        emailInput.addEventListener('input', showHist);
+        emailInput.addEventListener('blur', () => setTimeout(() => { histBox.hidden = true; }, 160));
+      }
       host.querySelector('#af').onsubmit = async (e) => {
         e.preventDefault();
         const btn = host.querySelector('button[type=submit]'); btn.disabled = true;
