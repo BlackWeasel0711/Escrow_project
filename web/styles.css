@@ -839,3 +839,48 @@ body.auth-mode .worldmap, body.auth-mode .auth-earth, body.auth-mode .auth-rise 
 .hero-disclaimer { background: rgba(255,255,255,.75) !important; color: #33402a !important; border: 1px solid rgba(20,50,0,.15) !important; }
 .auth-pay { color: #244310 !important; }
 .pay-chip { background: #163300 !important; color: #c9f5b0 !important; border: none !important; box-shadow: none !important; }
+/* ============================================================
+   WISE-INSPIRED LIGHT THEME — whole app (dashboard/admin/tables)
+   ============================================================ */
+body:not(.auth-mode) {
+  --bg: #f2f1ec; --bg-2: #eeede7; --panel: #ffffff; --panel-2: #f4f3ee;
+  --border: rgba(20,40,0,.10); --border-strong: rgba(20,40,0,.18);
+  --text: #14210b; --muted: #5b6a4d; --accent: #163300; --accent-2: #1f4a08;
+  background: #f2f1ec !important; color: #14210b;
+}
+body:not(.auth-mode) .aurora, body:not(.auth-mode) .worldmap, body:not(.auth-mode) .bg-overlay { display: none !important; }
+body:not(.auth-mode) .topbar { background: rgba(255,255,255,.92) !important; border-bottom: 1px solid rgba(20,40,0,.1) !important; }
+body:not(.auth-mode) .topbar::after { opacity: 1; }
+body:not(.auth-mode) .brand, body:not(.auth-mode) .brand span { color: #163300 !important; }
+body:not(.auth-mode) .nav a { color: #3a4a2a !important; }
+body:not(.auth-mode) .nav a:hover, body:not(.auth-mode) .nav a.active { color: #163300 !important; background: rgba(22,51,0,.08) !important; }
+body:not(.auth-mode) h1, body:not(.auth-mode) h2, body:not(.auth-mode) h3 { background: none !important; -webkit-text-fill-color: #163300 !important; color: #163300 !important; }
+body:not(.auth-mode) .sub, body:not(.auth-mode) .muted, body:not(.auth-mode) .empty, body:not(.auth-mode) .mono { color: #5b6a4d !important; }
+body:not(.auth-mode) .card { background: #fff !important; border: 1px solid rgba(20,40,0,.1) !important; box-shadow: 0 8px 26px rgba(20,40,0,.06) !important; }
+body:not(.auth-mode) .card:hover { border-color: rgba(22,51,0,.25) !important; box-shadow: 0 12px 30px rgba(20,40,0,.1) !important; }
+body:not(.auth-mode) .stat { background: #fff !important; border: 1px solid rgba(20,40,0,.1) !important; box-shadow: 0 8px 26px rgba(20,40,0,.06) !important; }
+body:not(.auth-mode) .stat .num { color: #163300 !important; }
+body:not(.auth-mode) .stat .lbl { color: #5b6a4d !important; }
+body:not(.auth-mode) label { color: #3a4a2a !important; }
+body:not(.auth-mode) input, body:not(.auth-mode) select, body:not(.auth-mode) textarea { background: #f4f3ee !important; border: 1px solid rgba(20,40,0,.18) !important; color: #14210b !important; }
+body:not(.auth-mode) input:focus, body:not(.auth-mode) select:focus, body:not(.auth-mode) textarea:focus { border-color: #163300 !important; box-shadow: 0 0 0 3px rgba(159,232,112,.6) !important; }
+body:not(.auth-mode) th { color: #5b6a4d !important; }
+body:not(.auth-mode) th, body:not(.auth-mode) td { border-bottom: 1px solid rgba(20,40,0,.1) !important; }
+body:not(.auth-mode) td { color: #14210b !important; }
+body:not(.auth-mode) tr.clickable:hover td { background: rgba(22,51,0,.05) !important; }
+body:not(.auth-mode) .timeline li { border-left-color: rgba(20,40,0,.15) !important; }
+body:not(.auth-mode) .timeline .t-time { color: #5b6a4d !important; }
+body:not(.auth-mode) .toast { background: #fff !important; border: 1px solid rgba(20,40,0,.18) !important; color: #14210b !important; }
+body:not(.auth-mode) .bell-panel { background: #fff !important; border: 1px solid rgba(20,40,0,.15) !important; box-shadow: 0 18px 44px rgba(20,40,0,.15) !important; }
+body:not(.auth-mode) .bell-head, body:not(.auth-mode) .bell-item { border-color: rgba(20,40,0,.1) !important; color: #14210b; }
+body:not(.auth-mode) .bell-item.unread { background: rgba(22,51,0,.06) !important; }
+body:not(.auth-mode) .link { color: #167a2e !important; }
+/* status badges tuned for a light background */
+body:not(.auth-mode) .badge.CREATED, body:not(.auth-mode) .badge.PAYMENT_PENDING { background:#fbeccb !important; color:#8a6100 !important; box-shadow:none !important; }
+body:not(.auth-mode) .badge.HELD, body:not(.auth-mode) .badge.kind-DEPOSIT { background:#d9ecff !important; color:#1663a8 !important; box-shadow:none !important; }
+body:not(.auth-mode) .badge.SHIPPED { background:#e6e3ff !important; color:#4a42b0 !important; box-shadow:none !important; }
+body:not(.auth-mode) .badge.DELIVERED { background:#dcefff !important; color:#1f6fb0 !important; box-shadow:none !important; }
+body:not(.auth-mode) .badge.DISPUTED, body:not(.auth-mode) .badge.OPEN, body:not(.auth-mode) .badge.UNDER_REVIEW { background:#ffe0e0 !important; color:#b3261e !important; box-shadow:none !important; }
+body:not(.auth-mode) .badge.RELEASED, body:not(.auth-mode) .badge.RESOLVED_RELEASE, body:not(.auth-mode) .badge.kind-RELEASE { background:#d7f5e1 !important; color:#1a7a3a !important; box-shadow:none !important; }
+body:not(.auth-mode) .badge.REFUNDED, body:not(.auth-mode) .badge.CANCELLED, body:not(.auth-mode) .badge.RESOLVED_REFUND, body:not(.auth-mode) .badge.kind-REFUND { background:#eceadf !important; color:#5b6a4d !important; box-shadow:none !important; }
+body:not(.auth-mode) .spinner { border-color: rgba(20,40,0,.15) !important; border-top-color:#163300 !important; }
