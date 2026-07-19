@@ -788,3 +788,54 @@ body.auth-mode .worldmap {
   opacity: .95 !important;
   filter: drop-shadow(0 0 22px rgba(90,215,255,.55)) drop-shadow(0 0 44px rgba(70,240,170,.3)) !important;
 }
+/* ============================================================
+   WISE-INSPIRED STYLE — bright green, bold black display, pill buttons
+   (applied to SafePay's own branding; no third-party logos or names)
+   ============================================================ */
+/* pill buttons: forest green with bright-green text */
+button, .auth-submit {
+  background: #163300 !important; color: #c9f5b0 !important;
+  border-radius: 999px !important; box-shadow: none !important; font-weight: 700 !important;
+  background-image: none !important;
+}
+button:hover, .auth-submit:hover { background: #1f4a08 !important; transform: translateY(-1px); }
+button.ghost { background: transparent !important; color: #163300 !important; border: 1px solid #163300 !important; }
+button.danger { background: #b3261e !important; color: #fff !important; }
+
+/* LOGIN — bright Wise-green hero */
+body.auth-mode {
+  background: linear-gradient(180deg, #a8ee91 0%, #9fe870 100%) !important;
+}
+body.auth-mode .worldmap, body.auth-mode .auth-earth, body.auth-mode .auth-rise { display: none !important; }
+.auth-brand, .auth-brand span { color: #163300 !important; }
+.auth-tagline {
+  background: none !important; -webkit-text-fill-color: #163300 !important; color: #163300 !important;
+  font-weight: 900 !important; text-transform: uppercase; letter-spacing: -.02em; line-height: .98;
+  font-size: clamp(38px, 5vw, 66px) !important; filter: none !important; animation: none !important;
+}
+.auth-lead { color: #244310 !important; text-shadow: none !important; }
+.auth-lead strong { color: #163300 !important; }
+
+/* form card: clean white */
+.auth-form-inner {
+  background: #ffffff !important; border: 1px solid #e6e6df !important;
+  box-shadow: 0 24px 60px rgba(20,40,0,.18) !important;
+}
+.auth-form-inner::before, .auth-form-inner::after { display: none !important; }
+.kenya-line { display: none !important; }
+.auth-form-inner h1 { background: none !important; -webkit-text-fill-color: #163300 !important; color: #163300 !important; font-weight: 800 !important; }
+.auth-form-inner .sub { color: #55624a !important; }
+.auth-form-inner label { color: #3a4a2a !important; text-shadow: none !important; }
+.auth-form-inner .field { background: #f3f2ec !important; border: 1px solid #d9d9cf !important; }
+.auth-form-inner .field input { color: #12200a !important; }
+.auth-form-inner .field:focus-within { border-color: #163300 !important; box-shadow: 0 0 0 3px rgba(159,232,112,.7) !important; }
+.auth-form-inner .auth-swap, .auth-form-inner .auth-trust { color: #55624a !important; }
+.auth-form-inner .link, .auth-form-inner a { color: #167a2e !important; }
+
+/* feature cards + chips: white cards, black text, green chips */
+.auth-features li { background: #ffffff !important; border: 1px solid #e6e6df !important; box-shadow: 0 10px 26px rgba(20,40,0,.1) !important; }
+.auth-features strong { color: #163300 !important; text-shadow: none !important; }
+.auth-features em { color: #55624a !important; }
+.hero-disclaimer { background: rgba(255,255,255,.75) !important; color: #33402a !important; border: 1px solid rgba(20,50,0,.15) !important; }
+.auth-pay { color: #244310 !important; }
+.pay-chip { background: #163300 !important; color: #c9f5b0 !important; border: none !important; box-shadow: none !important; }
