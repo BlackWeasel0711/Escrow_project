@@ -272,3 +272,7 @@ button:focus-visible { outline: 2px solid #9fe870; outline-offset: 2px; }
 .auth-brand .brand-logo { width: 30px; height: 30px; }
 .hero2-copy .auth-brand .brand-logo, .site-foot .auth-brand .brand-logo { width: 32px; height: 32px; }
 @media (prefers-reduced-motion: reduce) { .brand-logo img { animation: none; } }
+/* brand logo: rotate slowly on the y-axis */
+.brand-logo img { animation: logoFlipY 6s linear infinite !important; }
+@keyframes logoFlipY { from { transform: rotateY(0deg); } to { transform: rotateY(360deg); } }
+@media (prefers-reduced-motion: reduce) { .brand-logo img { animation: none !important; } }
