@@ -28,7 +28,7 @@
   const icon = (name, size = 20) =>
     `<svg class="ico" viewBox="0 0 24 24" width="${size}" height="${size}" aria-hidden="true">${ICONS[name] || ''}</svg>`;
   // Shield logo with a light-shine sweep clipped to the shield shape.
-  const brandLogo = () => `<span class="brand-logo"><img src="111.png" alt="SafePay" /></span>`;
+  const brandLogo = () => '';
 
   // ---------- remembered emails (custom, theme-matched history) ----------
   const EMAILS_KEY = 'safepay.emails';
