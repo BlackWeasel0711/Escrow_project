@@ -106,8 +106,9 @@
     if (session.isAuthed && publicRoutes.includes(name)) return go('dashboard');
 
     // Immersive full-bleed layout for the auth screens.
-    document.body.classList.toggle('auth-mode', name === 'login' || name === 'register');
-    document.body.classList.toggle('land-mode', name === 'home');
+    const isLand = name === 'home' || name === 'login' || name === 'register';
+    document.body.classList.toggle('land-mode', isLand);
+    document.body.classList.toggle('auth-mode', false);
 
     const view = $('#view');
     view.innerHTML = '<div class="spinner"></div>';
@@ -124,8 +125,9 @@
     const nav = $('#nav');
     nav.innerHTML = '';
     if (!session.isAuthed) {
-      nav.appendChild(navLink('login', 'Log in'));
-      nav.appendChild(navLink('register', 'Sign up'));
+      const lg = el('<a class="nav-cta ghost">Log in</a>'); lg.onclick = () => openAuth('login');
+      const su = el('<a class="nav-cta">Sign up</a>'); su.onclick = () => openAuth('register');
+      nav.appendChild(lg); nav.appendChild(su);
       return;
     }
     nav.appendChild(navLink('dashboard', 'My Escrows', active));
@@ -133,7 +135,7 @@
     if (session.isAdmin) nav.appendChild(navLink('admin', 'Admin', active));
     nav.appendChild(buildBell());
     const out = el('<a>Log out</a>');
-    out.onclick = () => { stopBellPolling(); session.token = null; renderNav(); go('login'); };
+    out.onclick = () => { stopBellPolling(); session.token = null; renderNav(); go('home'); };
     nav.appendChild(out);
     startBellPolling();
   }
@@ -143,34 +145,110 @@
     return a;
   }
 
+  function openModal(node) {
+    const back = el('<div class="modal-back"><div class="modal" role="dialog" aria-modal="true"><button class="modal-x" aria-label="Close">×</button><div class="modal-body"></div></div></div>');
+    back.querySelector('.modal-body').appendChild(node);
+    const close = () => { back.remove(); document.removeEventListener('keydown', onKey); };
+    function onKey(e) { if (e.key === 'Escape') close(); }
+    back.addEventListener('click', (e) => { if (e.target === back || e.target.closest('.modal-x')) close(); });
+    document.addEventListener('keydown', onKey);
+    document.body.appendChild(back);
+    return close;
+  }
+  function openAuth(mode) {
+    let isLogin = mode === 'login';
+    const host = el('<div class="auth-card"></div>');
+    let close = () => {};
+    function draw() {
+      host.innerHTML = `
+        <h2>${isLogin ? 'Welcome back' : 'Create your account'}</h2>
+        <p class="sub">${isLogin ? 'Log in to manage your escrow.' : 'Sign up to buy and sell safely with escrow protection.'}</p>
+        <form id="af" autocomplete="off">
+          ${isLogin ? '' : '<label>Full name</label><div class="field"><input name="fullName" required minlength="2" placeholder="e.g. Jane Wanjiku" /></div>'}
+          <label>Email</label><div class="field"><input name="email" type="email" required placeholder="you@example.com" /></div>
+          ${isLogin ? '' : '<label>M-Pesa phone number</label><div class="field"><input name="phone" type="tel" required minlength="10" placeholder="e.g. 0712 345678" /></div>'}
+          <label>Password</label><div class="field"><input name="password" type="password" required minlength="8" placeholder="At least 8 characters" /></div>
+          <button type="submit" class="btn-cta modal-submit">${isLogin ? 'Log in' : 'Create account'} <span class="arr">→</span></button>
+        </form>
+        <p class="auth-swap">${isLogin ? 'New to SafePay?' : 'Already have an account?'} <span class="link" id="swap">${isLogin ? 'Create an account' : 'Log in'}</span></p>
+        <p class="auth-trust">${icon('lock', 13)} 256-bit encrypted · Your credentials are never shared</p>`;
+      host.querySelector('#swap').onclick = () => { isLogin = !isLogin; draw(); };
+      host.querySelector('#af').onsubmit = async (e) => {
+        e.preventDefault();
+        const btn = host.querySelector('button[type=submit]'); btn.disabled = true;
+        const fd = new FormData(e.target);
+        try {
+          const b = { email: fd.get('email'), password: fd.get('password') };
+          if (!isLogin) { b.fullName = fd.get('fullName'); b.phone = fd.get('phone'); }
+          const { token } = await api('/auth/' + (isLogin ? 'login' : 'register'), { method: 'POST', body: b });
+          session.token = token; rememberEmail(fd.get('email'));
+          toast(isLogin ? 'Logged in' : 'Account created', 'ok');
+          close(); renderNav(); go('dashboard');
+        } catch (err) { toast(err.message, 'err'); btn.disabled = false; }
+      };
+    }
+    draw();
+    close = openModal(host);
+  }
   // ================= ROUTES =================
 
   route('home', (view) => {
     view.innerHTML = '';
+    const pics = Array.from({ length: 10 }, (_, i) => 'pictures/' + (i + 1) + '.png');
     const wrap = el(`
-      <div class="land">
-        <div class="land-hero">
-          <div class="auth-brand">${brandLogo()} SafePay <span>Escrow</span></div>
-          <h1 class="land-title">Buy and sell online, bila wasiwasi.</h1>
-          <p class="land-sub"><strong>Pesa yako iko salama.</strong> SafePay holds the buyer's money in escrow and releases it to the seller only once delivery is confirmed — or an admin resolves the dispute.</p>
-          <div class="land-cta">
-            <button id="toReg" class="land-primary">Get started <span class="arr">→</span></button>
-            <button id="toLogin" class="land-ghost">Log in</button>
+      <div class="site">
+        <section class="hero2">
+          <div class="hero2-copy">
+            <div class="auth-brand">${brandLogo()} SafePay <span>Escrow</span></div>
+            <h1 class="hero2-title">Buy and sell online, bila wasiwasi.</h1>
+            <p class="hero2-sub"><strong>Pesa yako iko salama.</strong> We hold the buyer money in escrow and release it to the seller only once delivery is confirmed — or an admin resolves the dispute.</p>
+            <div class="hero2-cta">
+              <button class="btn-cta" id="hSignup">Get started <span class="arr">→</span></button>
+              <button class="btn-cta ghost" id="hLogin">Log in</button>
+            </div>
           </div>
-          <p class="land-trust">${icon('lock', 13)} 256-bit encrypted · M-Pesa · PayPal · Visa</p>
-        </div>
-        <div class="land-cards">
-          <div class="land-card"><span class="lc-ic">${icon('lock', 30)}</span><h3>Pesa salama in escrow</h3><p>Funds are locked the moment a deal starts, released only on confirmed delivery.</p></div>
-          <div class="land-card"><span class="lc-ic">${icon('scales', 30)}</span><h3>Fair dispute resolution</h3><p>Open a case with evidence; an admin reviews and decides who gets the money.</p></div>
-          <div class="land-card"><span class="lc-ic">${icon('star', 30)}</span><h3>Trusted reputations</h3><p>Ratings after every completed deal, so you always know who you deal with.</p></div>
-        </div>
+          <div class="slideshow">
+            ${pics.map((p, i) => `<img src="${p}" class="slide${i === 0 ? ' on' : ''}" alt="" />`).join('')}
+            <div class="dots">${pics.map((_, i) => `<span class="dot${i === 0 ? ' on' : ''}"></span>`).join('')}</div>
+          </div>
+        </section>
+        <section class="stages2">
+          <h2>How a deal moves, step by step</h2>
+          <ol class="stage-strip"><li>Register</li><li>Sign in</li><li>Create order</li><li>Payment</li><li>Delivery</li><li>Confirmation</li></ol>
+          <p class="stages2-note">Each step happens in its own window, one stage at a time.</p>
+        </section>
+        <section class="accord">
+          <h2>Everything you want to know</h2>
+          ${[
+            ['How it works', 'The buyer pays into escrow, funds are held, the seller ships and marks delivered, the buyer confirms, and funds are released. If something goes wrong, an admin resolves a dispute.'],
+            ['Escrow protection', 'The money is locked the moment a deal starts and is released to the seller only once delivery is confirmed, so neither side can be cheated.'],
+            ['Dispute resolution', 'Either party can open a case with evidence. An admin reviews it and rules to release the funds to the seller or refund the buyer.'],
+            ['Payments', 'Pay with M-Pesa, PayPal, or Visa. Every deposit, release, and refund is recorded in a payment ledger.'],
+            ['Ratings and trust', 'After every completed deal, buyers rate sellers. A reputation score and the number of reviews are shown on each transaction.'],
+            ['Is my money safe', 'Funds sit in escrow until delivery is confirmed. Passwords are encrypted, connections use HTTPS, and only the two parties and an admin can see a transaction.']
+          ].map(function (row) { return `<details class="acc"><summary>${row[0]}<span class="acc-ic">+</span></summary><div class="acc-body">${row[1]}</div></details>`; }).join('')}
+        </section>
+        <footer class="site-foot">
+          <div class="auth-brand">${brandLogo()} SafePay <span>Escrow</span></div>
+          <p>SafePay holds funds in escrow until delivery is confirmed. Demo environment, payments are simulated.</p>
+          <button class="btn-cta" id="fSignup">Get started <span class="arr">→</span></button>
+        </footer>
       </div>`);
     view.appendChild(wrap);
-    $('#toLogin', wrap).onclick = () => go('login');
-    $('#toReg', wrap).onclick = () => go('register');
+    wrap.querySelector('#hLogin').onclick = () => openAuth('login');
+    wrap.querySelector('#hSignup').onclick = () => openAuth('register');
+    wrap.querySelector('#fSignup').onclick = () => openAuth('register');
+    const slides = wrap.querySelectorAll('.slide'), dots = wrap.querySelectorAll('.dot');
+    let si = 0;
+    const t = setInterval(() => {
+      if (!slides.length || !slides[0].isConnected) return clearInterval(t);
+      slides[si].classList.remove('on'); dots[si].classList.remove('on');
+      si = (si + 1) % slides.length;
+      slides[si].classList.add('on'); dots[si].classList.add('on');
+    }, 2600);
   });
-  route('login', authView('login'));
-  route('register', authView('register'));
+  route('login', (v) => { routes.home(v); openAuth('login'); });
+  route('register', (v) => { routes.home(v); openAuth('register'); });
 
   function authView(mode) {
     const isLogin = mode === 'login';
