@@ -308,3 +308,27 @@ button:focus-visible { outline: 2px solid #9fe870; outline-offset: 2px; }
   .nav-cta.ghost { width: 97px; background-position: -10px -54px; }
   .nav-cta:not(.ghost) { width: 99px; background-position: -117px -54px; }
 }
+/* exact sprite crops measured from button.png (login 42,357 723x297 | signup 768,363 726x303) */
+.nav-cta {
+  background-image: url('button.png') !important;
+  background-repeat: no-repeat !important;
+  background-color: transparent !important;
+  border: none !important;
+  border-radius: 999px;
+  box-shadow: none !important;
+  font-size: 0 !important;
+  padding: 0 !important;
+  height: 46px;
+  display: inline-block;
+  cursor: pointer;
+  transition: transform .14s ease, filter .18s ease;
+}
+.nav-cta:hover { transform: translateY(-1px); filter: brightness(1.05) saturate(1.05); text-decoration: none; }
+.nav-cta:active { transform: translateY(0) scale(.98); }
+.nav-cta.ghost { width: 112px; background-size: 238px 159px !important; background-position: -7px -55px !important; }
+.nav-cta:not(.ghost) { width: 110px; background-size: 233px 155px !important; background-position: -117px -55px !important; }
+@media (max-width: 520px) {
+  .nav-cta { height: 38px; }
+  .nav-cta.ghost { width: 93px; background-size: 197px 131px !important; background-position: -5px -46px !important; }
+  .nav-cta:not(.ghost) { width: 91px; background-size: 193px 128px !important; background-position: -96px -46px !important; }
+}
