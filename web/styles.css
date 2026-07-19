@@ -173,3 +173,22 @@ body.auth-mode{background:#fff}
 .auth-card h2{font-size:24px;margin:0 0 6px}
 .auth-card .sub{margin:0 0 16px;color:var(--muted)}
 .modal-submit{width:100%;justify-content:center;margin-top:18px}
+/* ---------- staged order wizard (modal) ---------- */
+.wiz-steps{display:flex;gap:8px;justify-content:center;margin:0 0 20px}
+.wiz-step{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1;position:relative;color:var(--muted);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.wiz-step b{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:#eceadf;color:var(--muted);font-size:13px}
+.wiz-step.on b{background:var(--forest);color:#eafff0}
+.wiz-step.done b{background:var(--green);color:var(--forest)}
+.wiz-step.on em,.wiz-step.done em{color:var(--forest)}
+.wiz-step::after{content:"";position:absolute;top:14px;left:calc(50% + 20px);right:calc(-50% + 20px);height:2px;background:var(--line)}
+.wiz-step:last-child::after{display:none}
+.wiz-step.done::after{background:var(--green)}
+.pay-methods{display:grid;gap:10px;margin:4px 0 16px}
+.pay-opt{display:flex;align-items:center;gap:10px;padding:14px 16px;border:1.5px solid var(--line-2);border-radius:12px;cursor:pointer;font-weight:600;transition:border-color .15s,background .15s}
+.pay-opt.on{border-color:var(--forest);background:var(--wash)}
+.pay-opt input{width:auto}
+.wiz-summary{background:#f7f6f1;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin:0 0 16px;display:grid;gap:8px}
+.wiz-summary div{display:flex;justify-content:space-between;gap:12px;font-size:14px}
+.wiz-summary span{color:var(--muted)} .wiz-summary b{color:var(--ink);text-align:right}
+.wiz-done{text-align:center;padding:8px 0}
+.wiz-check{width:84px;height:84px;border-radius:50%;background:var(--wash);display:grid;place-items:center;margin:6px auto 14px}

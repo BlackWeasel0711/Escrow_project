@@ -190,6 +190,63 @@
     draw();
     close = openModal(host);
   }
+  function openOrderWizard() {
+    const host = el('<div class="wiz"></div>');
+    let close = () => {};
+    let step = 1, created = null;
+    const data = { sellerEmail: '', description: '', amount: '', method: 'MPESA' };
+    const names = ['Order', 'Payment', 'Done'];
+    const stepper = () => `<div class="wiz-steps">${names.map((s, i) => `<span class="wiz-step${i + 1 === step ? ' on' : ''}${i + 1 < step ? ' done' : ''}"><b>${i + 1}</b><em>${s}</em></span>`).join('')}</div>`;
+    function draw() {
+      if (step === 1) {
+        host.innerHTML = stepper() + `
+          <h2>Create an order</h2>
+          <p class="sub">As the buyer, you deposit funds into escrow. They stay locked until you confirm delivery.</p>
+          <form id="w1">
+            <label>Seller email</label><div class="field"><input name="sellerEmail" type="email" required placeholder="seller@example.com" value="${esc(data.sellerEmail)}" /></div>
+            <label>What are you buying?</label><textarea name="description" required minlength="3" maxlength="500" placeholder="e.g. iPhone 13, 128GB, sealed">${esc(data.description)}</textarea>
+            <label>Amount (KES)</label><div class="field"><input name="amount" type="number" min="0.01" step="0.01" required placeholder="0.00" value="${esc(data.amount)}" /></div>
+            <button type="submit" class="btn-cta modal-submit">Continue to payment <span class="arr">→</span></button>
+          </form>`;
+        host.querySelector('#w1').onsubmit = (e) => {
+          e.preventDefault(); const fd = new FormData(e.target);
+          data.sellerEmail = fd.get('sellerEmail'); data.description = fd.get('description'); data.amount = fd.get('amount');
+          step = 2; draw();
+        };
+      } else if (step === 2) {
+        host.innerHTML = stepper() + `
+          <h2>Payment</h2>
+          <p class="sub">Your money is locked in escrow — the seller is paid only after you confirm delivery.</p>
+          <div class="pay-methods">${[['MPESA', 'M-Pesa'], ['PAYPAL', 'PayPal'], ['VISA', 'Visa Card']].map((m) => `<label class="pay-opt${data.method === m[0] ? ' on' : ''}"><input type="radio" name="pm" value="${m[0]}"${data.method === m[0] ? ' checked' : ''} /> ${m[1]}</label>`).join('')}</div>
+          <div class="wiz-summary">
+            <div><span>To</span><b>${esc(data.sellerEmail)}</b></div>
+            <div><span>Item</span><b>${esc(data.description)}</b></div>
+            <div><span>Amount held</span><b>KES ${Number(data.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })}</b></div>
+          </div>
+          <div class="btn-row"><button type="button" class="btn-cta ghost" id="back">Back</button><button type="button" class="btn-cta" id="pay">Pay &amp; lock in escrow <span class="arr">→</span></button></div>`;
+        host.querySelectorAll('input[name=pm]').forEach((r) => r.onchange = () => { data.method = r.value; draw(); });
+        host.querySelector('#back').onclick = () => { step = 1; draw(); };
+        host.querySelector('#pay').onclick = async () => {
+          const btn = host.querySelector('#pay'); btn.disabled = true;
+          try {
+            created = await api('/transactions', { method: 'POST', body: { sellerEmail: data.sellerEmail, description: data.description, amountCents: Math.round(parseFloat(data.amount) * 100), method: data.method, currency: 'KES' } });
+            step = 3; draw();
+          } catch (err) { toast(err.message, 'err'); btn.disabled = false; }
+        };
+      } else {
+        host.innerHTML = stepper() + `
+          <div class="wiz-done">
+            <div class="wiz-check">${icon('check', 52)}</div>
+            <h2>Money is safe in escrow</h2>
+            <p class="sub">KES ${Number(data.amount || 0).toLocaleString(undefined, { minimumFractionDigits: 2 })} is locked for "${esc(data.description)}". The seller ships next; confirm on delivery to release the payment.</p>
+            <button type="button" class="btn-cta modal-submit" id="view">View this escrow <span class="arr">→</span></button>
+          </div>`;
+        host.querySelector('#view').onclick = () => { close(); go('tx', { id: created.id }); };
+      }
+    }
+    draw();
+    close = openModal(host);
+  }
   // ================= ROUTES =================
 
   route('home', (view) => {
@@ -742,6 +799,7 @@
   $('.brand').innerHTML = `${brandLogo()} SafePay <span>Escrow</span>`;
   $('.brand').onclick = () => go(session.isAuthed ? 'dashboard' : 'home');
   window.addEventListener('hashchange', render);
+  route('new', (v) => { routes.dashboard(v); openOrderWizard(); });
   renderNav();
   render();
 
