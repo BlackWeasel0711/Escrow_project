@@ -377,3 +377,47 @@ button:focus-visible { outline: 2px solid #9fe870; outline-offset: 2px; }
 @keyframes errShake { 10%,90%{transform:translateX(-1px)} 20%,80%{transform:translateX(2px)} 30%,50%,70%{transform:translateX(-4px)} 40%,60%{transform:translateX(4px)} }
 .toast { z-index: 400 !important; }
 @media (prefers-reduced-motion: reduce) { .form-err { animation: none; } }
+/* ============================================================
+   Nav auth buttons — built purely in CSS + inline SVG (no image)
+   ============================================================ */
+.pillbtn {
+  display: inline-flex; align-items: center; gap: 11px;
+  padding: 5px 20px 5px 5px; border-radius: 999px; cursor: pointer;
+  font-family: "Inter", system-ui, sans-serif; font-weight: 800; font-size: 15.5px; line-height: 1;
+  text-decoration: none; position: relative; overflow: hidden;
+  transition: transform .15s ease, box-shadow .2s ease, filter .2s ease;
+}
+.pillbtn:hover { transform: translateY(-1.5px); text-decoration: none; }
+.pillbtn:active { transform: translateY(0) scale(.985); }
+.pb-ic { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; flex: none; }
+.pb-div { width: 1.5px; height: 20px; flex: none; border-radius: 1px; }
+.pb-label { white-space: nowrap; }
+.pb-arrow { display: grid; place-items: center; transition: transform .15s ease; }
+.pillbtn:hover .pb-arrow { transform: translateX(3px); }
+
+/* Log in — clean white pill with a soft blue halo */
+.pb-login { background: #fff; color: #0b1220; border: 1.5px solid #e6efff;
+  box-shadow: 0 0 0 4px rgba(219,234,254,.45), 0 8px 22px rgba(37,99,235,.14); }
+.pb-login:hover { box-shadow: 0 0 0 5px rgba(191,219,254,.55), 0 12px 28px rgba(37,99,235,.2); }
+.pb-login .pb-ic { background: #e8f1ff; color: #3b82f6; }
+.pb-login .pb-div { background: #e2e8f0; }
+.pb-login .pb-arrow { color: #2563eb; }
+
+/* Sign up — blue to purple gradient pill */
+.pb-signup { color: #fff; border: 1.5px solid rgba(255,255,255,.55);
+  background: linear-gradient(100deg, #1e4fd8 0%, #4f46e5 42%, #8b2fd0 72%, #a21caf 100%);
+  box-shadow: 0 0 0 3px rgba(168,85,247,.18), 0 12px 28px rgba(79,70,229,.42); }
+.pb-signup:hover { box-shadow: 0 0 0 4px rgba(168,85,247,.26), 0 16px 34px rgba(79,70,229,.5); filter: saturate(1.06); }
+.pb-signup .pb-ic { background: #fff; color: #4f46e5; }
+.pb-signup .pb-div { background: rgba(255,255,255,.55); }
+.pb-signup .pb-arrow { color: #fff; }
+.pb-signup::after { content: ""; position: absolute; top: 0; left: -45%; width: 45%; height: 100%;
+  background: linear-gradient(100deg, transparent, rgba(255,255,255,.38), transparent);
+  transform: skewX(-18deg); transition: left .6s ease; }
+.pb-signup:hover::after { left: 140%; }
+
+@media (max-width: 560px) {
+  .pillbtn { font-size: 13.5px; padding: 4px 15px 4px 4px; gap: 8px; }
+  .pb-ic { width: 30px; height: 30px; }
+  .pb-ic svg { width: 16px; height: 16px; }
+}

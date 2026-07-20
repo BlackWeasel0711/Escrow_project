@@ -125,8 +125,13 @@
     const nav = $('#nav');
     nav.innerHTML = '';
     if (!session.isAuthed) {
-      const lg = el('<a class="nav-cta ghost">Log in</a>'); lg.onclick = () => openAuth('login');
-      const su = el('<a class="nav-cta">Sign up</a>'); su.onclick = () => openAuth('register');
+      const I_USER = '<svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><circle cx="12" cy="8" r="3.8"/><path d="M4.5 20.8c0-4.3 3.4-6.7 7.5-6.7s7.5 2.4 7.5 6.7v.2h-15z"/></svg>';
+      const I_USERPLUS = '<svg viewBox="0 0 24 24" width="19" height="19" fill="currentColor"><circle cx="9.6" cy="8" r="3.8"/><path d="M2.2 20.8c0-4.3 3.3-6.7 7.4-6.7 1 0 2 .15 2.9.44-.5.8-.8 1.75-.8 2.76 0 1.3.45 2.5 1.2 3.5H2.2z"/><path d="M18 12.7h1.9v2.6h2.6v1.9h-2.6v2.6H18v-2.6h-2.6v-1.9H18z"/></svg>';
+      const I_CHEV = '<svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 5.5l6.5 6.5L9 18.5"/></svg>';
+      const lg = el('<a class="pillbtn pb-login"><span class="pb-ic">' + I_USER + '</span><i class="pb-div"></i><span class="pb-label">Log in</span><span class="pb-arrow">' + I_CHEV + '</span></a>');
+      const su = el('<a class="pillbtn pb-signup"><span class="pb-ic">' + I_USERPLUS + '</span><i class="pb-div"></i><span class="pb-label">Sign up</span><span class="pb-arrow">' + I_CHEV + '</span></a>');
+      lg.onclick = () => openAuth('login');
+      su.onclick = () => openAuth('register');
       nav.appendChild(lg); nav.appendChild(su);
       return;
     }
@@ -881,7 +886,7 @@
   document.addEventListener('click', () => { const p = document.getElementById('bellPanel'); if (p) p.hidden = true; });
 
   // ---------- boot ----------
-  $('.brand').innerHTML = `<span class="brand-logo"><img src="111.png" alt="" /></span> SafePay <span>Escrow</span>`;
+  $('.brand').innerHTML = `SafePay <span>Escrow</span>`;
   $('.brand').onclick = () => go(session.isAuthed ? 'dashboard' : 'home');
   window.addEventListener('hashchange', render);
   route('new', (v) => { routes.dashboard(v); openOrderWizard(); });
