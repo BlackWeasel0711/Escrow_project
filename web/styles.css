@@ -421,3 +421,15 @@ button:focus-visible { outline: 2px solid #9fe870; outline-offset: 2px; }
   .pb-ic { width: 30px; height: 30px; }
   .pb-ic svg { width: 16px; height: 16px; }
 }
+/* small screens: brand on top, auth buttons underneath */
+@media (max-width: 700px) {
+  .topbar { flex-direction: column; align-items: center; gap: 12px; padding: 14px 14px 16px; }
+  .brand { justify-content: center; }
+  .nav { width: 100%; justify-content: center; flex-wrap: wrap; gap: 10px; }
+}
+@media (max-width: 400px) {
+  .pillbtn { font-size: 12.5px; padding: 3px 13px 3px 3px; gap: 7px; }
+  .pb-ic { width: 27px; height: 27px; }
+  .pb-ic svg { width: 15px; height: 15px; }
+  .pb-div { height: 17px; }
+}
