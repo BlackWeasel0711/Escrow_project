@@ -512,3 +512,8 @@ body.nav-open .burger span:nth-child(3) { transform: translateY(-3.55px) rotate(
 body.nav-open .burger span:nth-child(3) { width: 15px !important; }
 /* no arrows inside buttons (nav chevrons keep theirs) */
 .arr { display: none !important; }
+/* edit / cancel row inside the deal window */
+.deal-manage { display: flex; gap: 10px; margin-top: 12px; }
+.deal-manage .btn-cta { flex: 1; justify-content: center; padding: 11px 16px; font-size: 14px; }
+.btn-cta.danger { background: #b3261e; color: #fff; box-shadow: 0 8px 20px rgba(179,38,30,.25); }
+.btn-cta.danger:hover { background: #c9342b; }

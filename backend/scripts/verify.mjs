@@ -174,6 +174,45 @@ async function runShippingPath(adminToken) {
   check('SHIP: admin reviews list includes rating', reviews.some((r) => r.transactionId === txId && r.score === 4));
 }
 
+async function runManagePath(adminToken) {
+  console.log('\n--- Update & cancel an escrow ---');
+  const buyer = (await api('/auth/register', { method: 'POST', body: { email: 'mgbuyer@t.test', password: 'password123', fullName: 'Test User', phone: '254700000000' } })).data;
+  await api('/auth/register', { method: 'POST', body: { email: 'mgseller@t.test', password: 'password123', fullName: 'Test User', phone: '254700000000' } });
+  const seller = (await api('/auth/login', { method: 'POST', body: { email: 'mgseller@t.test', password: 'password123' } })).data;
+
+  const tx = (await api('/transactions', { method: 'POST', token: buyer.token, body: { sellerEmail: 'mgseller@t.test', description: 'Editable item', amountCents: 50000, method: 'MPESA' } })).data;
+
+  const upd = await api(`/transactions/${tx.id}`, { method: 'PATCH', token: buyer.token, body: { description: 'Updated item name' } });
+  check('MANAGE: buyer can update the description', upd.status === 200 && upd.data?.description === 'Updated item name', `got ${upd.status} ${upd.data?.description}`);
+
+  const badAmt = await api(`/transactions/${tx.id}`, { method: 'PATCH', token: buyer.token, body: { amountCents: 99999 } });
+  check('MANAGE: amount locked once funds are HELD', badAmt.status === 409, `got ${badAmt.status}`);
+
+  const outsider = (await api('/auth/register', { method: 'POST', body: { email: 'mgout@t.test', password: 'password123', fullName: 'Test User', phone: '254700000000' } })).data;
+  const forbidden = await api(`/transactions/${tx.id}`, { method: 'PATCH', token: outsider.token, body: { description: 'hack attempt' } });
+  check('MANAGE: outsider cannot edit', forbidden.status === 403, `got ${forbidden.status}`);
+
+  const cancelled = await api(`/transactions/${tx.id}/cancel`, { method: 'POST', token: buyer.token });
+  check('MANAGE: cancel returns CANCELLED', cancelled.data?.status === 'CANCELLED', `got ${cancelled.data?.status}`);
+  const after = (await api(`/transactions/${tx.id}`, { token: buyer.token })).data;
+  check('MANAGE: timeline records the cancellation', after.events.some((e) => e.toStatus === 'CANCELLED'));
+  const pays = (await api('/admin/payments', { token: adminToken })).data.filter((p) => p.transactionId === tx.id);
+  check('MANAGE: held funds refunded in the ledger', pays.some((p) => p.kind === 'REFUND'));
+  const notifs = (await api('/notifications', { token: buyer.token })).data;
+  check('MANAGE: both parties notified of cancellation', notifs.items.some((n) => /cancelled/i.test(n.message)));
+
+  const tx2 = (await api('/transactions', { method: 'POST', token: buyer.token, body: { sellerEmail: 'mgseller@t.test', description: 'Shipped item', amountCents: 40000, method: 'MPESA' } })).data;
+  await api(`/transactions/${tx2.id}/ship`, { method: 'POST', token: seller.token });
+  const lateCancel = await api(`/transactions/${tx2.id}/cancel`, { method: 'POST', token: buyer.token });
+  check('MANAGE: cannot cancel after shipping', lateCancel.status === 409, `got ${lateCancel.status}`);
+  const lateEdit = await api(`/transactions/${tx2.id}`, { method: 'PATCH', token: buyer.token, body: { description: 'too late' } });
+  check('MANAGE: cannot edit after shipping', lateEdit.status === 409, `got ${lateEdit.status}`);
+
+  const sellerCancelTx = (await api('/transactions', { method: 'POST', token: buyer.token, body: { sellerEmail: 'mgseller@t.test', description: 'Seller declines this', amountCents: 30000, method: 'MPESA' } })).data;
+  const sellerCancel = await api(`/transactions/${sellerCancelTx.id}/cancel`, { method: 'POST', token: seller.token });
+  check('MANAGE: seller can decline/cancel too', sellerCancel.data?.status === 'CANCELLED', `got ${sellerCancel.data?.status}`);
+}
+
 async function main() {
   fs.rmSync(dataDir, { recursive: true, force: true });
   const pg = new EmbeddedPostgres({ databaseDir: dataDir, user: 'postgres', password: 'postgres', port: PORT_DB, persistent: false });
@@ -228,6 +267,9 @@ async function main() {
 
     // seller shipping workflow + payment ledger + reviews + reputation
     await runShippingPath(admin.token);
+
+    // update + cancel management
+    await runManagePath(admin.token);
 
     // admin overview reflects data
     const overview = (await api('/admin/overview', { token: admin.token })).data;

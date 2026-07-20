@@ -258,3 +258,85 @@ export async function markDisputed(transactionId: string) {
   await notifyBoth(tx.buyerId, tx.sellerId, `A dispute was opened on your ${money(tx.amountCents, tx.currency)} escrow. Funds stay locked until an admin resolves it.`, transactionId);
   return updated;
 }
+
+/**
+ * Buyer edits a deal before the seller ships.
+ * Description is editable while CREATED/PAYMENT_PENDING/HELD; the amount only
+ * while the money is not yet locked in escrow.
+ */
+export async function updateTransaction(
+  userId: string,
+  transactionId: string,
+  data: { description?: string; amountCents?: number }
+) {
+  const tx = await prisma.transaction.findUnique({ where: { id: transactionId } });
+  if (!tx) throw new HttpError(404, 'Transaction not found');
+  if (tx.buyerId !== userId) throw new HttpError(403, 'Only the buyer can edit this escrow');
+
+  const editable: TransactionStatus[] = [
+    TransactionStatus.CREATED,
+    TransactionStatus.PAYMENT_PENDING,
+    TransactionStatus.HELD,
+  ];
+  if (!editable.includes(tx.status)) {
+    throw new HttpError(409, `Cannot edit an escrow in status ${tx.status}`);
+  }
+
+  const patch: { description?: string; amountCents?: number } = {};
+  if (data.description !== undefined) patch.description = data.description.trim();
+  if (data.amountCents !== undefined) {
+    if (tx.status === TransactionStatus.HELD) {
+      throw new HttpError(409, 'The amount cannot change once funds are held in escrow');
+    }
+    patch.amountCents = data.amountCents;
+  }
+  if (Object.keys(patch).length === 0) return tx;
+
+  const updated = await prisma.transaction.update({ where: { id: transactionId }, data: patch });
+  await logEvent(transactionId, tx.status, tx.status, 'Buyer updated the escrow details');
+  await notify(
+    tx.sellerId,
+    `The buyer updated the escrow "${updated.description}" (${money(updated.amountCents, updated.currency)}).`,
+    transactionId
+  );
+  return updated;
+}
+
+/**
+ * Cancels a deal before the seller ships. If the money is already held it is
+ * refunded to the buyer first. The record is kept (status CANCELLED) for audit.
+ */
+export async function cancelTransaction(userId: string, transactionId: string) {
+  const tx = await prisma.transaction.findUnique({ where: { id: transactionId } });
+  if (!tx) throw new HttpError(404, 'Transaction not found');
+  if (tx.buyerId !== userId && tx.sellerId !== userId) throw new HttpError(403, 'Not your transaction');
+
+  const cancellable: TransactionStatus[] = [
+    TransactionStatus.CREATED,
+    TransactionStatus.PAYMENT_PENDING,
+    TransactionStatus.HELD,
+  ];
+  if (!cancellable.includes(tx.status)) {
+    throw new HttpError(409, `Cannot cancel an escrow in status ${tx.status}`);
+  }
+
+  const wasHeld = tx.status === TransactionStatus.HELD;
+  if (wasHeld) {
+    const gateway = getGateway(tx.method);
+    await gateway.refund({ gatewayRef: tx.gatewayRef!, amountCents: tx.amountCents });
+  }
+
+  const cancelled = await prisma.transaction.update({
+    where: { id: transactionId },
+    data: { status: TransactionStatus.CANCELLED },
+  });
+  if (wasHeld) await recordPayment(tx, PaymentKind.REFUND);
+
+  const by = tx.buyerId === userId ? 'buyer' : 'seller';
+  await logEvent(transactionId, tx.status, TransactionStatus.CANCELLED, `Cancelled by the ${by}`);
+  const note = wasHeld
+    ? `The escrow "${tx.description}" was cancelled by the ${by} — ${money(tx.amountCents, tx.currency)} has been refunded to the buyer.`
+    : `The escrow "${tx.description}" was cancelled by the ${by}.`;
+  await notifyBoth(tx.buyerId, tx.sellerId, note, transactionId);
+  return cancelled;
+}

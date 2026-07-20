@@ -40,6 +40,28 @@ escrowRouter.get('/:id', async (req: AuthedRequest, res, next) => {
   }
 });
 
+const updateSchema = z.object({
+  description: z.string().min(3).max(500).optional(),
+  amountCents: z.number().int().positive().optional(),
+});
+
+escrowRouter.patch('/:id', async (req: AuthedRequest, res, next) => {
+  try {
+    const body = updateSchema.parse(req.body ?? {});
+    res.json(await escrowService.updateTransaction(req.user!.id, req.params.id, body));
+  } catch (err) {
+    next(err);
+  }
+});
+
+escrowRouter.post('/:id/cancel', async (req: AuthedRequest, res, next) => {
+  try {
+    res.json(await escrowService.cancelTransaction(req.user!.id, req.params.id));
+  } catch (err) {
+    next(err);
+  }
+});
+
 const shipSchema = z.object({ note: z.string().max(300).optional() });
 
 escrowRouter.post('/:id/ship', async (req: AuthedRequest, res, next) => {

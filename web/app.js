@@ -305,12 +305,15 @@
       host.innerHTML = '<h2>' + esc(t.description) + '</h2>' +
         '<div class="deal-meta"><span class="badge ' + t.status + '">' + t.status.replace('_', ' ') + '</span> <b>' + money(t.amountCents, t.currency) + '</b> <span class="muted">you are the ' + (isBuyer ? 'buyer' : 'seller') + '</span></div>' +
         tracker(t.status) + '<div class="deal-act">' + actions + '</div>' +
+        manageRow(t, isBuyer) +
         '<p class="deal-link"><span class="link" id="full">View full details &amp; timeline</span></p>';
       host.querySelector('#full').onclick = function () { close(); go('tx', { id: id }); };
       host.querySelectorAll('[data-act]').forEach(function (b) {
         b.onclick = async function () {
           const act = b.dataset.act;
           if (act === 'dispute') return drawDispute(t);
+          if (act === 'edit') return drawEdit(t);
+          if (act === 'cancel' && !confirm('Cancel this escrow? Any money held will be refunded to the buyer.')) return;
           if (act === 'confirm-received' && !confirm('Release the held funds to the seller? This cannot be undone.')) return;
           b.disabled = true;
           try { await api('/transactions/' + id + '/' + act, { method: 'POST' }); toast('Deal updated', 'ok'); await load(); }
@@ -323,6 +326,32 @@
         rr.querySelectorAll('span').forEach(function (st) { st.onclick = function () { score = +st.dataset.s; rr.querySelectorAll('span').forEach(function (x) { x.textContent = (+x.dataset.s <= score) ? STARF : STAR; }); }; });
         host.querySelector('#rateBtn').onclick = async function () { if (!score) return toast('Pick a score', 'err'); try { await api('/ratings', { method: 'POST', body: { transactionId: id, score: score } }); toast('Thanks for rating', 'ok'); await load(); } catch (e) { toast(e.message, 'err'); } };
       }
+    }
+    function manageRow(t, isBuyer) {
+      const open = ['CREATED', 'PAYMENT_PENDING', 'HELD'].includes(t.status);
+      if (!open) return '';
+      if (isBuyer) return '<div class="deal-manage"><button class="btn-cta ghost" data-act="edit">Edit details</button><button class="btn-cta danger" data-act="cancel">Cancel escrow</button></div>';
+      return '<div class="deal-manage"><button class="btn-cta danger" data-act="cancel">Decline &amp; cancel</button></div>';
+    }
+    function drawEdit(t) {
+      const amountOpen = t.status !== 'HELD';
+      host.innerHTML = '<h2>Edit escrow</h2><p class="sub">You can change the details until the seller marks it shipped.</p>' +
+        '<label>What are you buying?</label><textarea id="edesc" minlength="3" maxlength="500">' + esc(t.description) + '</textarea>' +
+        (amountOpen
+          ? '<label>Amount (KES)</label><div class="field"><input id="eamt" type="number" min="0.01" step="0.01" value="' + (t.amountCents / 100) + '" /></div>'
+          : '<p class="field-hint">The amount cannot change once the money is held in escrow.</p>') +
+        '<div class="btn-row"><button class="btn-cta ghost" id="eback">Back</button><button class="btn-cta" id="esave">Save changes</button></div>';
+      host.querySelector('#eback').onclick = function () { draw(t); };
+      host.querySelector('#esave').onclick = async function () {
+        const body = {};
+        const d = host.querySelector('#edesc').value.trim();
+        if (d) body.description = d;
+        const amtEl = host.querySelector('#eamt');
+        if (amtEl) { const v = parseFloat(amtEl.value); if (v > 0) body.amountCents = Math.round(v * 100); }
+        const btn = host.querySelector('#esave'); btn.disabled = true;
+        try { await api('/transactions/' + id, { method: 'PATCH', body: body }); toast('Escrow updated', 'ok'); await load(); }
+        catch (e) { toast(e.message, 'err'); btn.disabled = false; }
+      };
     }
     function drawDispute(t) {
       host.innerHTML = '<h2>Report a problem</h2><p class="sub">Open a dispute. An admin reviews the evidence and decides.</p><label>What went wrong?</label><textarea id="reason" minlength="3" maxlength="1000" placeholder="Describe the problem"></textarea><label>Evidence URL (optional)</label><div class="field"><input id="ev" type="url" placeholder="https://link-to-photo" /></div><div class="btn-row"><button class="btn-cta ghost" id="dback">Back</button><button class="btn-cta danger" id="dsubmit">Submit dispute</button></div>';
