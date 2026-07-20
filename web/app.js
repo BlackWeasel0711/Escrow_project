@@ -219,8 +219,8 @@
         } catch (err) { if (errBox) { errBox.textContent = err.message; errBox.hidden = false; } toast(err.message, 'err'); btn.disabled = false; }
       };
     }
-    draw();
     close = openModal(host);
+    try { draw(); } catch (e) { host.innerHTML = '<h2>Could not open</h2><p class="sub">' + esc(e.message) + '</p>'; }
   }
   function openOrderWizard() {
     const host = el('<div class="wiz"></div>');
@@ -276,8 +276,8 @@
         host.querySelector('#view').onclick = () => { close(); go('tx', { id: created.id }); };
       }
     }
-    draw();
     close = openModal(host);
+    try { draw(); } catch (e) { host.innerHTML = '<h2>Could not open</h2><p class="sub">' + esc(e.message) + '</p>'; }
   }
   async function openDealFlow(id) {
     const host = el('<div class="deal"></div>');
