@@ -461,3 +461,32 @@ body.nav-open .burger span:nth-child(3) { transform: translateY(-6px) rotate(-45
   .nav .pillbtn { justify-content: center; }
   .nav a { text-align: center; }
 }
+/* ---------- refined hamburger ---------- */
+.burger {
+  width: 46px; height: 46px; border-radius: 14px;
+  background: linear-gradient(180deg, #ffffff, #f6f8f3);
+  border: 1.5px solid rgba(20,40,0,.14);
+  box-shadow: 0 2px 6px rgba(20,40,0,.06);
+  transition: background .18s ease, border-color .18s ease, box-shadow .2s ease;
+}
+.burger:hover { background: var(--wash); border-color: rgba(22,51,0,.45); box-shadow: 0 5px 14px rgba(22,51,0,.14); transform: none; }
+.burger:active { transform: scale(.96); }
+.burger span {
+  height: 2.5px; background: var(--forest); border-radius: 99px;
+  transition: transform .28s cubic-bezier(.2,.7,.3,1), opacity .18s ease, width .28s cubic-bezier(.2,.7,.3,1);
+}
+.burger span + span { margin-top: 4.5px; }
+.burger span:nth-child(1) { width: 22px; }
+.burger span:nth-child(2) { width: 15px; }
+.burger span:nth-child(3) { width: 22px; }
+body.nav-open .burger { background: var(--forest); border-color: var(--forest); }
+body.nav-open .burger span { background: #eafff0; }
+body.nav-open .burger span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+body.nav-open .burger span:nth-child(2) { opacity: 0; width: 0; }
+body.nav-open .burger span:nth-child(3) { width: 22px; transform: translateY(-7px) rotate(-45deg); }
+
+/* ---------- stage pills: neat centred column on narrow screens ---------- */
+@media (max-width: 720px) {
+  .stage-strip { flex-direction: column; align-items: center; gap: 10px; }
+  .stage-strip li { width: min(260px, 100%); justify-content: flex-start; }
+}
