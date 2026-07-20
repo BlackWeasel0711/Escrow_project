@@ -76,7 +76,7 @@
     try {
       res = await fetch(API + path, { method, headers, body: body ? JSON.stringify(body) : undefined });
     } catch {
-      throw new Error('Server offline. Start it: open the backend folder and run "npm run dev:local", then use http://localhost:4000');
+      throw new Error('We could not reach SafePay. Please check your internet connection and try again.');
     }
     let data = null;
     const text = await res.text();
