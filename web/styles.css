@@ -507,3 +507,6 @@ body.nav-open .burger {
 .burger:hover span { opacity: .65; }
 body.nav-open .burger span:nth-child(1) { transform: translateY(3.55px) rotate(45deg); }
 body.nav-open .burger span:nth-child(3) { transform: translateY(-3.55px) rotate(-45deg); width: 19px; }
+/* shorter menu lines */
+.burger span { width: 15px !important; }
+body.nav-open .burger span:nth-child(3) { width: 15px !important; }
