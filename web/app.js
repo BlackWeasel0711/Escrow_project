@@ -888,6 +888,19 @@
   // ---------- boot ----------
   $('.brand').innerHTML = `SafePay <span>Escrow</span>`;
   $('.brand').onclick = () => go(session.isAuthed ? 'dashboard' : 'home');
+  const burger = el('<button class="burger" aria-label="Menu" aria-expanded="false"><span></span><span></span><span></span></button>');
+  burger.onclick = (e) => {
+    e.stopPropagation();
+    const open = document.body.classList.toggle('nav-open');
+    burger.setAttribute('aria-expanded', open ? 'true' : 'false');
+  };
+  document.querySelector('.topbar').appendChild(burger);
+  $('#nav').addEventListener('click', () => { document.body.classList.remove('nav-open'); burger.setAttribute('aria-expanded', 'false'); });
+  document.addEventListener('click', (e) => {
+    if (!document.body.classList.contains('nav-open')) return;
+    if (e.target.closest('.topbar')) return;
+    document.body.classList.remove('nav-open'); burger.setAttribute('aria-expanded', 'false');
+  });
   window.addEventListener('hashchange', render);
   route('new', (v) => { routes.dashboard(v); openOrderWizard(); });
   renderNav();
