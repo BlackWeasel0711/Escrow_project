@@ -26,3 +26,5 @@ local.properties
 
 # Prisma local dev database data (embedded)
 *-pgdata/
+
+deploy/.env
